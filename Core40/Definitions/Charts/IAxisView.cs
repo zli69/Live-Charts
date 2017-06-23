@@ -21,6 +21,7 @@
 //SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using LiveCharts.Charts;
 using LiveCharts.Dtos;
 
@@ -37,49 +38,49 @@ namespace LiveCharts.Definitions.Charts
         /// <value>
         /// The model.
         /// </value>
-        AxisCore Model { get; set; }
+        AxisCore Model { get; }
         /// <summary>
         /// Gets or sets a value indicating whether [disable animations].
         /// </summary>
         /// <value>
         ///   <c>true</c> if [disable animations]; otherwise, <c>false</c>.
         /// </value>
-        bool DisableAnimations { get; set; }
+        bool DisableAnimations { get; }
         /// <summary>
         /// Gets or sets a value indicating whether [show labels].
         /// </summary>
         /// <value>
         ///   <c>true</c> if [show labels]; otherwise, <c>false</c>.
         /// </value>
-        bool ShowLabels { get; set; }
+        bool ShowLabels { get; }
         /// <summary>
         /// Gets or sets the maximum value.
         /// </summary>
         /// <value>
         /// The maximum value.
         /// </value>
-        double MaxValue { get; set; }
+        double MaxValue { get; }
         /// <summary>
         /// Gets or sets the minimum value.
         /// </summary>
         /// <value>
         /// The minimum value.
         /// </value>
-        double MinValue { get; set; }
+        double MinValue { get; }
         /// <summary>
         /// Gets or sets the minimum range.
         /// </summary>
         /// <value>
         /// The minimum range.
         /// </value>
-        double MinRange { get; set; }
+        double MinRange { get; }
         /// <summary>
         /// Gets or sets the maximum range.
         /// </summary>
         /// <value>
         /// The maximum range.
         /// </value>
-        double MaxRange { get; set; }
+        double MaxRange { get; }
         /// <summary>
         /// Gets or sets the labels rotation.
         /// </summary>
@@ -93,7 +94,7 @@ namespace LiveCharts.Definitions.Charts
         /// <value>
         ///   <c>true</c> if this instance is merged; otherwise, <c>false</c>.
         /// </value>
-        bool IsMerged { get; set; }
+        bool IsMerged { get; }
         /// <summary>
         /// Gets or sets the bar unit.
         /// </summary>
@@ -130,8 +131,36 @@ namespace LiveCharts.Definitions.Charts
         /// The axis orientation.
         /// </value>
         AxisOrientation AxisOrientation { get; }
-
         /// <summary>
+        /// Gets the labels.
+        /// </summary>
+        /// <value>
+        /// The labels.
+        /// </value>
+        IList<string> Labels { get; }
+        /// <summary>
+        /// Gets the label formatter.
+        /// </summary>
+        /// <value>
+        /// The label formatter.
+        /// </value>
+        Func<double, string> LabelFormatter { get; }
+        /// <summary>
+        /// Gets the title.
+        /// </summary>
+        /// <value>
+        /// The title.
+        /// </value>
+        string Title { get; }
+        /// <summary>
+        /// Gets the position.
+        /// </summary>
+        /// <value>
+        /// The position.
+        /// </value>
+        AxisPosition Position { get; }
+
+            /// <summary>
         /// Updates the title.
         /// </summary>
         /// <param name="chart">The chart.</param>

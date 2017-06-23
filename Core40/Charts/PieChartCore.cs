@@ -64,8 +64,10 @@ namespace LiveCharts.Charts
                     "There is a invalid series in the series collection, " +
                     "verify that all the series implement IPieSeries.");
 
-            foreach (var xi in AxisX)
+            foreach (var xAxis in View.AxisX)
             {
+                var xi = xAxis.Model;
+
                 xi.S = 1;
                 xi.BotLimit = View.ActualSeries.Select(x => x.Values.GetTracker(x).XLimit.Min)
                     .DefaultIfEmpty(0).Min();
@@ -79,8 +81,10 @@ namespace LiveCharts.Charts
                 }
             }
 
-            foreach (var yi in AxisY)
+            foreach (var yAxis in View.AxisY)
             {
+                var yi = yAxis.Model;
+
                 //yi.CalculateSeparator(this, AxisTags.X);
                 yi.BotLimit = View.ActualSeries.Select(x => x.Values.GetTracker(x).YLimit.Min)
                     .DefaultIfEmpty(0).Min();

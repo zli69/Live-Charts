@@ -41,17 +41,8 @@ namespace LiveCharts.Wpf
         {
             if(Model == null) Model = new LogarithmicAxisCore(this);
 
-            Model.ShowLabels = ShowLabels;
             Model.Chart = chart;
-            Model.IsMerged = IsMerged;
-            Model.Labels = Labels;
-            Model.LabelFormatter = LabelFormatter;
-            Model.MaxValue = MaxValue;
-            Model.MinValue = MinValue;
-            Model.Title = Title;
-            Model.Position = Position;
             Model.Separator = Separator.AsCoreElement(Model, source);
-            Model.DisableAnimations = DisableAnimations;
             Model.Sections = Sections.Select(x => x.AsCoreElement(Model, source)).ToList();
 
             return Model;

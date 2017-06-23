@@ -188,10 +188,10 @@ namespace LiveCharts
 
         internal double TopLimit
         {
-            get { return _topLimit; }
+            get { return TopLimit; }
             set
             {
-                _topLimit = value;
+                TopLimit = value;
             }
         }
 

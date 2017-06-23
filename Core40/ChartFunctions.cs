@@ -44,30 +44,8 @@ namespace LiveCharts
         /// <returns></returns>
         public static double ToPlotArea(double value, AxisOrientation source, ChartCore chart, int axis = 0)
         {
-            var p1 = new CorePoint();
-            var p2 = new CorePoint();
-
-            if (source == AxisOrientation.Y)
-            {
-                p1.X = chart.AxisY[axis].TopLimit;
-                p1.Y = chart.DrawMargin.Top;
-
-                p2.X = chart.AxisY[axis].BotLimit;
-                p2.Y = chart.DrawMargin.Top + chart.DrawMargin.Height;
-            }
-            else
-            {
-                p1.X = chart.AxisX[axis].TopLimit;
-                p1.Y = chart.DrawMargin.Width + chart.DrawMargin.Left;
-
-                p2.X = chart.AxisX[axis].BotLimit;
-                p2.Y = chart.DrawMargin.Left;
-            }
-
-            var deltaX = p2.X - p1.X;
-            // ReSharper disable once CompareOfFloatsByEqualityOperator
-            var m = (p2.Y - p1.Y)/(deltaX == 0 ? double.MinValue : deltaX);
-            return m * (value - p1.X) + p1.Y;
+            return ToPlotArea(value, source, chart,
+                (source == AxisOrientation.X ? chart.View.AxisX : chart.View.AxisY)[axis].Model);
         }
 
         /// <summary>
@@ -121,18 +99,18 @@ namespace LiveCharts
             
             if (source == AxisOrientation.Y)
             {
-                p1.X = chart.AxisY[axis].TopLimit;
+                p1.X = chart.View.AxisY[axis].Model.TopLimit;
                 p1.Y = chart.DrawMargin.Top;
 
-                p2.X = chart.AxisY[axis].BotLimit;
+                p2.X = chart.View.AxisY[axis].Model.BotLimit;
                 p2.Y = chart.DrawMargin.Top + chart.DrawMargin.Height;
             }
             else
             {
-                p1.X = chart.AxisX[axis].TopLimit;
+                p1.X = chart.View.AxisX[axis].Model.TopLimit;
                 p1.Y = chart.DrawMargin.Width + chart.DrawMargin.Left;
 
-                p2.X = chart.AxisX[axis].BotLimit;
+                p2.X = chart.View.AxisX[axis].Model.BotLimit;
                 p2.Y = chart.DrawMargin.Left;
             }
 
@@ -201,7 +179,7 @@ namespace LiveCharts
         public static double GetUnitWidth(AxisOrientation source, ChartCore chart, int axis = 0)
         {
             return GetUnitWidth(source, chart,
-                (source == AxisOrientation.X ? chart.AxisX : chart.AxisY)[axis]);
+                (source == AxisOrientation.X ? chart.View.AxisX : chart.View.AxisY)[axis].Model);
         }
 
         /// <summary>
@@ -214,7 +192,7 @@ namespace LiveCharts
         public static double GetUnitWidth(AxisOrientation source, ChartCore chart, AxisCore axis)
         {
             double min;
-            double u = !double.IsNaN(axis.View.BarUnit)
+            var u = !double.IsNaN(axis.View.BarUnit)
                     ? axis.View.BarUnit
                     : (!double.IsNaN(axis.View.Unit)
                         ? axis.View.Unit
@@ -242,8 +220,8 @@ namespace LiveCharts
         /// <returns></returns>
         public static TooltipDataViewModel GetTooltipData(ChartPoint senderPoint, ChartCore chart, TooltipSelectionMode selectionMode)
         {
-            var ax = chart.AxisX[senderPoint.SeriesView.ScalesXAt];
-            var ay = chart.AxisY[senderPoint.SeriesView.ScalesYAt];
+            var ax = chart.View.AxisX[senderPoint.SeriesView.ScalesXAt].Model;
+            var ay = chart.View.AxisY[senderPoint.SeriesView.ScalesYAt].Model;
 
             switch (selectionMode)
             {

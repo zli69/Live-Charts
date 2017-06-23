@@ -21,7 +21,6 @@
 //SOFTWARE.
 
 using System;
-using System.Diagnostics;
 using System.Windows.Threading;
 using LiveCharts.Dtos;
 using LiveCharts.Wpf.Charts.Base;
@@ -78,11 +77,9 @@ namespace LiveCharts.Wpf.Components
         {
             var wpfChart = (Chart) Chart.View;
             
-            if (!force && !wpfChart.IsVisible && !wpfChart.IsMocked) return;
+            if (!force && !wpfChart.IsVisible) return;
 
-            Chart.ControlSize = wpfChart.IsMocked
-                ? wpfChart.Model.ControlSize
-                : new CoreSize(wpfChart.ActualWidth, wpfChart.ActualHeight);
+            Chart.ControlSize = new CoreSize(wpfChart.ActualWidth, wpfChart.ActualHeight);
 
             Timer.Stop();
             Update(restartView, force);

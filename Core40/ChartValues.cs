@@ -89,8 +89,8 @@ namespace LiveCharts
 
             var cp = new ChartPoint();
 
-            var ax = seriesView.Model.Chart.AxisX[seriesView.ScalesXAt];
-            var ay = seriesView.Model.Chart.AxisY[seriesView.ScalesYAt];
+            var ax = seriesView.Model.Chart.View.AxisX[seriesView.ScalesXAt];
+            var ay = seriesView.Model.Chart.View.AxisY[seriesView.ScalesYAt];
             double fx = double.IsNaN(ax.MinValue) ? double.NegativeInfinity : ax.MinValue,
                 tx = double.IsNaN(ax.MaxValue) ? double.PositiveInfinity : ax.MaxValue,
                 fy = double.IsNaN(ay.MinValue) ? double.NegativeInfinity : ay.MinValue,

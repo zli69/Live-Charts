@@ -253,6 +253,8 @@ namespace LiveCharts.Wpf.Charts.Base
 
         #region Properties
 
+        IList<IAxisView> IChartView.AxisX {get { return AxisX.Cast<IAxisView>().ToArray(); }}
+        IList<IAxisView> IChartView.AxisY { get { return AxisY.Cast<IAxisView>().ToArray(); } }
         private AxesCollection PreviousXAxis { get; set; }
         private AxesCollection PreviousYAxis { get; set; }
         private static Random Randomizer { get; set; }
@@ -270,10 +272,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public static bool RandomizeStartingColor { get; set; }
 
-        /// <summary>
-        /// This property need to be true when unit testing
-        /// </summary>
-        public bool IsMocked { get; set; }
+
 
         /// <summary>
         /// Gets or sets the application level default series color list
@@ -1240,7 +1239,7 @@ namespace LiveCharts.Wpf.Charts.Base
 
         private void OnDraggingStart(object sender, MouseButtonEventArgs e)
         {
-            if (Model == null || Model.AxisX == null || Model.AxisY == null) return;
+            if (Model == null || AxisX == null || AxisY == null) return;
 
             DragOrigin = e.GetPosition(this);
             IsPanning = true;

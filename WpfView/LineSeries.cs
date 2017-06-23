@@ -386,7 +386,7 @@ namespace LiveCharts.Wpf
             var noAnim = Model.Chart.View.DisableAnimations;
 
             var areaLimit = ChartFunctions.ToDrawMargin(double.IsNaN(AreaLimit)
-                ? Model.Chart.AxisY[ScalesYAt].FirstSeparator
+                ? Model.Chart.View.AxisY[ScalesYAt].Model.FirstSeparator
                 : AreaLimit, AxisOrientation.Y, Model.Chart, ScalesYAt);
 
             if (Values != null && atIndex == 0)
@@ -456,10 +456,10 @@ namespace LiveCharts.Wpf
             var noAnim = Model.Chart.View.DisableAnimations;
 
             var areaLimit = ChartFunctions.ToDrawMargin(double.IsNaN(AreaLimit)
-                 ? Model.Chart.AxisY[ScalesYAt].FirstSeparator
+                 ? Model.Chart.View.AxisY[ScalesYAt].Model.FirstSeparator
                  : AreaLimit, AxisOrientation.Y, Model.Chart, ScalesYAt);
 
-            var uw = Model.Chart.AxisX[ScalesXAt].EvaluatesUnitWidth
+            var uw = Model.Chart.View.AxisX[ScalesXAt].Model.EvaluatesUnitWidth
                 ? ChartFunctions.GetUnitWidth(AxisOrientation.X, Model.Chart, ScalesXAt)/2
                 : 0;
             location.X -= uw;

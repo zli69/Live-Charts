@@ -109,6 +109,7 @@ namespace LiveCharts.Wpf
         #endregion
 
         #region properties
+
         private TextBlock TitleBlock { get; set; }
         private FormattedText FormattedTitle { get; set; }
         /// <summary>
@@ -123,6 +124,7 @@ namespace LiveCharts.Wpf
         /// Gets previous Max Value
         /// </summary>
         public double PreviousMaxValue { get; internal set; }
+
         #endregion
 
         #region Dependency Properties
@@ -622,17 +624,8 @@ namespace LiveCharts.Wpf
         {
             if (Model == null) Model = new AxisCore(this);
 
-            Model.ShowLabels = ShowLabels;
             Model.Chart = chart;
-            Model.IsMerged = IsMerged;
-            Model.Labels = Labels;
-            Model.LabelFormatter = LabelFormatter;
-            Model.MaxValue = MaxValue;
-            Model.MinValue = MinValue;
-            Model.Title = Title;
-            Model.Position = Position;
             Model.Separator = Separator.AsCoreElement(Model, source);
-            Model.DisableAnimations = DisableAnimations;
             Model.Sections = Sections.Select(x => x.AsCoreElement(Model, source)).ToList();
 
             return Model;

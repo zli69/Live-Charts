@@ -36,8 +36,6 @@ namespace LiveCharts
     /// </summary>
     public class AxisCore
     {
-        private double _topLimit;
-
         #region Constructors
 
         /// <summary>
@@ -63,91 +61,23 @@ namespace LiveCharts
         /// <value>
         /// The chart.
         /// </value>
-        public ChartCore Chart { get; set; }
+        public ChartCore Chart { get; internal set; }
         /// <summary>
         /// Gets or sets the view.
         /// </summary>
         /// <value>
         /// The view.
         /// </value>
-        public IAxisView View { get; set; }
-        /// <summary>
-        /// Gets or sets the labels.
-        /// </summary>
-        /// <value>
-        /// The labels.
-        /// </value>
-        public IList<string> Labels { get; set; }
+        public IAxisView View { get; internal set; }
+
         /// <summary>
         /// Gets or sets the sections.
         /// </summary>
         /// <value>
         /// The sections.
         /// </value>
-        public List<AxisSectionCore> Sections { get; set; }
-        /// <summary>
-        /// Gets or sets the label formatter.
-        /// </summary>
-        /// <value>
-        /// The label formatter.
-        /// </value>
-        public Func<double, string> LabelFormatter { get; set; }
-        /// <summary>
-        /// Gets or sets the stroke thickness.
-        /// </summary>
-        /// <value>
-        /// The stroke thickness.
-        /// </value>
-        public double StrokeThickness { get; set; }
-        /// <summary>
-        /// Gets or sets a value indicating whether [show labels].
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if [show labels]; otherwise, <c>false</c>.
-        /// </value>
-        public bool ShowLabels { get; set; }
-        /// <summary>
-        /// Gets or sets the maximum value.
-        /// </summary>
-        /// <value>
-        /// The maximum value.
-        /// </value>
-        public double MaxValue { get; set; }
-        /// <summary>
-        /// Gets or sets the minimum value.
-        /// </summary>
-        /// <value>
-        /// The minimum value.
-        /// </value>
-        public double MinValue { get; set; }
-        /// <summary>
-        /// Gets or sets the title.
-        /// </summary>
-        /// <value>
-        /// The title.
-        /// </value>
-        public string Title { get; set; }
-        /// <summary>
-        /// Gets or sets a value indicating whether [disable animations].
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if [disable animations]; otherwise, <c>false</c>.
-        /// </value>
-        public bool DisableAnimations { get; set; }
-        /// <summary>
-        /// Gets or sets the position.
-        /// </summary>
-        /// <value>
-        /// The position.
-        /// </value>
-        public AxisPosition Position { get; set; }
-        /// <summary>
-        /// Gets or sets a value indicating whether this instance is merged.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if this instance is merged; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsMerged { get; set; }
+        public List<AxisSectionCore> Sections { get; set; }  //Todo: delete
+        
         /// <summary>
         /// Gets a value indicating whether [evaluates unit width].
         /// </summary>
@@ -185,16 +115,7 @@ namespace LiveCharts
         #region Internal Properties
 
         internal double Tab { get; set; }
-
-        internal double TopLimit
-        {
-            get { return _topLimit; }
-            set
-            {
-                _topLimit = value;
-            }
-        }
-
+        internal double TopLimit { get; set; }
         internal double BotLimit { get; set; }
         internal double TopSeriesLimit { get; set; }
         internal double BotSeriesLimit { get; set; }
@@ -273,12 +194,12 @@ namespace LiveCharts
 
             S = tick;
 
-            if (Labels != null) S = S < 1 ? 1 : S;
+            if (View.Labels != null) S = S < 1 ? 1 : S;
         }
 
         internal virtual CoreMargin PrepareChart(AxisOrientation source, ChartCore chart)
         {
-            if (!(Math.Abs(TopLimit - BotLimit) > S * .01) || !ShowLabels) return new CoreMargin();
+            if (!(Math.Abs(TopLimit - BotLimit) > S * .01) || !View.ShowLabels) return new CoreMargin();
 
             CalculateSeparator(chart, source);
 
@@ -342,7 +263,7 @@ namespace LiveCharts
                 toLine += EvaluatesUnitWidth ? direction * ChartFunctions.GetUnitWidth(source, chart, this) / 2 : 0;
                 var toLabel = toLine + element.View.LabelModel.GetOffsetBySource(source);
 
-                if (IsMerged)
+                if (View.IsMerged)
                 {
                     const double padding = 4;
 
@@ -522,16 +443,16 @@ namespace LiveCharts
 
         private string Formatter(double x)
         {
-            if (Labels == null)
+            if (View.Labels == null)
             {
-                return LabelFormatter == null
+                return View.LabelFormatter == null
                     ? x.ToString(CultureInfo.InvariantCulture)
-                    : LabelFormatter(x);
+                    : View.LabelFormatter(x);
             }
 
             if (x < 0) x *= -1;
-            return Labels.Count > x && x >= 0
-                ? Labels[(int)x]
+            return View.Labels.Count > x && x >= 0
+                ? View.Labels[(int)x]
                 : "";
         }
 

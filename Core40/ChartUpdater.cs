@@ -103,9 +103,6 @@ namespace LiveCharts
                     });
                 });
 
-            Chart.AxisX = Chart.View.MapXAxes(Chart);
-            Chart.AxisY = Chart.View.MapYAxes(Chart);
-
             foreach (var series in Chart.View.ActualSeries)
             {
                 InitializeSeriesView(series);

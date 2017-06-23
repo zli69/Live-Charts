@@ -65,9 +65,11 @@ namespace LiveCharts.Charts
 
             var cartesianSeries = View.ActualSeries.Select(x => x.Model).Cast<ICartesianSeries>().ToArray();
 
-            for (var index = 0; index < AxisX.Count; index++)
+            var xAxis = View.AxisX;
+
+            for (var index = 0; index < xAxis.Count; index++)
             {
-                var xi = AxisX[index];
+                var xi = xAxis[index].Model;
 
                 xi.CalculateSeparator(this, AxisOrientation.X);
 
@@ -78,11 +80,11 @@ namespace LiveCharts.Charts
                 {
                     if (Math.Abs(xi.PreviousBot - xi.PreviousTop) < xi.S * .01)
                     {
-                        if (double.IsNaN(xi.MinValue)) xi.BotLimit -= xi.S;
-                        else xi.BotLimit = xi.MinValue;
+                        if (double.IsNaN(xi.View.MinValue)) xi.BotLimit -= xi.S;
+                        else xi.BotLimit = xi.View.MinValue;
 
-                        if (double.IsNaN(xi.MaxValue)) xi.TopLimit += xi.S;
-                        else xi.TopLimit = xi.MaxValue;
+                        if (double.IsNaN(xi.View.MaxValue)) xi.TopLimit += xi.S;
+                        else xi.TopLimit = xi.View.MaxValue;
 
                         if (Math.Abs(xi.BotLimit - xi.TopLimit) < xi.S * .01 && !View.IsInDesignMode)
                             throw new LiveChartsException("One axis has an invalid range, it is or it is " +
@@ -99,9 +101,11 @@ namespace LiveCharts.Charts
                 xi.PreviousTop = xi.TopLimit;
             }
 
-            for (var index = 0; index < AxisY.Count; index++)
+            var yAxis = View.AxisY;
+
+            for (var index = 0; index < yAxis.Count; index++)
             {
-                var yi = AxisY[index];
+                var yi = yAxis[index].Model;
 
                 yi.CalculateSeparator(this, AxisOrientation.Y);
 
@@ -112,11 +116,11 @@ namespace LiveCharts.Charts
                 {
                     if (Math.Abs(yi.PreviousBot - yi.PreviousTop) < yi.S * .01)
                     {
-                        if (double.IsNaN(yi.MinValue)) yi.BotLimit -= yi.S;
-                        else yi.BotLimit = yi.MinValue;
+                        if (double.IsNaN(yi.View.MinValue)) yi.BotLimit -= yi.S;
+                        else yi.BotLimit = yi.View.MinValue;
 
-                        if (double.IsNaN(yi.MaxValue)) yi.TopLimit += yi.S;
-                        else yi.TopLimit = yi.MaxValue;
+                        if (double.IsNaN(yi.View.MaxValue)) yi.TopLimit += yi.S;
+                        else yi.TopLimit = yi.View.MaxValue;
 
                         if (Math.Abs(yi.BotLimit - yi.TopLimit) < yi.S * .01)
                             throw new LiveChartsException("One axis has an invalid range, it is or it " +
@@ -156,9 +160,11 @@ namespace LiveCharts.Charts
         /// </summary>
         public void DrawOrUpdateSections()
         {
-            for (var index = 0; index < AxisX.Count; index++)
+            var xAxis = View.AxisX;
+
+            for (var index = 0; index < xAxis.Count; index++)
             {
-                var xi = AxisX[index];
+                var xi = xAxis[index].Model;
                 foreach (var section in xi.Sections)
                 {
                     section.AxisIndex = index;
@@ -167,9 +173,11 @@ namespace LiveCharts.Charts
                 }
             }
 
-            for (var index = 0; index < AxisY.Count; index++)
+            var yAxis = View.AxisY;
+
+            for (var index = 0; index < yAxis.Count; index++)
             {
-                var yi = AxisY[index];
+                var yi = yAxis[index].Model;
                 foreach (var section in yi.Sections)
                 {
                     section.AxisIndex = index;
@@ -218,8 +226,8 @@ namespace LiveCharts.Charts
             ax.TopSeriesLimit = boundries[0];
             ax.BotSeriesLimit = boundries[1];
 
-            ax.TopLimit = double.IsNaN(ax.MaxValue) ? boundries[0] : ax.MaxValue;
-            ax.BotLimit = double.IsNaN(ax.MinValue) ? boundries[1] : ax.MinValue;
+            ax.TopLimit = double.IsNaN(ax.View.MaxValue) ? boundries[0] : ax.View.MaxValue;
+            ax.BotLimit = double.IsNaN(ax.View.MinValue) ? boundries[1] : ax.View.MinValue;
 
             ax.MaxPointRadius = boundries[2];
         }
@@ -252,11 +260,11 @@ namespace LiveCharts.Charts
                 if (series is IStackedColumnSeriesView || series is IColumnSeriesView || 
                     series is IFinancialSeriesView || series is IHeatSeriesView)
                 {
-                    AxisX[series.ScalesXAt].EvaluatesUnitWidth = true;
+                    View.AxisX[series.ScalesXAt].Model.EvaluatesUnitWidth = true;
                 }
                 if (series is IStackedRowSeriesView || series is IRowSeriesView || series is IHeatSeriesView)
                 {
-                    AxisY[series.ScalesYAt].EvaluatesUnitWidth = true;
+                    View.AxisY[series.ScalesYAt].Model.EvaluatesUnitWidth = true;
                 }
             }
         }

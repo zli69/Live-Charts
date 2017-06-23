@@ -300,12 +300,12 @@ namespace LiveCharts.Wpf
             BindingOperations.SetBinding(_rectangle, VisibilityProperty,
                 new Binding {Path = new PropertyPath(VisibilityProperty), Source = this});
 
-            var ax = source == AxisOrientation.X ? Model.Chart.AxisX[axis] : Model.Chart.AxisY[axis];
-            var uw = ax.EvaluatesUnitWidth ? ChartFunctions.GetUnitWidth(source, Model.Chart, axis) / 2 : 0;
+            var ax = source == AxisOrientation.X ? Model.Chart.View.AxisX[axis] : Model.Chart.View.AxisY[axis];
+            var uw = ax.Model.EvaluatesUnitWidth ? ChartFunctions.GetUnitWidth(source, Model.Chart, axis) / 2 : 0;
 
             if (Parent == null)
             {
-                _label = ((Axis) ax.View).BindATextBlock();
+                _label = ((Axis) ax).BindATextBlock();
                 _label.Padding = new Thickness(5, 2, 5, 2);
                 Model.Chart.View.AddToView(this);
                 Model.Chart.View.AddToDrawMargin(_rectangle);
@@ -341,7 +341,7 @@ namespace LiveCharts.Wpf
                 if (DataLabelForeground != null) _label.Foreground = DataLabelForeground;
                 _label.UpdateLayout();
                 _label.Background = Stroke ?? Fill;
-                PlaceLabel(ax.GetFormatter()(Value), ax, source);
+                PlaceLabel(ax.Model.GetFormatter()(Value), ax.Model, source);
             }
 
             if (source == AxisOrientation.X)
@@ -446,7 +446,7 @@ namespace LiveCharts.Wpf
 
             var chart = Model.Chart;
 
-            if (axis.IsMerged)
+            if (axis.View.IsMerged)
             {
                 const double padding = 4;
 
@@ -469,7 +469,7 @@ namespace LiveCharts.Wpf
 
             if (source == AxisOrientation.Y)
             {
-                labelTab += 8 * (axis.Position == AxisPosition.LeftBottom ? 1 : -1);
+                labelTab += 8 * (axis.View.Position == AxisPosition.LeftBottom ? 1 : -1);
 
                 if (Model.View.DisableAnimations || DisableAnimations)
                 {

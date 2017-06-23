@@ -122,6 +122,20 @@ namespace LiveCharts.Definitions.Charts
         /// The state of the updater.
         /// </value>
         UpdaterState UpdaterState { get; set; }
+        /// <summary>
+        /// Gets or sets the axis x.
+        /// </summary>
+        /// <value>
+        /// The axis x.
+        /// </value>
+        IList<IAxisView> AxisX { get; }
+        /// <summary>
+        /// Gets or sets the axis y.
+        /// </summary>
+        /// <value>
+        /// The axis y.
+        /// </value>
+        IList<IAxisView> AxisY { get; }
 
         /// <summary>
         /// Gets a value indicating whether this instance has tooltip.
@@ -237,17 +251,5 @@ namespace LiveCharts.Definitions.Charts
         /// </summary>
         /// <returns></returns>
         CoreSize LoadLegend();
-        /// <summary>
-        /// Maps the x axes.
-        /// </summary>
-        /// <param name="chart">The chart.</param>
-        /// <returns></returns>
-        List<AxisCore> MapXAxes(ChartCore chart);
-        /// <summary>
-        /// Maps the y axes.
-        /// </summary>
-        /// <param name="chart">The chart.</param>
-        /// <returns></returns>
-        List<AxisCore> MapYAxes(ChartCore chart);
     }
 }

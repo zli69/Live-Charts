@@ -60,7 +60,7 @@ namespace LiveCharts.Dtos
                 }
                 else
                 {
-                    if (axis.Position == AxisPosition.LeftBottom)
+                    if (axis.View.Position == AxisPosition.LeftBottom)
                     {
                         //Bot
                         XOffset = padding;
@@ -112,7 +112,7 @@ namespace LiveCharts.Dtos
                 // Y Axis
                 if (quadrant == 1)
                 {
-                    if (axis.Position == AxisPosition.LeftBottom)
+                    if (axis.View.Position == AxisPosition.LeftBottom)
                     {
                         // 1, L
                         Top = HFromW + (HFromH / 2);      //space taken from separator to top
@@ -131,7 +131,7 @@ namespace LiveCharts.Dtos
                 }
                 else
                 {
-                    if (axis.Position == AxisPosition.LeftBottom)
+                    if (axis.View.Position == AxisPosition.LeftBottom)
                     {
                         // 4, L
                         Bottom = HFromW + (HFromH / 2);
@@ -159,7 +159,7 @@ namespace LiveCharts.Dtos
                     Left = TakenWidth / 2;
                     Right = Left;
                     XOffset = -Left;
-                    YOffset = axis.Position == AxisPosition.LeftBottom
+                    YOffset = axis.View.Position == AxisPosition.LeftBottom
                         ? padding
                         : -padding - TakenHeight;
                 }
@@ -167,7 +167,7 @@ namespace LiveCharts.Dtos
                 {
                     if (quadrant == 1)
                     {
-                        if (axis.Position == AxisPosition.LeftBottom)
+                        if (axis.View.Position == AxisPosition.LeftBottom)
                         {
                             //1, B
                             Right = WFromW + (WFromH / 2);  //space taken from separator to right
@@ -186,7 +186,7 @@ namespace LiveCharts.Dtos
                     }
                     else
                     {
-                        if (axis.Position == AxisPosition.LeftBottom)
+                        if (axis.View.Position == AxisPosition.LeftBottom)
                         {
                             //4, B
                             Left = WFromW + (WFromH / 2);

@@ -90,7 +90,7 @@ namespace LiveCharts
         /// </value>
         public AxisCore CurrentXAxis
         {
-            get { return Chart.AxisX[View.ScalesXAt]; }
+            get { return Chart.View.AxisX[View.ScalesXAt].Model; }
         }
         /// <summary>
         /// Gets the current y axis.
@@ -100,7 +100,7 @@ namespace LiveCharts
         /// </value>
         public AxisCore CurrentYAxis
         {
-            get { return Chart.AxisY[View.ScalesYAt]; }
+            get { return Chart.View.AxisY[View.ScalesYAt].Model; }
         }
 
         /// <summary>
