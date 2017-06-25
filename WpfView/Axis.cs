@@ -50,6 +50,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public Axis()
         {
+            Model = new AxisCore(this);
             TitleBlock = BindATextBlock();
             SetCurrentValue(SeparatorProperty, new Separator());
             SetCurrentValue(ShowLabelsProperty, true);
