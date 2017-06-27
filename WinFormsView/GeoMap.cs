@@ -50,13 +50,6 @@ namespace LiveCharts.WinForms
         {
             Child = WpfBase;
 
-            //workaround for windows 7 focus issue
-            //https://github.com/beto-rodriguez/Live-Charts/issues/515
-            HostContainer.MouseEnter += (sender, args) =>
-            {
-                Focus();
-            };
-
             WpfBase.LandClick += (o, point) =>
             {
                 if (LandClick != null) LandClick.Invoke(o, point);

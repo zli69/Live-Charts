@@ -51,13 +51,6 @@ namespace LiveCharts.WinForms
         public AngularGauge()
         {
             Child = WpfBase;
-
-            //workaround for windows 7 focus issue
-            //https://github.com/beto-rodriguez/Live-Charts/issues/515
-            HostContainer.MouseEnter += (sender, args) =>
-            {
-                Focus();
-            };
         }
 
         /// <summary>

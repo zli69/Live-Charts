@@ -23,8 +23,8 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
-using System.Diagnostics;
 using System.Windows.Forms.Integration;
+using System.Windows.Input;
 using System.Windows.Media;
 using LiveCharts.Events;
 using LiveCharts.Wpf;
@@ -51,13 +51,6 @@ namespace LiveCharts.WinForms
         public CartesianChart()
         {
             Child = WpfBase;
-
-            //workaround for windows 7 focus issue
-            //https://github.com/beto-rodriguez/Live-Charts/issues/515
-            HostContainer.MouseEnter += (sender, args) =>
-            {
-                Focus();
-            };
 
             if (LicenseManager.UsageMode == LicenseUsageMode.Designtime)
             {
@@ -150,7 +143,20 @@ namespace LiveCharts.WinForms
         public ZoomingOptions Zoom
         {
             get { return WpfBase.Zoom; }
-            set { WpfBase.Zoom = value; }
+            set
+            {
+                WpfBase.Zoom = value;
+                if (WpfBase.Zoom != ZoomingOptions.None)
+                {
+                    //workaround for windows 7 focus issue
+                    //https://github.com/beto-rodriguez/Live-Charts/issues/515
+                    HostContainer.MouseEnter += OnHostContainerOnMouseEnter;
+                }
+                else
+                {
+                    HostContainer.MouseEnter -= OnHostContainerOnMouseEnter;
+                }
+            }
         }
 
         /// <summary>
@@ -371,5 +377,10 @@ namespace LiveCharts.WinForms
             WpfBase.Update(restartView, force);
         }
         #endregion
+
+        private void OnHostContainerOnMouseEnter(object sender, MouseEventArgs args)
+        {
+            Focus();
+        }
     }
 }
