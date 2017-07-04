@@ -165,6 +165,7 @@ namespace LiveCharts.Charts
             for (var index = 0; index < xAxis.Count; index++)
             {
                 var xi = xAxis[index].Model;
+                if (xi.Sections == null) continue;
                 foreach (var section in xi.Sections)
                 {
                     section.AxisIndex = index;
@@ -178,6 +179,7 @@ namespace LiveCharts.Charts
             for (var index = 0; index < yAxis.Count; index++)
             {
                 var yi = yAxis[index].Model;
+                if (yi.Sections == null) continue;
                 foreach (var section in yi.Sections)
                 {
                     section.AxisIndex = index;

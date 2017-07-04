@@ -83,21 +83,5 @@ namespace LiveCharts.Wpf
 
         #endregion
 
-        /// <summary>
-        /// Maps as core element.
-        /// </summary>
-        /// <param name="chart">The chart.</param>
-        /// <param name="source">The source.</param>
-        /// <returns></returns>
-        public override AxisCore AsCoreElement(ChartCore chart, AxisOrientation source)
-        {
-            if (Model == null) Model = new DateAxisCore(this);
-            Model.Separator = Separator.AsCoreElement(Model, source);
-            Model.Sections = Sections.Select(x => x.AsCoreElement(Model, source)).ToList();            
-
-            ((DateAxisCore)Model).Windows = Windows.ToList();
-            ((DateAxisCore)Model).Windows.ForEach(w => ((DateAxisWindow)w).DateAxisCore = (DateAxisCore)Model);
-            return Model;
-        }
     }
 }

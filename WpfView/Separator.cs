@@ -146,25 +146,6 @@ namespace LiveCharts.Wpf
 
         #endregion
 
-        /// <summary>
-        /// Ases the core element.
-        /// </summary>
-        /// <param name="axis">The axis.</param>
-        /// <param name="source">The source.</param>
-        /// <returns></returns>
-        public SeparatorConfigurationCore AsCoreElement(AxisCore axis, AxisOrientation source)
-        {
-            AxisOrientation = source;
-            Chart = axis.Chart;
-            Axis = axis;
-            return new SeparatorConfigurationCore(axis)
-            {
-                IsEnabled = IsEnabled,
-                Step = Step,
-                Source = source
-            };
-        }
-
         private static PropertyChangedCallback CallChartUpdater(bool animate = false)
         {
             return (o, args) =>

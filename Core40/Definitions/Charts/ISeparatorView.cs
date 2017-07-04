@@ -45,13 +45,5 @@ namespace LiveCharts.Definitions.Charts
         /// The axis orientation.
         /// </value>
         AxisOrientation AxisOrientation { get; }
-
-        /// <summary>
-        /// Ases the core element.
-        /// </summary>
-        /// <param name="axis">The axis.</param>
-        /// <param name="source">The source.</param>
-        /// <returns></returns>
-        SeparatorConfigurationCore AsCoreElement(AxisCore axis, AxisOrientation source);
     }
 }

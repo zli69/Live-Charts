@@ -90,7 +90,7 @@ namespace LiveCharts
 
         internal IEnumerable<double> CalculateSeparatorIndices(ChartCore chart, AxisOrientation source, double unit)
         {
-            if (!double.IsNaN(Separator.Step)) throw new Exception("Step should be NaN for WindowAxis separators");
+            if (!double.IsNaN(View.Separator.Step)) throw new Exception("Step should be NaN for WindowAxis separators");
             if (Windows == null) return Enumerable.Empty<double>();
 
             // Holder for the calculated separator indices and the proposed window

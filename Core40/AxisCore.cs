@@ -96,13 +96,6 @@ namespace LiveCharts
             get { return Cache.Values; }
         }
         /// <summary>
-        /// Gets or sets the separator.
-        /// </summary>
-        /// <value>
-        /// The separator.
-        /// </value>
-        public SeparatorConfigurationCore Separator { get; set; }
-        /// <summary>
         /// Gets the s.
         /// </summary>
         /// <value>
@@ -175,9 +168,9 @@ namespace LiveCharts
             var minimum = range / separations;
             Magnitude = Math.Pow(10, Math.Floor(Math.Log(minimum) / Math.Log(10)));
 
-            if (!double.IsNaN(Separator.Step))
+            if (!double.IsNaN(View.Separator.Step))
             {
-                S = Separator.Step;
+                S = View.Separator.Step;
                 return;
             }
 

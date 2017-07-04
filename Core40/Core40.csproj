@@ -151,7 +151,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScrollMode.cs" />
     <Compile Include="SeparationState.cs" />
-    <Compile Include="SeparatorConfigurationCore.cs" />
     <Compile Include="SeparatorElementCore.cs" />
     <Compile Include="Seriesalgorithm.cs" />
     <Compile Include="SeriesAlgorithms\CandleAlgorithm.cs" />

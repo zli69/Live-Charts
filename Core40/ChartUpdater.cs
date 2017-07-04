@@ -91,6 +91,8 @@ namespace LiveCharts
              
             if (!force && !Chart.View.IsControlLoaded) return;
 
+            Chart.View.SetParentsTree();
+
             if (restartsAnimations)
                 Chart.View.ActualSeries.ForEach(s =>
                 {

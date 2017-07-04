@@ -1,4 +1,4 @@
-//The MIT License(MIT)
+﻿//The MIT License(MIT)
 
 //Copyright(c) 2016 Alberto Rodriguez & LiveCharts Contributors
 
@@ -20,45 +20,30 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-namespace LiveCharts
+namespace LiveCharts.Definitions.Charts
 {
     /// <summary>
     /// 
     /// </summary>
-    public class SeparatorConfigurationCore
+    public interface SeparatorelementCore
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SeparatorConfigurationCore"/> class.
-        /// </summary>
-        /// <param name="axis">The axis.</param>
-        public SeparatorConfigurationCore(AxisCore axis)
-        {
-            Axis = axis;
-        }
-
-        /// <summary>
-        /// Gets or sets the axis.
+        /// Gets or sets a value indicating whether this instance is enabled.
         /// </summary>
         /// <value>
-        /// The axis.
+        /// <c>true</c> if this instance is enabled; otherwise, <c>false</c>.
         /// </value>
-        public AxisCore Axis { get; set; }
-
+        bool IsEnabled { get; set; }
         /// <summary>
-        /// Gets or sets if separators are enabled (will be drawn)
+        /// Gets or sets separator step, this means the value between each line, use double.NaN for auto.
         /// </summary>
-        public bool IsEnabled { get; set; }
+        double Step { get; set; }
         /// <summary>
-        /// Gets or sets sepator step, this means the value between each line, use null for auto.
-        /// </summary>
-        public double Step { get; set; }
-
-        /// <summary>
-        /// Gets or sets the source.
+        /// Gets the axis orientation.
         /// </summary>
         /// <value>
-        /// The source.
+        /// The axis orientation.
         /// </value>
-        public AxisOrientation Source { get; set; }
+        AxisOrientation AxisOrientation { get; }
     }
 }

@@ -32,23 +32,6 @@ namespace LiveCharts.Wpf
     public class LogarithmicAxis : Axis, ILogarithmicAxisView
     {
         /// <summary>
-        /// Ases the core element.
-        /// </summary>
-        /// <param name="chart">The chart.</param>
-        /// <param name="source">The source.</param>
-        /// <returns></returns>
-        public override AxisCore AsCoreElement(ChartCore chart, AxisOrientation source)
-        {
-            if(Model == null) Model = new LogarithmicAxisCore(this);
-
-            Model.Chart = chart;
-            Model.Separator = Separator.AsCoreElement(Model, source);
-            Model.Sections = Sections.Select(x => x.AsCoreElement(Model, source)).ToList();
-
-            return Model;
-        }
-
-        /// <summary>
         /// The base property
         /// </summary>
         public static readonly DependencyProperty BaseProperty = DependencyProperty.Register(

@@ -160,6 +160,14 @@ namespace LiveCharts.Definitions.Charts
         /// </value>
         AxisPosition Position { get; }
 
+        /// <summary>
+        /// Gets the separator.
+        /// </summary>
+        /// <value>
+        /// The separator.
+        /// </value>
+        ISeparatorView Separator { get; }
+
             /// <summary>
         /// Updates the title.
         /// </summary>
@@ -192,13 +200,6 @@ namespace LiveCharts.Definitions.Charts
         /// </summary>
         /// <returns></returns>
         CoreSize GetLabelSize();
-        /// <summary>
-        /// Ases the core element.
-        /// </summary>
-        /// <param name="chart">The chart.</param>
-        /// <param name="source">The source.</param>
-        /// <returns></returns>
-        AxisCore AsCoreElement(ChartCore chart, AxisOrientation source);
         /// <summary>
         /// Renders the separator.
         /// </summary>

@@ -86,16 +86,6 @@ namespace LiveCharts.Wpf
             get { return (Brush)GetValue(HeaderForegroundProperty); }
             set { SetValue(HeaderForegroundProperty, value); }
         }
-
-        public override AxisCore AsCoreElement(ChartCore chart, AxisOrientation source)
-        {
-            if (Model == null) Model = new WindowAxisCore(this);
-            Model.Chart = chart;
-            Model.Separator = Separator.AsCoreElement(Model, source);
-            Model.Sections = Sections.Select(x => x.AsCoreElement(Model, source)).ToList();
-            ((WindowAxisCore) Model).Windows = Windows.ToList();
-            return Model;
-        }
                         
         public override void RenderSeparator(SeparatorElementCore model, ChartCore chart)
         {

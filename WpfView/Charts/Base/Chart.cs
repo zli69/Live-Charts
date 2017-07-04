@@ -76,8 +76,8 @@ namespace LiveCharts.Wpf.Charts.Base
             SetCurrentValue(AnimationsSpeedProperty, TimeSpan.FromMilliseconds(300));
             SetCurrentValue(TooltipTimeoutProperty, TimeSpan.FromMilliseconds(800));
 
-            SetCurrentValue(AxisXProperty, new AxesCollection());
-            SetCurrentValue(AxisYProperty, new AxesCollection());
+            SetCurrentValue(AxisXProperty, new AxesCollection{new Axis()});
+            SetCurrentValue(AxisYProperty, new AxesCollection{new Axis()});
 
             SetCurrentValue(ChartLegendProperty, new DefaultLegend());
             SetCurrentValue(DataTooltipProperty, new DefaultTooltip());
@@ -795,58 +795,13 @@ namespace LiveCharts.Wpf.Charts.Base
             if (Model != null) Model.Updater.Run(restartView, force);
         }
 
-        /// <summary>
-        /// Maps the x axes.
-        /// </summary>
-        /// <param name="chart">The chart.</param>
-        /// <returns></returns>
-        public List<AxisCore> MapXAxes(ChartCore chart)
+        void IChartView.SetParentsTree()
         {
-            if (DesignerProperties.GetIsInDesignMode(this) && AxisX == null)
-                AxisX = DefaultAxes.DefaultAxis;
-
-            if (AxisX.Count == 0)
-                AxisX.Add(new Axis {Separator = new Separator()});
-
             AxisX.Chart = this;
-
-            return AxisX.Select(x =>
-            {
-                if (x.Parent == null)
-                {
-                    x.AxisOrientation = AxisOrientation.X;
-                    if (x.Separator != null) chart.View.AddToView(x.Separator);
-                    chart.View.AddToView(x);
-                }
-                return x.AsCoreElement(Model, AxisOrientation.X);
-            }).ToList();
-        }
-
-        /// <summary>
-        /// Maps the y axes.
-        /// </summary>
-        /// <param name="chart">The chart.</param>
-        /// <returns></returns>
-        public List<AxisCore> MapYAxes(ChartCore chart)
-        {
-            if (DesignerProperties.GetIsInDesignMode(this) && AxisY == null)
-                AxisY = DefaultAxes.DefaultAxis;
-
-            if (AxisY.Count == 0)
-                AxisY.Add(new Axis {Separator = new Separator()});
-
             AxisY.Chart = this;
 
-            return AxisY.Select(y =>
-            {
-                if (y.Parent == null)
-                {
-                    y.AxisOrientation = AxisOrientation.Y;
-                    if (y.Separator != null) chart.View.AddToView(y.Separator);
-                    chart.View.AddToView(y);
-                }
-                return y.AsCoreElement(Model, AxisOrientation.Y);
-            }).ToList();
+            foreach (var ax in AxisX) ax.Model.Chart = Model;
+            foreach (var ay in AxisY) ay.Model.Chart = Model;
         }
 
         /// <summary>
@@ -1453,10 +1408,13 @@ namespace LiveCharts.Wpf.Charts.Base
                 var ax = orientation == AxisOrientation.X ? chart.PreviousXAxis : chart.PreviousYAxis;
 
                 if (ax != null)
+                {
                     foreach (var axis in ax)
                     {
                         axis.Clean();
                     }
+                }
+
                 if (orientation == AxisOrientation.X)
                 {
                     chart.PreviousXAxis = chart.AxisX;

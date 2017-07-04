@@ -22,7 +22,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -125,6 +124,8 @@ namespace LiveCharts.Wpf
         /// Gets previous Max Value
         /// </summary>
         public double PreviousMaxValue { get; internal set; }
+
+        ISeparatorView IAxisView.Separator { get { return Separator; } }
 
         #endregion
 
@@ -616,23 +617,6 @@ namespace LiveCharts.Wpf
         }
 
         /// <summary>
-        /// Ases the core element.
-        /// </summary>
-        /// <param name="chart">The chart.</param>
-        /// <param name="source">The source.</param>
-        /// <returns></returns>
-        public virtual AxisCore AsCoreElement(ChartCore chart, AxisOrientation source)
-        {
-            if (Model == null) Model = new AxisCore(this);
-
-            Model.Chart = chart;
-            Model.Separator = Separator.AsCoreElement(Model, source);
-            Model.Sections = Sections.Select(x => x.AsCoreElement(Model, source)).ToList();
-
-            return Model;
-        }
-
-        /// <summary>
         /// Sets the range.
         /// </summary>
         /// <param name="min">The minimum.</param>
@@ -696,7 +680,7 @@ namespace LiveCharts.Wpf
         {
             var l = new Line();
 
-            var s = Separator as Separator;
+            var s = Separator;
             if (s == null) return l;
 
             l.SetBinding(Shape.StrokeProperty,
@@ -724,7 +708,7 @@ namespace LiveCharts.Wpf
                 var wpfAxis = o as Axis;
                 if (wpfAxis == null) return;
 
-                if (wpfAxis.Model != null)
+                if (wpfAxis.Model != null && wpfAxis.Model.Chart != null)
                     wpfAxis.Model.Chart.Updater.Run(animate, updateNow);
             };
         }

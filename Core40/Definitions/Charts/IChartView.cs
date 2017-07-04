@@ -231,7 +231,12 @@ namespace LiveCharts.Definitions.Charts
         /// </summary>
         /// <param name="element">The element.</param>
         void EnsureElementBelongsToCurrentDrawMargin(object element);
-        
+
+        /// <summary>
+        /// Sets the parents.
+        /// </summary>
+        void SetParentsTree();
+
         /// <summary>
         /// Hides the tooltip.
         /// </summary>
