@@ -57,8 +57,6 @@ namespace LiveCharts.Charts
         ///                     "verify that all the series implement IPieSeries.</exception>
         public override void PrepareAxes()
         {
-            View.Zoom = ZoomingOptions.None;
-
             if (View.ActualSeries.Any(x => !(x.Model is IPieSeries)))
                 throw new LiveChartsException(
                     "There is a invalid series in the series collection, " +
