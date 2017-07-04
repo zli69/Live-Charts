@@ -42,6 +42,13 @@ namespace LiveCharts.Definitions.Charts
         /// </value>
         ChartCore Model { get; }
         /// <summary>
+        /// Gets or sets the size of the control.
+        /// </summary>
+        /// <value>
+        /// The size of the control.
+        /// </value>
+        CoreSize ControlSize { get; }
+        /// <summary>
         /// Occurs when [data click].
         /// </summary>
         event DataClickHandler DataClick;

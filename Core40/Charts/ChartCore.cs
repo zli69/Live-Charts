@@ -98,13 +98,7 @@ namespace LiveCharts.Charts
         /// The updater.
         /// </value>
         public ChartUpdater Updater { get; set; }
-        /// <summary>
-        /// Gets or sets the size of the control.
-        /// </summary>
-        /// <value>
-        /// The size of the control.
-        /// </value>
-        public CoreSize ControlSize { get; set; }
+        
         /// <summary>
         /// Gets or sets the draw margin.
         /// </summary>
@@ -219,7 +213,9 @@ namespace LiveCharts.Charts
         /// </summary>
         public void CalculateComponentsAndMargin()
         {
-            var curSize = new CoreRectangle(0, 0, ControlSize.Width, ControlSize.Height);
+            var controlSize = View.ControlSize;
+
+            var curSize = new CoreRectangle(0, 0, View.ControlSize.Width, controlSize.Height);
 
             curSize = PlaceLegend(curSize);
 
@@ -260,9 +256,9 @@ namespace LiveCharts.Charts
                 }
 
                 var botE = biggest.Bottom - uw;
-                if (botE > ControlSize.Height - (curSize.Top + curSize.Height))
+                if (botE > controlSize.Height - (curSize.Top + curSize.Height))
                 {
-                    var dif = botE - (ControlSize.Height - (curSize.Top + curSize.Height));
+                    var dif = botE - (controlSize.Height - (curSize.Top + curSize.Height));
                     curSize.Height -= dif;
                 }
             }
@@ -307,9 +303,9 @@ namespace LiveCharts.Charts
                 }
 
                 var rightE = biggest.Right - uw > 0 ? biggest.Right - uw : 0;
-                if (rightE > ControlSize.Width - (curSize.Left + curSize.Width))
+                if (rightE > controlSize.Width - (curSize.Left + curSize.Width))
                 {
-                    var dif = rightE - (ControlSize.Width - (curSize.Left + curSize.Width));
+                    var dif = rightE - (controlSize.Width - (curSize.Left + curSize.Width));
                     curSize.Width -= dif;
                     foreach (var correctedAxis in View.AxisY
                         .Where(correctedAxis => correctedAxis.Position == AxisPosition.RightTop))
@@ -362,6 +358,7 @@ namespace LiveCharts.Charts
         public CoreRectangle PlaceLegend(CoreRectangle drawMargin)
         {
             var legendSize = View.LoadLegend();
+            var controlSize = View.ControlSize;
 
             const int padding = 10;
 
@@ -373,22 +370,22 @@ namespace LiveCharts.Charts
                 case LegendLocation.Top:
                     drawMargin.Top += legendSize.Height;
                     drawMargin.Height -= legendSize.Height;
-                    View.ShowLegend(new CorePoint(ControlSize.Width * .5 - legendSize.Width * .5, 0));
+                    View.ShowLegend(new CorePoint(controlSize.Width * .5 - legendSize.Width * .5, 0));
                     break;
                 case LegendLocation.Bottom:
-                    var bot = new CorePoint(ControlSize.Width*.5 - legendSize.Width*.5,
-                        ControlSize.Height - legendSize.Height);
+                    var bot = new CorePoint(controlSize.Width*.5 - legendSize.Width*.5,
+                        controlSize.Height - legendSize.Height);
                     drawMargin.Height -= legendSize.Height;
-                    View.ShowLegend(new CorePoint(bot.X, ControlSize.Height - legendSize.Height));
+                    View.ShowLegend(new CorePoint(bot.X, controlSize.Height - legendSize.Height));
                     break;
                 case LegendLocation.Left:
                     drawMargin.Left = drawMargin.Left + legendSize.Width;
-                    View.ShowLegend(new CorePoint(0, ControlSize.Height*.5 - legendSize.Height*.5));
+                    View.ShowLegend(new CorePoint(0, controlSize.Height*.5 - legendSize.Height*.5));
                     break;
                 case LegendLocation.Right:
                     drawMargin.Width -= legendSize.Width + padding;
-                    View.ShowLegend(new CorePoint(ControlSize.Width - legendSize.Width,
-                        ControlSize.Height*.5 - legendSize.Height*.5));
+                    View.ShowLegend(new CorePoint(controlSize.Width - legendSize.Width,
+                        controlSize.Height*.5 - legendSize.Height*.5));
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

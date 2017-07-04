@@ -160,8 +160,8 @@ namespace LiveCharts
 
             //ToDO: Improve this according to current labels!
             var separations = source == AxisOrientation.Y
-                ? Math.Round(chart.ControlSize.Height / ((12) * CleanFactor), 0) // at least 3 font 12 labels per separator.
-                : Math.Round(chart.ControlSize.Width / (50 * CleanFactor), 0); // at least 150 pixels per separator.
+                ? Math.Round(chart.View.ControlSize.Height / ((12) * CleanFactor), 0) // at least 3 font 12 labels per separator.
+                : Math.Round(chart.View.ControlSize.Width / (50 * CleanFactor), 0); // at least 150 pixels per separator.
 
             separations = separations < 2 ? 2 : separations;
 

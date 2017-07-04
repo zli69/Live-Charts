@@ -98,7 +98,9 @@ namespace LiveCharts.Charts
 
             StackPoints(View.ActualSeries, AxisOrientation.Y, 0);
 
-            var curSize = new CoreRectangle(0, 0, ControlSize.Width, ControlSize.Height);
+            var cs = View.ControlSize;
+
+            var curSize = new CoreRectangle(0, 0, cs.Width, cs.Height);
 
             curSize = PlaceLegend(curSize);
 

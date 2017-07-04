@@ -248,8 +248,7 @@ namespace LiveCharts.Wpf
 
                 ColorRangeControl.Width = m;
 
-                Model.Chart.ControlSize = new CoreSize(Model.Chart.ControlSize.Width - m - 4,
-                    Model.Chart.ControlSize.Height);
+                //Model.Chart.ControlSize = new CoreSize(Model.Chart.ControlSize.Width - m - 4, Model.Chart.ControlSize.Height);
             }
             else
             {

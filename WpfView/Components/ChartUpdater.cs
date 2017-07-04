@@ -22,7 +22,6 @@
 
 using System;
 using System.Windows.Threading;
-using LiveCharts.Dtos;
 using LiveCharts.Wpf.Charts.Base;
 
 namespace LiveCharts.Wpf.Components
@@ -78,8 +77,6 @@ namespace LiveCharts.Wpf.Components
             var wpfChart = (Chart) Chart.View;
             
             if (!force && !wpfChart.IsVisible) return;
-
-            Chart.ControlSize = new CoreSize(wpfChart.ActualWidth, wpfChart.ActualHeight);
 
             Timer.Stop();
             Update(restartView, force);

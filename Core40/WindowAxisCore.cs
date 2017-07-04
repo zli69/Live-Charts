@@ -109,7 +109,7 @@ namespace LiveCharts
                     IEnumerable<double> proposedSeparatorIndices;
 
                     // Calculate the number of supported separators.
-                    supportedSeparatorCount = (int)Math.Floor(chart.ControlSize.Width / (window.MinimumSeparatorWidth * CleanFactor));
+                    supportedSeparatorCount = (int)Math.Floor(chart.View.ControlSize.Width / (window.MinimumSeparatorWidth * CleanFactor));
 
                     // Try go get separators. Continue if the window invalidated.
                     if (!window.TryGetSeparatorIndices(rangeIndices, supportedSeparatorCount, out proposedSeparatorIndices)) continue;
