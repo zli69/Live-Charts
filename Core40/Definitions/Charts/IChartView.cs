@@ -41,24 +41,21 @@ namespace LiveCharts.Definitions.Charts
         /// The model.
         /// </value>
         ChartCore Model { get; }
-
         /// <summary>
         /// Occurs when [data click].
         /// </summary>
         event DataClickHandler DataClick;
-
         /// <summary>
         /// Occurs when [data hover]
         /// </summary>
         event DataHoverHandler DataHover;
-
         /// <summary>
         /// Gets or sets the series.
         /// </summary>
         /// <value>
         /// The series.
         /// </value>
-        SeriesCollection Series { get; set; }
+        SeriesCollection Series { get; }
         /// <summary>
         /// Gets the actual series.
         /// </summary>
@@ -72,56 +69,56 @@ namespace LiveCharts.Definitions.Charts
         /// <value>
         /// The tooltip timeout.
         /// </value>
-        TimeSpan TooltipTimeout { get; set; }
+        TimeSpan TooltipTimeout { get; }
         /// <summary>
         /// Gets or sets the zoom.
         /// </summary>
         /// <value>
         /// The zoom.
         /// </value>
-        ZoomingOptions Zoom { get; set; }
+        ZoomingOptions Zoom { get; }
         /// <summary>
         /// Gets or sets the zoom.
         /// </summary>
         /// <value>
         /// The zoom.
         /// </value>
-        PanningOptions Pan { get; set; }
+        PanningOptions Pan { get; }
         /// <summary>
         /// Gets or sets the zooming speed.
         /// </summary>
         /// <value>
         /// The zooming speed.
         /// </value>
-        double ZoomingSpeed { get; set; }
+        double ZoomingSpeed { get; }
         /// <summary>
         /// Gets or sets the legend location.
         /// </summary>
         /// <value>
         /// The legend location.
         /// </value>
-        LegendLocation LegendLocation { get; set; }
+        LegendLocation LegendLocation { get; }
         /// <summary>
         /// Gets or sets a value indicating whether [disable animations].
         /// </summary>
         /// <value>
         ///   <c>true</c> if [disable animations]; otherwise, <c>false</c>.
         /// </value>
-        bool DisableAnimations { get; set; }
+        bool DisableAnimations { get; }
         /// <summary>
         /// Gets or sets the animations speed.
         /// </summary>
         /// <value>
         /// The animations speed.
         /// </value>
-        TimeSpan AnimationsSpeed { get; set; }
+        TimeSpan AnimationsSpeed { get; }
         /// <summary>
         /// Gets or sets the state of the updater.
         /// </summary>
         /// <value>
         /// The state of the updater.
         /// </value>
-        UpdaterState UpdaterState { get; set; }
+        UpdaterState UpdaterState { get; }
         /// <summary>
         /// Gets or sets the axis x.
         /// </summary>
@@ -136,7 +133,6 @@ namespace LiveCharts.Definitions.Charts
         /// The axis y.
         /// </value>
         IList<IAxisView> AxisY { get; }
-
         /// <summary>
         /// Gets a value indicating whether this instance has tooltip.
         /// </summary>
@@ -179,7 +175,6 @@ namespace LiveCharts.Definitions.Charts
         /// <c>true</c> if this instance is in design mode; otherwise, <c>false</c>.
         /// </value>
         bool IsInDesignMode { get; }
-
         /// <summary>
         /// Sets the draw margin top.
         /// </summary>
@@ -200,7 +195,6 @@ namespace LiveCharts.Definitions.Charts
         /// </summary>
         /// <param name="value">The value.</param>
         void SetDrawMarginWidth(double value);
-
         /// <summary>
         /// Adds to view.
         /// </summary>
@@ -231,12 +225,10 @@ namespace LiveCharts.Definitions.Charts
         /// </summary>
         /// <param name="element">The element.</param>
         void EnsureElementBelongsToCurrentDrawMargin(object element);
-
         /// <summary>
         /// Sets the parents.
         /// </summary>
         void SetParentsTree();
-
         /// <summary>
         /// Hides the tooltip.
         /// </summary>
@@ -250,7 +242,6 @@ namespace LiveCharts.Definitions.Charts
         /// Hides the legend.
         /// </summary>
         void HideLegend();
-
         /// <summary>
         /// Loads the legend.
         /// </summary>
