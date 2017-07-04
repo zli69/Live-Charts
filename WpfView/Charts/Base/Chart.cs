@@ -134,13 +134,11 @@ namespace LiveCharts.Wpf.Charts.Base
         private void OnLoaded(object sender, RoutedEventArgs args)
         {
             IsControlLoaded = true;
-            Model.DrawMargin.Height = Canvas.ActualHeight;
-            Model.DrawMargin.Width = Canvas.ActualWidth;
         }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs args)
         {
-            Model.ControlSize = new CoreSize(ActualWidth, ActualHeight);
+            //Model.ControlSize = new CoreSize(ActualWidth, ActualHeight);
             if (!(this is IPieChart))
                 Canvas.Clip = new RectangleGeometry(new Rect(new Point(0, 0), new Size(ActualWidth, ActualHeight)));
             Model.Updater.Run();
@@ -149,7 +147,7 @@ namespace LiveCharts.Wpf.Charts.Base
         private void OnIsVisibleChanged(object sender,
             DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
         {
-            Model.ControlSize = new CoreSize(ActualWidth, ActualHeight);
+            //Model.ControlSize = new CoreSize(ActualWidth, ActualHeight);
 
             Model.Updater.Run();
             PrepareScrolBar();
@@ -1165,6 +1163,11 @@ namespace LiveCharts.Wpf.Charts.Base
         public ChartCore Model
         {
             get { return ChartCoreModel; }
+        }
+
+        CoreSize IChartView.ControlSize
+        {
+            get { return new CoreSize(ActualWidth, ActualHeight); }
         }
 
         /// <summary>
