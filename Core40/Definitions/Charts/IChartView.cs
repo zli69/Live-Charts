@@ -49,6 +49,34 @@ namespace LiveCharts.Definitions.Charts
         /// </value>
         CoreSize ControlSize { get; }
         /// <summary>
+        /// Gets or sets the height of the draw margin.
+        /// </summary>
+        /// <value>
+        /// The height of the draw margin.
+        /// </value>
+        double DrawMarginHeight { get; set; }
+        /// <summary>
+        /// Gets or sets the draw margin width.
+        /// </summary>
+        /// <value>
+        /// The draw margin width.
+        /// </value>
+        double DrawMarginWidth { get; set; }
+        /// <summary>
+        /// Gets or sets the draw margin top.
+        /// </summary>
+        /// <value>
+        /// The draw margin top.
+        /// </value>
+        double DrawMarginTop { get; set; }
+        /// <summary>
+        /// Gets or sets the draw margin left.
+        /// </summary>
+        /// <value>
+        /// The draw margin left.
+        /// </value>
+        double DrawMarginLeft { get; set; }
+        /// <summary>
         /// Occurs when [data click].
         /// </summary>
         event DataClickHandler DataClick;
@@ -182,26 +210,6 @@ namespace LiveCharts.Definitions.Charts
         /// <c>true</c> if this instance is in design mode; otherwise, <c>false</c>.
         /// </value>
         bool IsInDesignMode { get; }
-        /// <summary>
-        /// Sets the draw margin top.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        void SetDrawMarginTop(double value);
-        /// <summary>
-        /// Sets the draw margin left.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        void SetDrawMarginLeft(double value);
-        /// <summary>
-        /// Sets the height of the draw margin.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        void SetDrawMarginHeight(double value);
-        /// <summary>
-        /// Sets the width of the draw margin.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        void SetDrawMarginWidth(double value);
         /// <summary>
         /// Adds to view.
         /// </summary>

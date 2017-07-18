@@ -47,37 +47,37 @@ namespace LiveCharts.Wpf.Points
                 {
                     Line1.X1 = current.ChartLocation.X;
                     Line1.X2 = current.ChartLocation.X - DeltaX;
-                    Line1.Y1 = chart.DrawMargin.Height;
-                    Line1.Y2 = chart.DrawMargin.Height;
+                    Line1.Y1 = chart.View.DrawMarginHeight;
+                    Line1.Y2 = chart.View.DrawMarginHeight;
 
                     Line2.X1 = current.ChartLocation.X - DeltaX;
                     Line2.X2 = current.ChartLocation.X - DeltaX;
-                    Line2.Y1 = chart.DrawMargin.Height;
-                    Line2.Y2 = chart.DrawMargin.Height;
+                    Line2.Y1 = chart.View.DrawMarginHeight;
+                    Line2.Y2 = chart.View.DrawMarginHeight;
                 }
                 else
                 {
                     Line1.X1 = current.ChartLocation.X;
                     Line1.X2 = current.ChartLocation.X;
-                    Line1.Y1 = chart.DrawMargin.Height;
-                    Line1.Y2 = chart.DrawMargin.Height;
+                    Line1.Y1 = chart.View.DrawMarginHeight;
+                    Line1.Y2 = chart.View.DrawMarginHeight;
 
                     Line2.X1 = current.ChartLocation.X - DeltaX;
                     Line2.X2 = current.ChartLocation.X;
-                    Line2.Y1 = chart.DrawMargin.Height;
-                    Line2.Y2 = chart.DrawMargin.Height;
+                    Line2.Y1 = chart.View.DrawMarginHeight;
+                    Line2.Y2 = chart.View.DrawMarginHeight;
                 }
 
                 if (Shape != null)
                 {
                     Canvas.SetLeft(Shape, current.ChartLocation.X - Shape.Width/2);
-                    Canvas.SetTop(Shape, chart.DrawMargin.Height);
+                    Canvas.SetTop(Shape, chart.View.DrawMarginHeight);
                 }
             }
 
             if (DataLabel != null && double.IsNaN(Canvas.GetLeft(DataLabel)))
             {
-                Canvas.SetTop(DataLabel, chart.DrawMargin.Height);
+                Canvas.SetTop(DataLabel, chart.View.DrawMarginHeight);
                 Canvas.SetLeft(DataLabel, current.ChartLocation.X);
             }
 
@@ -226,8 +226,8 @@ namespace LiveCharts.Wpf.Points
         {
             if (desiredPosition + DataLabel.ActualWidth * .5 < -0.1) return -DataLabel.ActualWidth;
 
-            if (desiredPosition + DataLabel.ActualWidth > chart.DrawMargin.Width)
-                desiredPosition -= desiredPosition + DataLabel.ActualWidth - chart.DrawMargin.Width + 2;
+            if (desiredPosition + DataLabel.ActualWidth > chart.View.DrawMarginWidth)
+                desiredPosition -= desiredPosition + DataLabel.ActualWidth - chart.View.DrawMarginWidth + 2;
 
             if (desiredPosition < 0) desiredPosition = 0;
 
@@ -238,8 +238,8 @@ namespace LiveCharts.Wpf.Points
         {
             desiredPosition -= (Shape == null ? 0 : Shape.ActualHeight * .5) + DataLabel.ActualHeight * .5 + 2;
 
-            if (desiredPosition + DataLabel.ActualHeight > chart.DrawMargin.Height)
-                desiredPosition -= desiredPosition + DataLabel.ActualHeight - chart.DrawMargin.Height + 2;
+            if (desiredPosition + DataLabel.ActualHeight > chart.View.DrawMarginHeight)
+                desiredPosition -= desiredPosition + DataLabel.ActualHeight - chart.View.DrawMarginHeight + 2;
 
             if (desiredPosition < 0) desiredPosition = 0;
 

@@ -71,8 +71,8 @@ namespace LiveCharts.Wpf.Points
                 var r = Data.Top + Data.Height / 2 - DataLabel.ActualHeight / 2;
 
                 if (r < 0) r = 2;
-                if (r + DataLabel.ActualHeight > chart.DrawMargin.Height)
-                    r -= r + DataLabel.ActualHeight - chart.DrawMargin.Height + 2;
+                if (r + DataLabel.ActualHeight > chart.View.DrawMarginHeight)
+                    r -= r + DataLabel.ActualHeight - chart.View.DrawMarginHeight + 2;
 
                 return r;
             };
@@ -101,7 +101,7 @@ namespace LiveCharts.Wpf.Points
                     else
                     {
                         r = Data.Left + Data.Width + 5;
-                        if (r + DataLabel.ActualWidth > chart.DrawMargin.Width)
+                        if (r + DataLabel.ActualWidth > chart.View.DrawMarginWidth)
                             r -= DataLabel.ActualWidth + 10;
                     }
                 }

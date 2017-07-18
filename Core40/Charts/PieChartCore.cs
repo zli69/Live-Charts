@@ -104,10 +104,10 @@ namespace LiveCharts.Charts
 
             curSize = PlaceLegend(curSize);
 
-            DrawMargin.Top = curSize.Top;
-            DrawMargin.Left = curSize.Left;
-            DrawMargin.Width = curSize.Width;
-            DrawMargin.Height = curSize.Height;
+            View.DrawMarginTop = curSize.Top;
+            View.DrawMarginLeft = curSize.Left;
+            View.DrawMarginWidth = curSize.Width;
+            View.DrawMarginHeight = curSize.Height;
         }
 
         #endregion

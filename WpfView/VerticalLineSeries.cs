@@ -253,15 +253,15 @@ namespace LiveCharts.Wpf
 
                 if (splitter.IsNew)
                 {
-                    splitter.Bottom.Point = new Point(Model.Chart.DrawMargin.Width, location.Y);
-                    splitter.Left.Point = new Point(Model.Chart.DrawMargin.Width, location.Y);
+                    splitter.Bottom.Point = new Point(Model.Chart.View.DrawMarginWidth, location.Y);
+                    splitter.Left.Point = new Point(Model.Chart.View.DrawMarginWidth, location.Y);
                 }
 
                 if (noAnim)
-                    splitter.Bottom.Point = new Point(Model.Chart.DrawMargin.Width, location.Y);
+                    splitter.Bottom.Point = new Point(Model.Chart.View.DrawMarginWidth, location.Y);
                 else
                     splitter.Bottom.BeginAnimation(LineSegment.PointProperty,
-                        new PointAnimation(new Point(Model.Chart.DrawMargin.Width, location.Y), animSpeed));
+                        new PointAnimation(new Point(Model.Chart.View.DrawMarginWidth, location.Y), animSpeed));
                 Figure.Segments.Insert(atIndex, splitter.Bottom);
 
                 Figure.Segments.Remove(splitter.Left);
@@ -277,8 +277,8 @@ namespace LiveCharts.Wpf
 
             if (splitter.IsNew)
             {
-                splitter.Bottom.Point = new Point(location.X, Model.Chart.DrawMargin.Height);
-                splitter.Left.Point = new Point(location.X, Model.Chart.DrawMargin.Height);
+                splitter.Bottom.Point = new Point(location.X, Model.Chart.View.DrawMarginHeight);
+                splitter.Left.Point = new Point(location.X, Model.Chart.View.DrawMarginHeight);
             }
 
             Figure.Segments.Remove(splitter.Left);

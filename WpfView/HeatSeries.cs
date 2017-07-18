@@ -265,10 +265,10 @@ namespace LiveCharts.Wpf
 
             ColorRangeControl.UpdateFill(GradientStopCollection);
 
-            ColorRangeControl.Height = Model.Chart.DrawMargin.Height;
+            ColorRangeControl.Height = Model.Chart.View.DrawMarginHeight;
 
-            Canvas.SetTop(ColorRangeControl, Model.Chart.DrawMargin.Top);
-            Canvas.SetLeft(ColorRangeControl, Model.Chart.DrawMargin.Left + Model.Chart.DrawMargin.Width + 4);
+            Canvas.SetTop(ColorRangeControl, Model.Chart.View.DrawMarginTop);
+            Canvas.SetLeft(ColorRangeControl, Model.Chart.View.DrawMarginLeft + Model.Chart.View.DrawMarginWidth + 4);
         }
 
         #endregion

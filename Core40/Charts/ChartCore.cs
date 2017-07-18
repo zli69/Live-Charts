@@ -44,11 +44,6 @@ namespace LiveCharts.Charts
         {
             View = view;
             Updater = updater;
-            DrawMargin = new CoreRectangle();
-            DrawMargin.SetHeight += view.SetDrawMarginHeight;
-            DrawMargin.SetWidth += view.SetDrawMarginWidth;
-            DrawMargin.SetTop += view.SetDrawMarginTop;
-            DrawMargin.SetLeft += view.SetDrawMarginLeft;
         }
 
         /// <summary>
@@ -98,14 +93,6 @@ namespace LiveCharts.Charts
         /// The updater.
         /// </value>
         public ChartUpdater Updater { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the draw margin.
-        /// </summary>
-        /// <value>
-        /// The draw margin.
-        /// </value>
-        public CoreRectangle DrawMargin { get; set; }
         /// <summary>
         /// Gets or sets a value indicating whether this instance has unitary points.
         /// </summary>
@@ -315,10 +302,10 @@ namespace LiveCharts.Charts
                 }
             }
 
-            DrawMargin.Top = curSize.Top;
-            DrawMargin.Left = curSize.Left;
-            DrawMargin.Width = curSize.Width;
-            DrawMargin.Height = curSize.Height;
+            View.DrawMarginTop = curSize.Top;
+            View.DrawMarginLeft = curSize.Left;
+            View.DrawMarginWidth = curSize.Width;
+            View.DrawMarginHeight = curSize.Height;
 
             for (var index = 0; index < yAxis.Count; index++)
             {

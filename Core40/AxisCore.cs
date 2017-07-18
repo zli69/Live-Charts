@@ -263,13 +263,13 @@ namespace LiveCharts
                     if (source == AxisOrientation.Y)
                     {
                         if (toLabel + element.View.LabelModel.ActualHeight >
-                            chart.DrawMargin.Top + chart.DrawMargin.Height)
+                            chart.View.DrawMarginTop + chart.View.DrawMarginHeight)
                             toLabel -= element.View.LabelModel.ActualHeight + padding;
                     }
                     else
                     {
                         if (toLabel + element.View.LabelModel.ActualWidth >
-                            chart.DrawMargin.Left + chart.DrawMargin.Width)
+                            chart.View.DrawMarginLeft + chart.View.DrawMarginWidth)
                             toLabel -= element.View.LabelModel.ActualWidth + padding;
                     }
                 }
@@ -319,8 +319,8 @@ namespace LiveCharts
 
             LastAxisMax = TopLimit;
             LastAxisMin = BotLimit;
-            LastPlotArea = new CoreRectangle(chart.DrawMargin.Left, chart.DrawMargin.Top,
-                chart.DrawMargin.Width, chart.DrawMargin.Height);
+            LastPlotArea = new CoreRectangle(chart.View.DrawMarginLeft, chart.View.DrawMarginTop,
+                chart.View.DrawMarginWidth, chart.View.DrawMarginHeight);
         }
 
         internal double FromPreviousState(double value, AxisOrientation source, ChartCore chart)

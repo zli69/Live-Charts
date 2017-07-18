@@ -55,9 +55,9 @@ namespace LiveCharts.SeriesAlgorithms
                 .Select(x => x.PushOut)
                 .DefaultIfEmpty(0).Max();
 
-            var minDimension = Chart.DrawMargin.Width < Chart.DrawMargin.Height
-                ? Chart.DrawMargin.Width
-                : Chart.DrawMargin.Height;
+            var minDimension = Chart.View.DrawMarginWidth < Chart.View.DrawMarginHeight
+                ? Chart.View.DrawMarginWidth
+                : Chart.View.DrawMarginHeight;
             minDimension -= 10 + maxPushOut;
             minDimension = minDimension < 10 ? 10 : minDimension;
             

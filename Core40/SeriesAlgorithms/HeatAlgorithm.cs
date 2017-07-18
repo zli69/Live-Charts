@@ -66,8 +66,8 @@ namespace LiveCharts.SeriesAlgorithms
             var hd = CurrentYAxis.TopLimit - CurrentYAxis.BotLimit == 0
                 ? double.MaxValue
                 : CurrentYAxis.TopLimit - CurrentYAxis.BotLimit;
-            var w = Chart.DrawMargin.Width / wd;
-            var h = Chart.DrawMargin.Height / hd;
+            var w = Chart.View.DrawMarginWidth / wd;
+            var h = Chart.View.DrawMarginHeight / hd;
 
             //lets force the gradients to always have an 'interpol-able' model
 

@@ -64,18 +64,18 @@ namespace LiveCharts
             if (source == AxisOrientation.Y)
             {
                 p1.X = axis.TopLimit;
-                p1.Y = chart.DrawMargin.Top;
+                p1.Y = chart.View.DrawMarginTop;
 
                 p2.X = axis.BotLimit;
-                p2.Y = chart.DrawMargin.Top + chart.DrawMargin.Height;
+                p2.Y = chart.View.DrawMarginTop + chart.View.DrawMarginHeight;
             }
             else
             {
                 p1.X = axis.TopLimit;
-                p1.Y = chart.DrawMargin.Width + chart.DrawMargin.Left;
+                p1.Y = chart.View.DrawMarginWidth + chart.View.DrawMarginLeft;
 
                 p2.X = axis.BotLimit;
-                p2.Y = chart.DrawMargin.Left;
+                p2.Y = chart.View.DrawMarginLeft;
             }
 
             var deltaX = p2.X - p1.X;
@@ -100,18 +100,18 @@ namespace LiveCharts
             if (source == AxisOrientation.Y)
             {
                 p1.X = chart.View.AxisY[axis].Model.TopLimit;
-                p1.Y = chart.DrawMargin.Top;
+                p1.Y = chart.View.DrawMarginTop;
 
                 p2.X = chart.View.AxisY[axis].Model.BotLimit;
-                p2.Y = chart.DrawMargin.Top + chart.DrawMargin.Height;
+                p2.Y = chart.View.DrawMarginTop + chart.View.DrawMarginHeight;
             }
             else
             {
                 p1.X = chart.View.AxisX[axis].Model.TopLimit;
-                p1.Y = chart.DrawMargin.Width + chart.DrawMargin.Left;
+                p1.Y = chart.View.DrawMarginWidth + chart.View.DrawMarginLeft;
 
                 p2.X = chart.View.AxisX[axis].Model.BotLimit;
-                p2.Y = chart.DrawMargin.Left;
+                p2.Y = chart.View.DrawMarginLeft;
             }
 
             var deltaX = p2.X - p1.X;
@@ -131,8 +131,8 @@ namespace LiveCharts
         public static double ToDrawMargin(double value, AxisOrientation source, ChartCore chart, int axis = 0)
         {
             var o = source == AxisOrientation.X
-                ? chart.DrawMargin.Left
-                : chart.DrawMargin.Top;
+                ? chart.View.DrawMarginLeft
+                : chart.View.DrawMarginTop;
 
             return ToPlotArea(value, source, chart, axis) - o;
         }
@@ -148,8 +148,8 @@ namespace LiveCharts
         public static double ToDrawMargin(double value, AxisOrientation source, ChartCore chart, AxisCore axis)
         {
             var o = source == AxisOrientation.X
-                ? chart.DrawMargin.Left
-                : chart.DrawMargin.Top;
+                ? chart.View.DrawMarginLeft
+                : chart.View.DrawMarginTop;
 
             return ToPlotArea(value, source, chart, axis) - o;
         }

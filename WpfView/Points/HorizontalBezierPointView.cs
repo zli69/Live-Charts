@@ -44,7 +44,7 @@ namespace LiveCharts.Wpf.Points
                 ? null
                 : (HorizontalBezierPointView) previousDrawn.View;
 
-            var y = chart.DrawMargin.Top + chart.DrawMargin.Height;
+            var y = chart.View.DrawMarginTop + chart.View.DrawMarginHeight;
 
             Container.Segments.Remove(Segment);
             Container.Segments.Insert(index, Segment);
@@ -206,8 +206,8 @@ namespace LiveCharts.Wpf.Points
         {
             if (desiredPosition + DataLabel.ActualWidth*.5 < -0.1) return -DataLabel.ActualWidth;
 
-            if (desiredPosition + DataLabel.ActualWidth > chart.DrawMargin.Width)
-                desiredPosition -= desiredPosition + DataLabel.ActualWidth - chart.DrawMargin.Width + 2;
+            if (desiredPosition + DataLabel.ActualWidth > chart.View.DrawMarginWidth)
+                desiredPosition -= desiredPosition + DataLabel.ActualWidth - chart.View.DrawMarginWidth + 2;
 
             if (desiredPosition < 0) desiredPosition = 0;
 
@@ -218,8 +218,8 @@ namespace LiveCharts.Wpf.Points
         {
             desiredPosition -= (Shape == null ? 0 : Shape.ActualHeight*.5) + DataLabel.ActualHeight*.5 + 2;
 
-            if (desiredPosition + DataLabel.ActualHeight > chart.DrawMargin.Height)
-                desiredPosition -= desiredPosition + DataLabel.ActualHeight - chart.DrawMargin.Height + 2;
+            if (desiredPosition + DataLabel.ActualHeight > chart.View.DrawMarginHeight)
+                desiredPosition -= desiredPosition + DataLabel.ActualHeight - chart.View.DrawMarginHeight + 2;
 
             if (desiredPosition < 0) desiredPosition = 0;
 

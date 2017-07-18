@@ -129,8 +129,8 @@ namespace LiveCharts.Wpf.Components
         {
             if (direction == AxisOrientation.Y)
             {
-                Line.X1 = chart.DrawMargin.Left;
-                Line.X2 = chart.DrawMargin.Left + chart.DrawMargin.Width;
+                Line.X1 = chart.View.DrawMarginLeft;
+                Line.X2 = chart.View.DrawMarginLeft + chart.View.DrawMarginWidth;
                 Line.Y1 = toLine;
                 Line.Y2 = toLine;
 
@@ -141,8 +141,8 @@ namespace LiveCharts.Wpf.Components
             {
                 Line.X1 = toLine;
                 Line.X2 = toLine;
-                Line.Y1 = chart.DrawMargin.Top;
-                Line.Y2 = chart.DrawMargin.Top + chart.DrawMargin.Height;
+                Line.Y1 = chart.View.DrawMarginTop;
+                Line.Y2 = chart.View.DrawMarginTop + chart.View.DrawMarginHeight;
 
                 Canvas.SetLeft(TextBlock, toLabel);
                 Canvas.SetTop(TextBlock, tab);
@@ -176,9 +176,9 @@ namespace LiveCharts.Wpf.Components
             if (direction == AxisOrientation.Y)
             {
                 Line.BeginAnimation(Line.X1Property,
-                    new DoubleAnimation(chart.DrawMargin.Left, chart.View.AnimationsSpeed));
+                    new DoubleAnimation(chart.View.DrawMarginLeft, chart.View.AnimationsSpeed));
                 Line.BeginAnimation(Line.X2Property,
-                    new DoubleAnimation(chart.DrawMargin.Left + chart.DrawMargin.Width, chart.View.AnimationsSpeed));
+                    new DoubleAnimation(chart.View.DrawMarginLeft + chart.View.DrawMarginWidth, chart.View.AnimationsSpeed));
                 Line.BeginAnimation(Line.Y1Property,
                     new DoubleAnimation(toLine, chart.View.AnimationsSpeed));
                 Line.BeginAnimation(Line.Y2Property,
@@ -196,9 +196,9 @@ namespace LiveCharts.Wpf.Components
                 Line.BeginAnimation(Line.X2Property,
                     new DoubleAnimation(toLine, chart.View.AnimationsSpeed));
                 Line.BeginAnimation(Line.Y1Property,
-                    new DoubleAnimation(chart.DrawMargin.Top, chart.View.AnimationsSpeed));
+                    new DoubleAnimation(chart.View.DrawMarginTop, chart.View.AnimationsSpeed));
                 Line.BeginAnimation(Line.Y2Property,
-                    new DoubleAnimation(chart.DrawMargin.Top + chart.DrawMargin.Height, chart.View.AnimationsSpeed));
+                    new DoubleAnimation(chart.View.DrawMarginTop + chart.View.DrawMarginHeight, chart.View.AnimationsSpeed));
 
                 TextBlock.BeginAnimation(Canvas.LeftProperty,
                     new DoubleAnimation(toLabel, chart.View.AnimationsSpeed));

@@ -105,10 +105,10 @@ namespace LiveCharts.Wpf
                 var xIni = ChartFunctions.ToDrawMargin(Values.GetTracker(this).XLimit.Min, AxisOrientation.X, Model.Chart, ScalesXAt);
 
                 if (Model.Chart.View.DisableAnimations)
-                    Figure.StartPoint = new Point(xIni, Model.Chart.DrawMargin.Height);
+                    Figure.StartPoint = new Point(xIni, Model.Chart.View.DrawMarginHeight);
                 else
                     Figure.BeginAnimation(PathFigure.StartPointProperty,
-                        new PointAnimation(new Point(xIni, Model.Chart.DrawMargin.Height),
+                        new PointAnimation(new Point(xIni, Model.Chart.View.DrawMarginHeight),
                             Model.Chart.View.AnimationsSpeed));
             }
 
@@ -141,7 +141,7 @@ namespace LiveCharts.Wpf
             Model.Chart.View.AddToDrawMargin(Path);
 
             var x = ChartFunctions.ToDrawMargin(ActualValues.GetTracker(this).XLimit.Min, AxisOrientation.X, Model.Chart, ScalesXAt);
-            Figure.StartPoint = new Point(x, Model.Chart.DrawMargin.Height);
+            Figure.StartPoint = new Point(x, Model.Chart.View.DrawMarginHeight);
 
             var i = Model.Chart.View.Series.IndexOf(this);
             Panel.SetZIndex(Path, Model.Chart.View.Series.Count - i);

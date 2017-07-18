@@ -313,9 +313,9 @@ namespace LiveCharts.Wpf
                 _rectangle.Height = 0;
                 _rectangle.Width = 0;
                 Canvas.SetLeft(_rectangle, 0d);
-                Canvas.SetTop(_rectangle, Model.Chart.DrawMargin.Height);
+                Canvas.SetTop(_rectangle, Model.Chart.View.DrawMarginHeight);
                 #region Obsolete
-                Canvas.SetTop(_label, Model.Chart.DrawMargin.Height);
+                Canvas.SetTop(_label, Model.Chart.View.DrawMarginHeight);
                 Canvas.SetLeft(_label, 0d);
                 #endregion
             }
@@ -350,7 +350,7 @@ namespace LiveCharts.Wpf
                 w = StrokeThickness > w ? StrokeThickness : w;
 
                 Canvas.SetTop(_rectangle, 0);
-                _rectangle.Height = Model.Chart.DrawMargin.Height;
+                _rectangle.Height = Model.Chart.View.DrawMarginHeight;
 
                 if (Model.Chart.View.DisableAnimations || DisableAnimations)
                 {
@@ -370,7 +370,7 @@ namespace LiveCharts.Wpf
             h = StrokeThickness > h ? StrokeThickness : h;
 
             Canvas.SetLeft(_rectangle, 0d);
-            _rectangle.Width = Model.Chart.DrawMargin.Width;
+            _rectangle.Width = Model.Chart.View.DrawMarginWidth;
 
             if (Model.Chart.View.DisableAnimations || DisableAnimations)
             {
@@ -453,13 +453,13 @@ namespace LiveCharts.Wpf
                 if (source == AxisOrientation.Y)
                 {
                     if (toLabel + transform.ActualHeight >
-                        chart.DrawMargin.Top + chart.DrawMargin.Height)
+                        chart.View.DrawMarginTop + chart.View.DrawMarginHeight)
                         toLabel -= transform.ActualHeight + padding;
                 }
                 else
                 {
                     if (toLabel + transform.ActualWidth >
-                        chart.DrawMargin.Left + chart.DrawMargin.Width)
+                        chart.View.DrawMarginLeft + chart.View.DrawMarginWidth)
                         toLabel -= transform.ActualWidth + padding;
                 }
             }

@@ -406,8 +406,8 @@ namespace LiveCharts.Wpf
 
                 if (splitter.IsNew)
                 {
-                    splitter.Bottom.Point = new Point(location.X, Model.Chart.DrawMargin.Height);
-                    splitter.Left.Point = new Point(location.X, Model.Chart.DrawMargin.Height);
+                    splitter.Bottom.Point = new Point(location.X, Model.Chart.View.DrawMarginHeight);
+                    splitter.Left.Point = new Point(location.X, Model.Chart.View.DrawMarginHeight);
                 }
 
                 if (noAnim)
@@ -430,8 +430,8 @@ namespace LiveCharts.Wpf
 
             if (splitter.IsNew)
             {
-                splitter.Bottom.Point = new Point(location.X, Model.Chart.DrawMargin.Height);
-                splitter.Left.Point = new Point(location.X, Model.Chart.DrawMargin.Height);
+                splitter.Bottom.Point = new Point(location.X, Model.Chart.View.DrawMarginHeight);
+                splitter.Left.Point = new Point(location.X, Model.Chart.View.DrawMarginHeight);
             }
 
             Figure.Segments.Remove(splitter.Left);
@@ -466,7 +466,7 @@ namespace LiveCharts.Wpf
 
             if (splitter.IsNew)
             {
-                splitter.Right.Point = new Point(location.X, Model.Chart.DrawMargin.Height);
+                splitter.Right.Point = new Point(location.X, Model.Chart.View.DrawMarginHeight);
             }
 
             Figure.Segments.Remove(splitter.Right);
