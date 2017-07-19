@@ -49,8 +49,8 @@ namespace LiveCharts.Wpf
 
         private void OnNoisyCollectionChanged(IEnumerable<Axis> oldItems, IEnumerable<Axis> newItems)
         {
-            if(Chart != null && Chart.Model != null)
-                Chart.Model.Updater.Run();
+            if(Chart != null && Chart.Core != null)
+                Chart.Core.Updater.QueueUpdate();
 
             if (oldItems == null) return;
 

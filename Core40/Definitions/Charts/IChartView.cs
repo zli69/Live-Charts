@@ -40,7 +40,7 @@ namespace LiveCharts.Definitions.Charts
         /// <value>
         /// The model.
         /// </value>
-        ChartCore Model { get; }
+        ChartCore Core { get; }
         /// <summary>
         /// Gets or sets the size of the control.
         /// </summary>

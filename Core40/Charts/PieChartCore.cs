@@ -43,7 +43,6 @@ namespace LiveCharts.Charts
         /// <param name="updater">The updater.</param>
         public PieChartCore(IChartView view, ChartUpdater updater) : base(view, updater)
         {
-            updater.Chart = this;
         }
 
         #endregion

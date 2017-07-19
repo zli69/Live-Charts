@@ -35,6 +35,7 @@ namespace LiveCharts.Charts
     public abstract class ChartCore
     {
         #region Constructors
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ChartCore"/> class.
         /// </summary>
@@ -44,6 +45,7 @@ namespace LiveCharts.Charts
         {
             View = view;
             Updater = updater;
+            updater.Chart = this;
         }
 
         /// <summary>
@@ -193,6 +195,14 @@ namespace LiveCharts.Charts
         public virtual void RunSpecializedChartComponents()
         {
             
+        }
+
+        /// <summary>
+        /// Runs the updater.
+        /// </summary>
+        public void RunUpdater(bool restart = false, bool force = false)
+        {
+            Updater.QueueUpdate(restart, force);
         }
 
         /// <summary>

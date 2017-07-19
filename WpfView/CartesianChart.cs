@@ -71,7 +71,7 @@ namespace LiveCharts.Wpf
         {
             var chart = (CartesianChart)dependencyObject;
 
-            if (chart.VisualElements != null) chart.VisualElements.Chart = chart.Model;
+            if (chart.VisualElements != null) chart.VisualElements.Chart = chart.Core;
         }
     }
 }

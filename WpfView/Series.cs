@@ -565,7 +565,7 @@ namespace LiveCharts.Wpf
                 if (wpfSeries == null) return;
                 if (wpfSeries.Model == null) return;
 
-                if (wpfSeries.Model.Chart != null) wpfSeries.Model.Chart.Updater.Run(animate);
+                if (wpfSeries.Model.Chart != null) wpfSeries.Model.Chart.Updater.QueueUpdate(animate);
             };
         }
         
@@ -577,7 +577,7 @@ namespace LiveCharts.Wpf
                 series.Erase(false);
 
             if (series.Model == null) return;
-            series.Model.Chart.Updater.Run();
+            series.Model.Chart.Updater.QueueUpdate();
         }
 
         private static IChartValues GetValuesForDesigner()

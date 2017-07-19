@@ -99,7 +99,7 @@ namespace LiveCharts.Wpf
             }
 
             var coordinate = new CorePoint(ChartFunctions.ToDrawMargin(X, AxisOrientation.X, chart, AxisX),
-                ChartFunctions.ToDrawMargin(Y, AxisOrientation.Y, chart.View.Model, AxisY));
+                ChartFunctions.ToDrawMargin(Y, AxisOrientation.Y, chart.View.Core, AxisY));
 
             var wpfChart = (CartesianChart) chart.View;
 

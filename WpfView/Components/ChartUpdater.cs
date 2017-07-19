@@ -22,25 +22,38 @@
 
 using System;
 using System.Windows.Threading;
+using LiveCharts.Charts;
 using LiveCharts.Wpf.Charts.Base;
 
 namespace LiveCharts.Wpf.Components
 {
-    internal class ChartUpdater : LiveCharts.ChartUpdater
+    /// <summary>
+    /// Defines the WPF chart updater.
+    /// </summary>
+    /// <seealso cref="LiveCharts.ChartUpdater" />
+    public class ChartUpdater : LiveCharts.ChartUpdater
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChartUpdater"/> class.
+        /// </summary>
+        /// <param name="frequency">The frequency.</param>
         public ChartUpdater(TimeSpan frequency)
         {
             Timer = new DispatcherTimer {Interval = frequency};
-
             Timer.Tick += OnTimerOnTick;
             Freq = frequency;
         }
 
-        public DispatcherTimer Timer { get; set; }
+        private DispatcherTimer Timer { get; set; }
         private bool RequiresRestart { get; set; }
         private TimeSpan Freq { get; set; }
 
-        public override void Run(bool restartView = false, bool updateNow = false)
+        /// <summary>
+        /// Runs the updater.
+        /// </summary>
+        /// <param name="restartView">if set to <c>true</c> [restart view].</param>
+        /// <param name="updateNow">if set to <c>true</c> [update now].</param>
+        public override void QueueUpdate(bool restartView = false, bool updateNow = false)
         {
             if (Timer == null)
             {
@@ -62,12 +75,28 @@ namespace LiveCharts.Wpf.Components
             Timer.Start();
         }
 
-        public override void UpdateFrequency(TimeSpan freq)
+        /// <summary>
+        /// Updates the frequency.
+        /// </summary>
+        /// <param name="freq">The freq.</param>
+        public override void SetFrequency(TimeSpan freq)
         {
             Timer.Interval = freq;
         }
 
-        public void OnTimerOnTick(object sender, EventArgs args)
+        /// <summary>
+        /// Unloads this instance.
+        /// </summary>
+        public override void Unload()
+        {
+            if (Timer == null) return;
+            Timer.Tick -= OnTimerOnTick;
+            Timer.Stop();
+            Timer.IsEnabled = false;
+            Timer = null;
+        }
+
+        private void OnTimerOnTick(object sender, EventArgs args)
         {
             UpdaterTick(RequiresRestart, false);
         }
@@ -83,7 +112,7 @@ namespace LiveCharts.Wpf.Components
             IsUpdating = false;
 
             RequiresRestart = false;
-            
+
             wpfChart.ChartUpdated();
             wpfChart.PrepareScrolBar();
         }

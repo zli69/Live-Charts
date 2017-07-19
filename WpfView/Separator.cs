@@ -153,7 +153,7 @@ namespace LiveCharts.Wpf
                 var wpfSeparator = o as Separator;
                 if (wpfSeparator == null) return;
 
-                if (wpfSeparator.Chart != null) wpfSeparator.Chart.Updater.Run(animate);
+                if (wpfSeparator.Chart != null) wpfSeparator.Chart.Updater.QueueUpdate(animate);
             };
         }
     }

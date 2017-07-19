@@ -649,7 +649,7 @@ namespace LiveCharts.Wpf
             MaxValue = max;
             MinValue = min;
 
-            Model.Chart.Updater.Run();
+            Model.Chart.Updater.QueueUpdate();
 
             OnRangeChanged(e);
         }
@@ -709,7 +709,7 @@ namespace LiveCharts.Wpf
                 if (wpfAxis == null) return;
 
                 if (wpfAxis.Model != null && wpfAxis.Model.Chart != null)
-                    wpfAxis.Model.Chart.Updater.Run(animate, updateNow);
+                    wpfAxis.Model.Chart.Updater.QueueUpdate(animate, updateNow);
             };
         }
 

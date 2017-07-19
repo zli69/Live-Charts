@@ -22,23 +22,15 @@
 
 using System;
 using LiveCharts.Charts;
-using LiveCharts.Definitions.Series;
 using LiveCharts.Helpers;
 
 namespace LiveCharts
 {
     /// <summary>
-    /// 
+    /// Defines the ChartUpdater logic.
     /// </summary>
-    public class ChartUpdater
+    public abstract class ChartUpdater
     {
-        /// <summary>
-        /// Gets or sets the chart.
-        /// </summary>
-        /// <value>
-        /// The chart.
-        /// </value>
-        public ChartCore Chart { get; set; }
         /// <summary>
         /// Gets or sets a value indicating whether this instance is updating.
         /// </summary>
@@ -47,17 +39,12 @@ namespace LiveCharts
         /// </value>
         public bool IsUpdating { get; set; }
         /// <summary>
-        /// Gets or sets a value indicating whether [restart view requested].
+        /// Gets or sets the chart.
         /// </summary>
         /// <value>
-        /// <c>true</c> if [restart view requested]; otherwise, <c>false</c>.
+        /// The chart.
         /// </value>
-        public bool RestartViewRequested { get; set; }
-
-        private void InitializeSeriesView(ISeriesView seriesView)
-        {
-            Chart.View.EnsureElementBelongsToCurrentView(seriesView);
-        }
+        public ChartCore Chart { get; set; }
 
         /// <summary>
         /// Runs the specified restart view.
@@ -65,7 +52,7 @@ namespace LiveCharts
         /// <param name="restartView">if set to <c>true</c> [restart view].</param>
         /// <param name="updateNow">if set to <c>true</c> [update now].</param>
         /// <exception cref="System.NotImplementedException"></exception>
-        public virtual void Run(bool restartView = false, bool updateNow = false)   
+        public virtual void QueueUpdate(bool restartView = false, bool updateNow = false)   
         {
             throw new NotImplementedException();
         }
@@ -75,7 +62,15 @@ namespace LiveCharts
         /// </summary>
         /// <param name="freq">The freq.</param>
         /// <exception cref="System.NotImplementedException"></exception>
-        public virtual void UpdateFrequency(TimeSpan freq)
+        public virtual void SetFrequency(TimeSpan freq)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Unloads this instance.
+        /// </summary>
+        public virtual void Unload()
         {
             throw new NotImplementedException();
         }
@@ -85,7 +80,7 @@ namespace LiveCharts
         /// </summary>
         /// <param name="restartsAnimations">if set to <c>true</c> [restarts animations].</param>
         /// <param name="force"></param>
-        protected void Update(bool restartsAnimations = false, bool force = false)   
+        protected virtual void Update(bool restartsAnimations = false, bool force = false)   
         {
             if (!force && Chart.View.UpdaterState == UpdaterState.Paused) return;
              
@@ -107,7 +102,7 @@ namespace LiveCharts
 
             foreach (var series in Chart.View.ActualSeries)
             {
-                InitializeSeriesView(series);
+                Chart.View.EnsureElementBelongsToCurrentView(series);
                 series.ActualValues.Initialize(series);
                 series.InitializeColors();
                 series.DrawSpecializedElements();
