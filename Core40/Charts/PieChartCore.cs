@@ -52,11 +52,9 @@ namespace LiveCharts.Charts
         /// <summary>
         /// Prepares the axes.
         /// </summary>
-        /// <exception cref="LiveChartsException">There is a invalid series in the series collection, " +
-        ///                     "verify that all the series implement IPieSeries.</exception>
         public override void PrepareAxes()
         {
-            if (View.ActualSeries.Any(x => !(x.Model is IPieSeries)))
+            if (View.ActualSeries.Any(x => !(x.Core is IPieSeries)))
                 throw new LiveChartsException(
                     "There is a invalid series in the series collection, " +
                     "verify that all the series implement IPieSeries.");

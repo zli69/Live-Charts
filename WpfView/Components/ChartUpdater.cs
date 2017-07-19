@@ -22,7 +22,6 @@
 
 using System;
 using System.Windows.Threading;
-using LiveCharts.Charts;
 using LiveCharts.Wpf.Charts.Base;
 
 namespace LiveCharts.Wpf.Components

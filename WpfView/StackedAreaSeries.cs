@@ -45,7 +45,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public StackedAreaSeries()
         {
-            Model = new StackedAreaAlgorithm(this);
+            Core = new StackedAreaAlgorithm(this);
             InitializeDefuaults();
         }
 
@@ -54,7 +54,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public StackedAreaSeries(object configuration)
         {
-            Model = new StackedAreaAlgorithm(this);
+            Core = new StackedAreaAlgorithm(this);
             Configuration = configuration;
             InitializeDefuaults();
         }
@@ -102,19 +102,19 @@ namespace LiveCharts.Wpf
 
             if (Figure != null && Values != null)
             {
-                var xIni = ChartFunctions.ToDrawMargin(Values.GetTracker(this).XLimit.Min, AxisOrientation.X, Model.Chart, ScalesXAt);
+                var xIni = ChartFunctions.ToDrawMargin(Values.GetTracker(this).XLimit.Min, AxisOrientation.X, Core.Chart, ScalesXAt);
 
-                if (Model.Chart.View.DisableAnimations)
-                    Figure.StartPoint = new Point(xIni, Model.Chart.View.DrawMarginHeight);
+                if (Core.Chart.View.DisableAnimations)
+                    Figure.StartPoint = new Point(xIni, Core.Chart.View.DrawMarginHeight);
                 else
                     Figure.BeginAnimation(PathFigure.StartPointProperty,
-                        new PointAnimation(new Point(xIni, Model.Chart.View.DrawMarginHeight),
-                            Model.Chart.View.AnimationsSpeed));
+                        new PointAnimation(new Point(xIni, Core.Chart.View.DrawMarginHeight),
+                            Core.Chart.View.AnimationsSpeed));
             }
 
             if (IsPathInitialized)
             {
-                Model.Chart.View.EnsureElementBelongsToCurrentDrawMargin(Path);
+                Core.Chart.View.EnsureElementBelongsToCurrentDrawMargin(Path);
                 Path.Stroke = Stroke;
                 Path.StrokeThickness = StrokeThickness;
                 Path.Fill = Fill;
@@ -138,13 +138,13 @@ namespace LiveCharts.Wpf
             Figure = new PathFigure();
             geometry.Figures.Add(Figure);
             Path.Data = geometry;
-            Model.Chart.View.AddToDrawMargin(Path);
+            Core.Chart.View.AddToDrawMargin(Path);
 
-            var x = ChartFunctions.ToDrawMargin(ActualValues.GetTracker(this).XLimit.Min, AxisOrientation.X, Model.Chart, ScalesXAt);
-            Figure.StartPoint = new Point(x, Model.Chart.View.DrawMarginHeight);
+            var x = ChartFunctions.ToDrawMargin(ActualValues.GetTracker(this).XLimit.Min, AxisOrientation.X, Core.Chart, ScalesXAt);
+            Figure.StartPoint = new Point(x, Core.Chart.View.DrawMarginHeight);
 
-            var i = Model.Chart.View.Series.IndexOf(this);
-            Panel.SetZIndex(Path, Model.Chart.View.Series.Count - i);
+            var i = Core.Chart.View.Series.IndexOf(this);
+            Panel.SetZIndex(Path, Core.Chart.View.Series.Count - i);
         }
 
         #endregion
@@ -165,7 +165,7 @@ namespace LiveCharts.Wpf
             SetCurrentValue(StrokeThicknessProperty, 0d);
             DefaultFillOpacity = 1;
 
-            Func<ChartPoint, string> defaultLabel = x => Model.CurrentYAxis.GetFormatter()(x.Y);
+            Func<ChartPoint, string> defaultLabel = x => Core.CurrentYAxis.GetFormatter()(x.Y);
             SetCurrentValue(LabelPointProperty, defaultLabel);
 
             Splitters = new List<LineSegmentSplitter>();

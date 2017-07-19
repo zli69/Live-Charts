@@ -50,7 +50,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public LineSeries() 
         {
-            Model = new LineAlgorithm(this);
+            Core = new LineAlgorithm(this);
             InitializeDefuaults();
         }
 
@@ -60,7 +60,7 @@ namespace LiveCharts.Wpf
         /// <param name="configuration"></param>
         public LineSeries(object configuration)
         {
-            Model = new LineAlgorithm(this);
+            Core = new LineAlgorithm(this);
             Configuration = configuration;
             InitializeDefuaults();
         }
@@ -190,7 +190,7 @@ namespace LiveCharts.Wpf
 
             if (IsPathInitialized)
             {
-                Model.Chart.View.EnsureElementBelongsToCurrentDrawMargin(Path);
+                Core.Chart.View.EnsureElementBelongsToCurrentDrawMargin(Path);
                 Path.Stroke = Stroke;
                 Path.StrokeThickness = StrokeThickness;
                 Path.Fill = Fill;
@@ -218,7 +218,7 @@ namespace LiveCharts.Wpf
             geometry.Figures.Add(Figure);
             Path.Data = geometry;
             
-            Model.Chart.View.EnsureElementBelongsToCurrentDrawMargin(Path);
+            Core.Chart.View.EnsureElementBelongsToCurrentDrawMargin(Path);
         }
 
         /// <summary>
@@ -245,15 +245,15 @@ namespace LiveCharts.Wpf
             else
             {
                 pbv.IsNew = false;
-                point.SeriesView.Model.Chart.View
+                point.SeriesView.Core.Chart.View
                     .EnsureElementBelongsToCurrentDrawMargin(pbv.Shape);
-                point.SeriesView.Model.Chart.View
+                point.SeriesView.Core.Chart.View
                     .EnsureElementBelongsToCurrentDrawMargin(pbv.HoverShape);
-                point.SeriesView.Model.Chart.View
+                point.SeriesView.Core.Chart.View
                     .EnsureElementBelongsToCurrentDrawMargin(pbv.DataLabel);
             }
 
-            if (Model.Chart.RequiresHoverShape && pbv.HoverShape == null)
+            if (Core.Chart.RequiresHoverShape && pbv.HoverShape == null)
             {
                 pbv.HoverShape = new Rectangle
                 {
@@ -265,10 +265,10 @@ namespace LiveCharts.Wpf
 
                 Panel.SetZIndex(pbv.HoverShape, int.MaxValue);
 
-                var wpfChart = (Chart)Model.Chart.View;
+                var wpfChart = (Chart)Core.Chart.View;
                 wpfChart.AttachHoverableEventTo(pbv.HoverShape);
 
-                Model.Chart.View.AddToDrawMargin(pbv.HoverShape);
+                Core.Chart.View.AddToDrawMargin(pbv.HoverShape);
             }
 
             if (pbv.HoverShape != null) pbv.HoverShape.Visibility = Visibility;
@@ -284,7 +284,7 @@ namespace LiveCharts.Wpf
                     };
                 }
 
-                Model.Chart.View.AddToDrawMargin(pbv.Shape);
+                Core.Chart.View.AddToDrawMargin(pbv.Shape);
             }
 
             if (pbv.Shape != null)
@@ -313,7 +313,7 @@ namespace LiveCharts.Wpf
 
             if (!DataLabels && pbv.DataLabel != null)
             {
-                Model.Chart.View.RemoveFromDrawMargin(pbv.DataLabel);
+                Core.Chart.View.RemoveFromDrawMargin(pbv.DataLabel);
                 pbv.DataLabel = null;
             }
 
@@ -346,13 +346,13 @@ namespace LiveCharts.Wpf
             ActualValues.GetPoints(this).ForEach(p =>
             {
                 if (p.View != null)
-                    p.View.RemoveFromView(Model.Chart);
+                    p.View.RemoveFromView(Core.Chart);
             });
             if (Path != null) Path.Visibility = Visibility.Hidden;
             if (removeFromView)
             {
-                Model.Chart.View.RemoveFromDrawMargin(Path);
-                Model.Chart.View.RemoveFromView(this);
+                Core.Chart.View.RemoveFromDrawMargin(Path);
+                Core.Chart.View.RemoveFromView(this);
             }
         }
 
@@ -382,16 +382,16 @@ namespace LiveCharts.Wpf
             splitter.SplitterCollectorIndex = SplittersCollector;
 
             ActiveSplitters++;
-            var animSpeed = Model.Chart.View.AnimationsSpeed;
-            var noAnim = Model.Chart.View.DisableAnimations;
+            var animSpeed = Core.Chart.View.AnimationsSpeed;
+            var noAnim = Core.Chart.View.DisableAnimations;
 
             var areaLimit = ChartFunctions.ToDrawMargin(double.IsNaN(AreaLimit)
-                ? Model.Chart.View.AxisY[ScalesYAt].Model.FirstSeparator
-                : AreaLimit, AxisOrientation.Y, Model.Chart, ScalesYAt);
+                ? Core.Chart.View.AxisY[ScalesYAt].Model.FirstSeparator
+                : AreaLimit, AxisOrientation.Y, Core.Chart, ScalesYAt);
 
             if (Values != null && atIndex == 0)
             {
-                if (Model.Chart.View.DisableAnimations || IsNew)
+                if (Core.Chart.View.DisableAnimations || IsNew)
                     Figure.StartPoint = new Point(location.X, areaLimit);
                 else
                     Figure.BeginAnimation(PathFigure.StartPointProperty,
@@ -406,8 +406,8 @@ namespace LiveCharts.Wpf
 
                 if (splitter.IsNew)
                 {
-                    splitter.Bottom.Point = new Point(location.X, Model.Chart.View.DrawMarginHeight);
-                    splitter.Left.Point = new Point(location.X, Model.Chart.View.DrawMarginHeight);
+                    splitter.Bottom.Point = new Point(location.X, Core.Chart.View.DrawMarginHeight);
+                    splitter.Left.Point = new Point(location.X, Core.Chart.View.DrawMarginHeight);
                 }
 
                 if (noAnim)
@@ -430,12 +430,12 @@ namespace LiveCharts.Wpf
 
             if (splitter.IsNew)
             {
-                splitter.Bottom.Point = new Point(location.X, Model.Chart.View.DrawMarginHeight);
-                splitter.Left.Point = new Point(location.X, Model.Chart.View.DrawMarginHeight);
+                splitter.Bottom.Point = new Point(location.X, Core.Chart.View.DrawMarginHeight);
+                splitter.Left.Point = new Point(location.X, Core.Chart.View.DrawMarginHeight);
             }
 
             Figure.Segments.Remove(splitter.Left);
-            if (Model.Chart.View.DisableAnimations)
+            if (Core.Chart.View.DisableAnimations)
                 splitter.Left.Point = location.AsPoint();
             else
                 splitter.Left.BeginAnimation(LineSegment.PointProperty,
@@ -452,21 +452,21 @@ namespace LiveCharts.Wpf
         {
             var splitter = Splitters[ActiveSplitters-1];
 
-            var animSpeed = Model.Chart.View.AnimationsSpeed;
-            var noAnim = Model.Chart.View.DisableAnimations;
+            var animSpeed = Core.Chart.View.AnimationsSpeed;
+            var noAnim = Core.Chart.View.DisableAnimations;
 
             var areaLimit = ChartFunctions.ToDrawMargin(double.IsNaN(AreaLimit)
-                 ? Model.Chart.View.AxisY[ScalesYAt].Model.FirstSeparator
-                 : AreaLimit, AxisOrientation.Y, Model.Chart, ScalesYAt);
+                 ? Core.Chart.View.AxisY[ScalesYAt].Model.FirstSeparator
+                 : AreaLimit, AxisOrientation.Y, Core.Chart, ScalesYAt);
 
-            var uw = Model.Chart.View.AxisX[ScalesXAt].Model.EvaluatesUnitWidth
-                ? ChartFunctions.GetUnitWidth(AxisOrientation.X, Model.Chart, ScalesXAt)/2
+            var uw = Core.Chart.View.AxisX[ScalesXAt].Model.EvaluatesUnitWidth
+                ? ChartFunctions.GetUnitWidth(AxisOrientation.X, Core.Chart, ScalesXAt)/2
                 : 0;
             location.X -= uw;
 
             if (splitter.IsNew)
             {
-                splitter.Right.Point = new Point(location.X, Model.Chart.View.DrawMarginHeight);
+                splitter.Right.Point = new Point(location.X, Core.Chart.View.DrawMarginHeight);
             }
 
             Figure.Segments.Remove(splitter.Right);
@@ -490,7 +490,7 @@ namespace LiveCharts.Wpf
             SetCurrentValue(PointForegroundProperty, Brushes.White);
             SetCurrentValue(StrokeThicknessProperty, 2d);
 
-            Func<ChartPoint, string> defaultLabel = x => Model.CurrentYAxis.GetFormatter()(x.Y);
+            Func<ChartPoint, string> defaultLabel = x => Core.CurrentYAxis.GetFormatter()(x.Y);
             SetCurrentValue(LabelPointProperty, defaultLabel);
 
             DefaultFillOpacity = 0.15;

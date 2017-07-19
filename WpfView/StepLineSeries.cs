@@ -45,7 +45,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public StepLineSeries()
         {
-            Model = new StepLineAlgorithm(this);
+            Core = new StepLineAlgorithm(this);
             InitializeDefuaults();
         }
 
@@ -55,7 +55,7 @@ namespace LiveCharts.Wpf
         /// <param name="configuration"></param>
         public StepLineSeries(object configuration)
         {
-            Model = new ScatterAlgorithm(this);
+            Core = new ScatterAlgorithm(this);
             Configuration = configuration;
             InitializeDefuaults();
         }
@@ -156,22 +156,22 @@ namespace LiveCharts.Wpf
                     Line1 = new Line()
                 };
 
-                Model.Chart.View.AddToDrawMargin(pbv.Line2);
-                Model.Chart.View.AddToDrawMargin(pbv.Line1);
-                Model.Chart.View.AddToDrawMargin(pbv.Shape);
+                Core.Chart.View.AddToDrawMargin(pbv.Line2);
+                Core.Chart.View.AddToDrawMargin(pbv.Line1);
+                Core.Chart.View.AddToDrawMargin(pbv.Shape);
             }
             else
             {
                 pbv.IsNew = false;
-                point.SeriesView.Model.Chart.View
+                point.SeriesView.Core.Chart.View
                     .EnsureElementBelongsToCurrentDrawMargin(pbv.Shape);
-                point.SeriesView.Model.Chart.View
+                point.SeriesView.Core.Chart.View
                     .EnsureElementBelongsToCurrentDrawMargin(pbv.HoverShape);
-                point.SeriesView.Model.Chart.View
+                point.SeriesView.Core.Chart.View
                     .EnsureElementBelongsToCurrentDrawMargin(pbv.DataLabel);
-                point.SeriesView.Model.Chart.View
+                point.SeriesView.Core.Chart.View
                     .EnsureElementBelongsToCurrentDrawMargin(pbv.Line2);
-                point.SeriesView.Model.Chart.View
+                point.SeriesView.Core.Chart.View
                     .EnsureElementBelongsToCurrentDrawMargin(pbv.Line1);
             }
 
@@ -197,7 +197,7 @@ namespace LiveCharts.Wpf
                         StrokeThickness = StrokeThickness
                     };
                 }
-                Model.Chart.View.AddToDrawMargin(pbv.Shape);
+                Core.Chart.View.AddToDrawMargin(pbv.Shape);
             }
 
             if (pbv.Shape != null)
@@ -216,7 +216,7 @@ namespace LiveCharts.Wpf
                 if (point.Fill != null) pbv.Shape.Fill = (Brush) point.Fill;
             }
 
-            if (Model.Chart.RequiresHoverShape && pbv.HoverShape == null)
+            if (Core.Chart.RequiresHoverShape && pbv.HoverShape == null)
             {
                 pbv.HoverShape = new Rectangle
                 {
@@ -226,10 +226,10 @@ namespace LiveCharts.Wpf
 
                 Panel.SetZIndex(pbv.HoverShape, int.MaxValue);
 
-                var wpfChart = (Chart) Model.Chart.View;
+                var wpfChart = (Chart) Core.Chart.View;
                 wpfChart.AttachHoverableEventTo(pbv.HoverShape);
 
-                Model.Chart.View.AddToDrawMargin(pbv.HoverShape);
+                Core.Chart.View.AddToDrawMargin(pbv.HoverShape);
             }
 
             if (pbv.HoverShape != null) pbv.HoverShape.Visibility = Visibility;
@@ -245,7 +245,7 @@ namespace LiveCharts.Wpf
 
             if (!DataLabels && pbv.DataLabel != null)
             {
-                Model.Chart.View.RemoveFromDrawMargin(pbv.DataLabel);
+                Core.Chart.View.RemoveFromDrawMargin(pbv.DataLabel);
                 pbv.DataLabel = null;
             }
 
@@ -257,11 +257,9 @@ namespace LiveCharts.Wpf
         /// </summary>
         public override void InitializeColors()
         {
-            var wpfChart = (Chart) Model.Chart.View;
-
             if (Stroke != null && AlternativeStroke != null) return;
 
-            var nextColor = wpfChart.GetNextDefaultColor();
+            var nextColor = (Color) Core.Chart.GetNextDefaultColor();
             
             if (Stroke == null)
                 SetValue(StrokeProperty, new SolidColorBrush(nextColor));
@@ -290,7 +288,7 @@ namespace LiveCharts.Wpf
             SetCurrentValue(PointForegroundProperty, Brushes.White);
             SetCurrentValue(StrokeThicknessProperty, 2d);
 
-            Func<ChartPoint, string> defaultLabel = x => Model.CurrentYAxis.GetFormatter()(x.Y);
+            Func<ChartPoint, string> defaultLabel = x => Core.CurrentYAxis.GetFormatter()(x.Y);
             SetCurrentValue(LabelPointProperty, defaultLabel);
 
             DefaultFillOpacity = 0.15;

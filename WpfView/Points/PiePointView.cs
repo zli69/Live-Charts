@@ -138,11 +138,11 @@ namespace LiveCharts.Wpf.Points
             copy.Opacity -= .15;
             Slice.Fill = copy;
 
-            var pieChart = (PieChart) point.SeriesView.Model.Chart.View;
+            var pieChart = (PieChart) point.SeriesView.Core.Chart.View;
 
             Slice.BeginAnimation(PieSlice.PushOutProperty,
                 new DoubleAnimation(Slice.PushOut, OriginalPushOut + pieChart.HoverPushOut,
-                    point.SeriesView.Model.Chart.View.AnimationsSpeed));
+                    point.SeriesView.Core.Chart.View.AnimationsSpeed));
         }
 
         public override void OnHoverLeave(ChartPoint point)
@@ -156,7 +156,7 @@ namespace LiveCharts.Wpf.Points
                 Slice.Fill = ((Series) point.SeriesView).Fill;
             }
             Slice.BeginAnimation(PieSlice.PushOutProperty,
-                new DoubleAnimation(OriginalPushOut, point.SeriesView.Model.Chart.View.AnimationsSpeed));
+                new DoubleAnimation(OriginalPushOut, point.SeriesView.Core.Chart.View.AnimationsSpeed));
         }
     }
 }

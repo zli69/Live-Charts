@@ -48,9 +48,9 @@ namespace LiveCharts.SeriesAlgorithms
         /// </summary>
         public override void Update()
         {
-            var pieChart = (IPieChart) View.Model.Chart.View;
+            var pieChart = (IPieChart) View.Core.Chart.View;
 
-            var maxPushOut = View.Model.Chart.View.ActualSeries
+            var maxPushOut = View.Core.Chart.View.ActualSeries
                 .OfType<IPieSeriesView>()
                 .Select(x => x.PushOut)
                 .DefaultIfEmpty(0).Max();

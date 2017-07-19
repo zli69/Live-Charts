@@ -54,12 +54,20 @@ namespace LiveCharts.Charts
         static ChartCore()
         {
             Configurations = new Charting();
+            Randomizer = new Random();
         }
 
         #endregion
 
         #region Properties 
 
+        /// <summary>
+        /// Gets or sets the randomizer.
+        /// </summary>
+        /// <value>
+        /// The randomizer.
+        /// </value>
+        public static Random Randomizer { get; set; }
         /// <summary>
         /// Gets or sets the configurations.
         /// </summary>
@@ -196,15 +204,7 @@ namespace LiveCharts.Charts
         {
             
         }
-
-        /// <summary>
-        /// Runs the updater.
-        /// </summary>
-        public void RunUpdater(bool restart = false, bool force = false)
-        {
-            Updater.QueueUpdate(restart, force);
-        }
-
+        
         /// <summary>
         /// Calculates the components and margin.
         /// </summary>
@@ -392,7 +392,7 @@ namespace LiveCharts.Charts
         }
 
         /// <summary>
-        /// Zooms the in.
+        /// Zooms a unit in.
         /// </summary>
         /// <param name="pivot">The pivot.</param>
         public void ZoomIn(CorePoint pivot)
@@ -453,7 +453,7 @@ namespace LiveCharts.Charts
         }
 
         /// <summary>
-        /// Zooms the out.
+        /// Zooms a unit out.
         /// </summary>
         /// <param name="pivot">The pivot.</param>
         public void ZoomOut(CorePoint pivot)
@@ -515,7 +515,7 @@ namespace LiveCharts.Charts
         /// </summary>
         public void ClearZoom()
         {
-            foreach (var xi in View.AxisX) xi.SetRange(double.NaN, double.NaN);
+            foreach (var ax in View.AxisX) ax.SetRange(double.NaN, double.NaN);
             foreach (var ax in View.AxisY) ax.SetRange(double.NaN, double.NaN);
         }
 
@@ -563,6 +563,28 @@ namespace LiveCharts.Charts
                         (double.IsNaN(ax.MaxValue) ? ax.Model.TopLimit : ax.MaxValue) + dy);
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets the default color of the next.
+        /// </summary>
+        /// <returns></returns>
+        public object GetNextDefaultColor()
+        {
+            if (View.Series.CurrentSeriesIndex == int.MaxValue) View.Series.CurrentSeriesIndex = 0;
+            var i = View.Series.CurrentSeriesIndex;
+            View.Series.CurrentSeriesIndex++;
+
+            if (View.SeriesColors != null)
+            {
+                var rsc = View.RandomizeStartingColor
+                    ? Randomizer.Next(0, View.SeriesColors.Count)
+                    : 0;
+                return View.SeriesColors[(i + rsc) % View.SeriesColors.Count];
+            }
+
+            var r = View.RandomizeStartingColor ? Randomizer.Next(0, View.Colors.Count) : 0;
+            return View.Colors[(i + r) % View.Colors.Count];
         }
 
         #endregion

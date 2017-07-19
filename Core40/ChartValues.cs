@@ -89,14 +89,14 @@ namespace LiveCharts
 
             var cp = new ChartPoint();
 
-            var ax = seriesView.Model.Chart.View.AxisX[seriesView.ScalesXAt];
-            var ay = seriesView.Model.Chart.View.AxisY[seriesView.ScalesYAt];
+            var ax = seriesView.Core.Chart.View.AxisX[seriesView.ScalesXAt];
+            var ay = seriesView.Core.Chart.View.AxisY[seriesView.ScalesYAt];
             double fx = double.IsNaN(ax.MinValue) ? double.NegativeInfinity : ax.MinValue,
                 tx = double.IsNaN(ax.MaxValue) ? double.PositiveInfinity : ax.MaxValue,
                 fy = double.IsNaN(ay.MinValue) ? double.NegativeInfinity : ay.MinValue,
                 ty = double.IsNaN(ay.MaxValue) ? double.PositiveInfinity : ay.MaxValue;
 
-            var isHorizontal = seriesView.Model.SeriesOrientation == SeriesOrientation.Horizontal;
+            var isHorizontal = seriesView.Core.SeriesOrientation == SeriesOrientation.Horizontal;
 
             var index = 0;
             foreach(var item in this)
@@ -249,7 +249,7 @@ namespace LiveCharts
             foreach (var garbage in GetGarbagePoints(seriesView).ToList())
             {
                 if (garbage.View != null) //yes null, double.Nan Values, will generate null views.
-                    garbage.View.RemoveFromView(seriesView.Model.Chart);
+                    garbage.View.RemoveFromView(seriesView.Core.Chart);
 
                 if (!isclass)
                 {
@@ -289,16 +289,16 @@ namespace LiveCharts
 
             //series == null means that chart values are null, and LiveCharts
             //could not set the Series Instance tho the current chart values...
-            if (view == null || view.Model.SeriesCollection == null) return null;
+            if (view == null || view.Core.SeriesCollection == null) return null;
 
             var config =
-                (view.Configuration ?? view.Model.SeriesCollection.Configuration) as IPointEvaluator<T>;
+                (view.Configuration ?? view.Core.SeriesCollection.Configuration) as IPointEvaluator<T>;
 
             if (config != null) return config;
 
             return DefaultConfiguration ??
                    (DefaultConfiguration =
-                       ChartCore.Configurations.GetConfig<T>(view.Model.SeriesOrientation) as IPointEvaluator<T>);
+                       ChartCore.Configurations.GetConfig<T>(view.Core.SeriesOrientation) as IPointEvaluator<T>);
         }
 
         private static ChartPoint GetChartPoint(bool isClass, PointTracker tracker, int index, T value)
@@ -330,12 +330,12 @@ namespace LiveCharts
 
         private void ObservableOnPointChanged()
         {
-            Trackers.Keys.ForEach(x => x.Model.Chart.Updater.QueueUpdate());
+            Trackers.Keys.ForEach(x => x.Core.Chart.Updater.QueueUpdate());
         }
 
         private void NotifyOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
-            Trackers.Keys.ForEach(x => x.Model.Chart.Updater.QueueUpdate());
+            Trackers.Keys.ForEach(x => x.Core.Chart.Updater.QueueUpdate());
         }
 
         private IEnumerable<ChartPoint> GetGarbagePoints(ISeriesView view)
@@ -366,8 +366,8 @@ namespace LiveCharts
 
         private void OnChanged(IEnumerable<T> oldItems, IEnumerable<T> newItems)
         {
-            if (Trackers.Keys.All(x => x != null && x.Model.Chart != null))
-                Trackers.Keys.ForEach(x => x.Model.Chart.Updater.QueueUpdate());
+            if (Trackers.Keys.All(x => x != null && x.Core.Chart != null))
+                Trackers.Keys.ForEach(x => x.Core.Chart.Updater.QueueUpdate());
         }
 
         #endregion

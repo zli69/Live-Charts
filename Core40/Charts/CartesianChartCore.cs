@@ -58,12 +58,12 @@ namespace LiveCharts.Charts
         {
             base.PrepareAxes();
 
-            if (View.ActualSeries.Any(x => !(x.Model is ICartesianSeries)))
+            if (View.ActualSeries.Any(x => !(x.Core is ICartesianSeries)))
                 throw new LiveChartsException(
                     "There is a invalid series in the series collection, " +
                     "verify that all the series implement ICartesianSeries.");
 
-            var cartesianSeries = View.ActualSeries.Select(x => x.Model).Cast<ICartesianSeries>().ToArray();
+            var cartesianSeries = View.ActualSeries.Select(x => x.Core).Cast<ICartesianSeries>().ToArray();
 
             var xAxis = View.AxisX;
 

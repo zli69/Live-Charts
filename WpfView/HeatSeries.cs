@@ -51,7 +51,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public HeatSeries()
         {
-            Model = new HeatAlgorithm(this);
+            Core = new HeatAlgorithm(this);
             InitializeDefuaults();
         }
 
@@ -61,7 +61,7 @@ namespace LiveCharts.Wpf
         /// <param name="configuration"></param>
         public HeatSeries(object configuration)
         {
-            Model = new HeatAlgorithm(this);
+            Core = new HeatAlgorithm(this);
             Configuration = configuration;
             InitializeDefuaults();
         }
@@ -141,16 +141,16 @@ namespace LiveCharts.Wpf
                     Rectangle = new Rectangle()
                 };
 
-                Model.Chart.View.AddToDrawMargin(pbv.Rectangle);
+                Core.Chart.View.AddToDrawMargin(pbv.Rectangle);
             }
             else
             {
                 pbv.IsNew = false;
-                point.SeriesView.Model.Chart.View
+                point.SeriesView.Core.Chart.View
                     .EnsureElementBelongsToCurrentDrawMargin(pbv.Rectangle);
-                point.SeriesView.Model.Chart.View
+                point.SeriesView.Core.Chart.View
                     .EnsureElementBelongsToCurrentDrawMargin(pbv.HoverShape);
-                point.SeriesView.Model.Chart.View
+                point.SeriesView.Core.Chart.View
                     .EnsureElementBelongsToCurrentDrawMargin(pbv.DataLabel);
             }
 
@@ -160,7 +160,7 @@ namespace LiveCharts.Wpf
             pbv.Rectangle.StrokeDashArray = StrokeDashArray;
             Panel.SetZIndex(pbv.Rectangle, Panel.GetZIndex(pbv.Rectangle));
 
-            if (Model.Chart.RequiresHoverShape && pbv.HoverShape == null)
+            if (Core.Chart.RequiresHoverShape && pbv.HoverShape == null)
             {
                 pbv.HoverShape = new Rectangle
                 {
@@ -170,10 +170,10 @@ namespace LiveCharts.Wpf
 
                 Panel.SetZIndex(pbv.HoverShape, int.MaxValue);
 
-                var wpfChart = (Chart)Model.Chart.View;
+                var wpfChart = (Chart)Core.Chart.View;
                 wpfChart.AttachHoverableEventTo(pbv.HoverShape);
 
-                Model.Chart.View.AddToDrawMargin(pbv.HoverShape);
+                Core.Chart.View.AddToDrawMargin(pbv.HoverShape);
             }
 
             if (pbv.HoverShape != null) pbv.HoverShape.Visibility = Visibility;
@@ -189,7 +189,7 @@ namespace LiveCharts.Wpf
 
             if (!DataLabels && pbv.DataLabel != null)
             {
-                Model.Chart.View.RemoveFromDrawMargin(pbv.DataLabel);
+                Core.Chart.View.RemoveFromDrawMargin(pbv.DataLabel);
                 pbv.DataLabel = null;
             }
 
@@ -205,9 +205,9 @@ namespace LiveCharts.Wpf
             Values.GetPoints(this).ForEach(p =>
             {
                 if (p.View != null)
-                    p.View.RemoveFromView(Model.Chart);
+                    p.View.RemoveFromView(Core.Chart);
             });
-            if (removeFromView) Model.Chart.View.RemoveFromView(this);
+            if (removeFromView) Core.Chart.View.RemoveFromView(this);
         }
 
         /// <summary>
@@ -239,7 +239,7 @@ namespace LiveCharts.Wpf
 
                 if (ColorRangeControl.Parent == null)
                 {
-                    Model.Chart.View.AddToView(ColorRangeControl);
+                    Core.Chart.View.AddToView(ColorRangeControl);
                 }
                 var max = ColorRangeControl.SetMax(ActualValues.GetTracker(this).WLimit.Max.ToString(CultureInfo.InvariantCulture));
                 var min = ColorRangeControl.SetMin(ActualValues.GetTracker(this).WLimit.Min.ToString(CultureInfo.InvariantCulture));
@@ -252,7 +252,7 @@ namespace LiveCharts.Wpf
             }
             else
             {
-                Model.Chart.View.RemoveFromView(ColorRangeControl);
+                Core.Chart.View.RemoveFromView(ColorRangeControl);
             }
         }
 
@@ -265,10 +265,10 @@ namespace LiveCharts.Wpf
 
             ColorRangeControl.UpdateFill(GradientStopCollection);
 
-            ColorRangeControl.Height = Model.Chart.View.DrawMarginHeight;
+            ColorRangeControl.Height = Core.Chart.View.DrawMarginHeight;
 
-            Canvas.SetTop(ColorRangeControl, Model.Chart.View.DrawMarginTop);
-            Canvas.SetLeft(ColorRangeControl, Model.Chart.View.DrawMarginLeft + Model.Chart.View.DrawMarginWidth + 4);
+            Canvas.SetTop(ColorRangeControl, Core.Chart.View.DrawMarginTop);
+            Canvas.SetLeft(ColorRangeControl, Core.Chart.View.DrawMarginLeft + Core.Chart.View.DrawMarginWidth + 4);
         }
 
         #endregion
@@ -294,8 +294,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public override void InitializeColors()
         {
-            var wpfChart = (Chart)Model.Chart.View;
-            var nextColor = wpfChart.GetNextDefaultColor();
+            var nextColor = (Color) Core.Chart.GetNextDefaultColor();
 
             if (Stroke == null)
                 SetValue(StrokeProperty, new SolidColorBrush(nextColor));

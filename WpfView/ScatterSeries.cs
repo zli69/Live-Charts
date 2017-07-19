@@ -44,7 +44,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public ScatterSeries()
         {
-            Model = new ScatterAlgorithm(this);
+            Core = new ScatterAlgorithm(this);
             InitializeDefuaults();
         }
 
@@ -54,7 +54,7 @@ namespace LiveCharts.Wpf
         /// <param name="configuration"></param>
         public ScatterSeries(object configuration)
         {
-            Model = new ScatterAlgorithm(this);
+            Core = new ScatterAlgorithm(this);
             Configuration = configuration;
             InitializeDefuaults();
         }
@@ -134,16 +134,16 @@ namespace LiveCharts.Wpf
                     }
                 };
 
-                Model.Chart.View.AddToDrawMargin(pbv.Shape);
+                Core.Chart.View.AddToDrawMargin(pbv.Shape);
             }
             else
             {
                 pbv.IsNew = false;
-                point.SeriesView.Model.Chart.View
+                point.SeriesView.Core.Chart.View
                     .EnsureElementBelongsToCurrentDrawMargin(pbv.Shape);
-                point.SeriesView.Model.Chart.View
+                point.SeriesView.Core.Chart.View
                     .EnsureElementBelongsToCurrentDrawMargin(pbv.HoverShape);
-                point.SeriesView.Model.Chart.View
+                point.SeriesView.Core.Chart.View
                     .EnsureElementBelongsToCurrentDrawMargin(pbv.DataLabel);
             }
 
@@ -156,7 +156,7 @@ namespace LiveCharts.Wpf
             Panel.SetZIndex(p, Panel.GetZIndex(this));
             p.StrokeDashArray = StrokeDashArray;
 
-            if (Model.Chart.RequiresHoverShape && pbv.HoverShape == null)
+            if (Core.Chart.RequiresHoverShape && pbv.HoverShape == null)
             {
                 pbv.HoverShape = new Rectangle
                 {
@@ -166,10 +166,10 @@ namespace LiveCharts.Wpf
 
                 Panel.SetZIndex(pbv.HoverShape, int.MaxValue);
 
-                var wpfChart = (Chart)Model.Chart.View;
+                var wpfChart = (Chart)Core.Chart.View;
                 wpfChart.AttachHoverableEventTo(pbv.HoverShape);
 
-                Model.Chart.View.AddToDrawMargin(pbv.HoverShape);
+                Core.Chart.View.AddToDrawMargin(pbv.HoverShape);
             }
 
             if (pbv.HoverShape != null) pbv.HoverShape.Visibility = Visibility;
@@ -185,7 +185,7 @@ namespace LiveCharts.Wpf
 
             if (!DataLabels && pbv.DataLabel != null)
             {
-                Model.Chart.View.RemoveFromDrawMargin(pbv.DataLabel);
+                Core.Chart.View.RemoveFromDrawMargin(pbv.DataLabel);
                 pbv.DataLabel = null;
             }
 
@@ -205,8 +205,8 @@ namespace LiveCharts.Wpf
             SetCurrentValue(MaxPointShapeDiameterProperty, 15d);
             SetCurrentValue(MinPointShapeDiameterProperty, 10d);
 
-            Func<ChartPoint, string> defaultLabel = x => Model.CurrentXAxis.GetFormatter()(x.X) + ", "
-                                                         + Model.CurrentYAxis.GetFormatter()(x.Y);
+            Func<ChartPoint, string> defaultLabel = x => Core.CurrentXAxis.GetFormatter()(x.X) + ", "
+                                                         + Core.CurrentYAxis.GetFormatter()(x.Y);
             SetCurrentValue(LabelPointProperty, defaultLabel);
 
             DefaultFillOpacity = 0.7;

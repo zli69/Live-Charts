@@ -44,7 +44,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public OhlcSeries()
         {
-            Model = new OhlcAlgorithm(this);
+            Core = new OhlcAlgorithm(this);
             InitializeDefuaults();
         }
 
@@ -54,7 +54,7 @@ namespace LiveCharts.Wpf
         /// <param name="configuration"></param>
         public OhlcSeries(object configuration)
         {
-            Model = new OhlcAlgorithm(this);
+            Core = new OhlcAlgorithm(this);
             Configuration = configuration;
             InitializeDefuaults();
         }
@@ -141,22 +141,22 @@ namespace LiveCharts.Wpf
                     CloseLine = new Line()
                 };
 
-                Model.Chart.View.AddToDrawMargin(pbv.HighToLowLine);
-                Model.Chart.View.AddToDrawMargin(pbv.OpenLine);
-                Model.Chart.View.AddToDrawMargin(pbv.CloseLine);
+                Core.Chart.View.AddToDrawMargin(pbv.HighToLowLine);
+                Core.Chart.View.AddToDrawMargin(pbv.OpenLine);
+                Core.Chart.View.AddToDrawMargin(pbv.CloseLine);
             }
             else
             {
                 pbv.IsNew = false;
-                point.SeriesView.Model.Chart.View
+                point.SeriesView.Core.Chart.View
                     .EnsureElementBelongsToCurrentDrawMargin(pbv.HighToLowLine);
-                point.SeriesView.Model.Chart.View
+                point.SeriesView.Core.Chart.View
                     .EnsureElementBelongsToCurrentDrawMargin(pbv.OpenLine);
-                point.SeriesView.Model.Chart.View
+                point.SeriesView.Core.Chart.View
                     .EnsureElementBelongsToCurrentDrawMargin(pbv.CloseLine);
-                point.SeriesView.Model.Chart.View
+                point.SeriesView.Core.Chart.View
                     .EnsureElementBelongsToCurrentDrawMargin(pbv.HoverShape);
-                point.SeriesView.Model.Chart.View
+                point.SeriesView.Core.Chart.View
                     .EnsureElementBelongsToCurrentDrawMargin(pbv.DataLabel);
             }
 
@@ -177,7 +177,7 @@ namespace LiveCharts.Wpf
             Panel.SetZIndex(pbv.CloseLine, i);
             Panel.SetZIndex(pbv.OpenLine, i);
 
-            if (Model.Chart.RequiresHoverShape && pbv.HoverShape == null)
+            if (Core.Chart.RequiresHoverShape && pbv.HoverShape == null)
             {
                 pbv.HoverShape = new Rectangle
                 {
@@ -187,10 +187,10 @@ namespace LiveCharts.Wpf
 
                 Panel.SetZIndex(pbv.HoverShape, int.MaxValue);
 
-                var wpfChart = (Chart)Model.Chart.View;
+                var wpfChart = (Chart)Core.Chart.View;
                 wpfChart.AttachHoverableEventTo(pbv.HoverShape);
 
-                Model.Chart.View.AddToDrawMargin(pbv.HoverShape);
+                Core.Chart.View.AddToDrawMargin(pbv.HoverShape);
             }
 
             if (pbv.HoverShape != null) pbv.HoverShape.Visibility = Visibility;
@@ -206,7 +206,7 @@ namespace LiveCharts.Wpf
 
             if (!DataLabels && pbv.DataLabel != null)
             {
-                Model.Chart.View.RemoveFromDrawMargin(pbv.DataLabel);
+                Core.Chart.View.RemoveFromDrawMargin(pbv.DataLabel);
                 pbv.DataLabel = null;
             }
 

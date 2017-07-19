@@ -84,7 +84,7 @@ namespace LiveCharts
         {
             if (!force && Chart.View.UpdaterState == UpdaterState.Paused) return;
              
-            if (!force && !Chart.View.IsControlLoaded) return;
+            if (!force && !Chart.View.IsLoaded) return;
 
             Chart.View.SetParentsTree();
 
@@ -115,7 +115,7 @@ namespace LiveCharts
             {
                 series.OnSeriesUpdateStart();
                 series.ActualValues.InitializeStep(series);
-                series.Model.Update();
+                series.Core.Update();
                 series.ActualValues.CollectGarbage(series);
                 series.OnSeriesUpdatedFinish();
                 series.PlaceSpecializedElements();

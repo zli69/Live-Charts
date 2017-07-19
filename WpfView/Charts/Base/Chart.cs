@@ -21,6 +21,7 @@
 //SOFTWARE.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -67,6 +68,8 @@ namespace LiveCharts.Wpf.Charts.Base
             VisualDrawMargin = new Canvas();
             VisualCanvas.Children.Add(VisualDrawMargin);
 
+            IsTabStop = false;
+
             TooltipTimeoutTimer = new DispatcherTimer();
             SetCurrentValue(MinHeightProperty, 50d);
             SetCurrentValue(MinWidthProperty, 80d);
@@ -91,12 +94,17 @@ namespace LiveCharts.Wpf.Charts.Base
                 Color.FromRgb(76, 174, 80)
             };
 
-            IsControlLoaded = true;
-
-            SizeChanged += OnSizeChanged;
-            IsVisibleChanged += OnIsVisibleChanged;
+            SizeChanged += (sender, args) =>
+            {
+                SetClip();
+                Core.Updater.QueueUpdate();
+            };
+            IsVisibleChanged += (sender, args) =>
+            {
+                PrepareScrolBar();
+                Core.Updater.QueueUpdate();
+            };
             MouseWheel += MouseWheelOnRoll;
-            Loaded += OnLoaded;
             TooltipTimeoutTimer.Tick += TooltipTimeoutTimerOnTick;
 
             VisualDrawMargin.Background = Brushes.Transparent;
@@ -112,127 +120,12 @@ namespace LiveCharts.Wpf.Charts.Base
             };
         }
 
-        static Chart()
-        {
-            Randomizer = new Random();
-        }
-
-        #endregion
-
-        #region Private and internal methods
-
-        private void OnLoaded(object sender, RoutedEventArgs args)
-        {
-            IsControlLoaded = true;
-        }
-
-        private void OnSizeChanged(object sender, SizeChangedEventArgs args)
-        {
-            if (!(this is IPieChart))
-                VisualCanvas.Clip = new RectangleGeometry(new Rect(new Point(0, 0), new Size(ActualWidth, ActualHeight)));
-            Core.Updater.QueueUpdate();
-        }
-
-        private void OnIsVisibleChanged(object sender,
-            DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
-        {
-            Core.Updater.QueueUpdate();
-            PrepareScrolBar();
-        }
-
-        private static void OnSeriesChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-        {
-            var chart = (Chart) o;
-
-            if (chart.Series != null)
-            {
-                chart.Series.Chart = chart.Core;
-                foreach (var series in chart.Series) series.Model.Chart = chart.Core;
-            }
-
-            if (chart.LastKnownSeriesCollection != chart.Series && chart.LastKnownSeriesCollection != null)
-            {
-                foreach (var series in chart.LastKnownSeriesCollection)
-                {
-                    series.Erase(true);
-                }
-            }
-
-            CallChartUpdater()(o, e);
-            chart.LastKnownSeriesCollection = chart.Series;
-        }
-
-        internal void ChartUpdated()
-        {
-            if (UpdaterTick != null) UpdaterTick.Invoke(this);
-            if (UpdaterTickCommand != null && UpdaterTickCommand.CanExecute(this)) UpdaterTickCommand.Execute(this);
-        }
-
-        #endregion
-
-        #region Commands        
-
-        /// <summary>
-        /// The data click command property
-        /// </summary>
-        public static readonly DependencyProperty DataClickCommandProperty = DependencyProperty.Register(
-            "DataClickCommand", typeof(ICommand), typeof(Chart), new PropertyMetadata(default(ICommand)));
-
-        /// <summary>
-        /// Gets or sets the data click command.
-        /// </summary>
-        /// <value>
-        /// The data click command.
-        /// </value>
-        public ICommand DataClickCommand
-        {
-            get { return (ICommand) GetValue(DataClickCommandProperty); }
-            set { SetValue(DataClickCommandProperty, value); }
-        }
-
-        /// <summary>
-        /// The data hover command property
-        /// </summary>
-        public static readonly DependencyProperty DataHoverCommandProperty = DependencyProperty.Register(
-            "DataHoverCommand", typeof(ICommand), typeof(Chart), new PropertyMetadata(default(ICommand)));
-
-        /// <summary>
-        /// Gets or sets the data hover command.
-        /// </summary>
-        /// <value>
-        /// The data hover command.
-        /// </value>
-        public ICommand DataHoverCommand
-        {
-            get { return (ICommand) GetValue(DataHoverCommandProperty); }
-            set { SetValue(DataHoverCommandProperty, value); }
-        }
-
-        /// <summary>
-        /// The updater tick command property
-        /// </summary>
-        public static readonly DependencyProperty UpdaterTickCommandProperty = DependencyProperty.Register(
-            "UpdaterTickCommand", typeof(ICommand), typeof(Chart), new PropertyMetadata(default(ICommand)));
-
-        /// <summary>
-        /// Gets or sets the updater tick command.
-        /// </summary>
-        /// <value>
-        /// The updater tick command.
-        /// </value>
-        public ICommand UpdaterTickCommand
-        {
-            get { return (ICommand) GetValue(UpdaterTickCommandProperty); }
-            set { SetValue(UpdaterTickCommandProperty, value); }
-        }
-
         #endregion
 
         #region Properties
 
         private AxesCollection PreviousXAxis { get; set; }
         private AxesCollection PreviousYAxis { get; set; }
-        private static Random Randomizer { get; set; }
         private SeriesCollection LastKnownSeriesCollection { get; set; }
 
         /// <summary>
@@ -247,8 +140,6 @@ namespace LiveCharts.Wpf.Charts.Base
         /// Gets or sets whether charts must randomize the starting default series color.
         /// </summary>
         public static bool RandomizeStartingColor { get; set; }
-
-
 
         /// <summary>
         /// Gets or sets the application level default series color list
@@ -266,7 +157,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public ColorsCollection SeriesColors
         {
-            get { return (ColorsCollection) GetValue(SeriesColorsProperty); }
+            get { return (ColorsCollection)GetValue(SeriesColorsProperty); }
             set { SetValue(SeriesColorsProperty, value); }
         }
 
@@ -282,7 +173,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public AxesCollection AxisY
         {
-            get { return (AxesCollection) GetValue(AxisYProperty); }
+            get { return (AxesCollection)GetValue(AxisYProperty); }
             set { SetValue(AxisYProperty, value); }
         }
 
@@ -298,7 +189,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public AxesCollection AxisX
         {
-            get { return (AxesCollection) GetValue(AxisXProperty); }
+            get { return (AxesCollection)GetValue(AxisXProperty); }
             set { SetValue(AxisXProperty, value); }
         }
 
@@ -314,7 +205,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public UserControl ChartLegend
         {
-            get { return (UserControl) GetValue(ChartLegendProperty); }
+            get { return (UserControl)GetValue(ChartLegendProperty); }
             set { SetValue(ChartLegendProperty, value); }
         }
 
@@ -330,7 +221,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public ZoomingOptions Zoom
         {
-            get { return (ZoomingOptions) GetValue(ZoomProperty); }
+            get { return (ZoomingOptions)GetValue(ZoomProperty); }
             set { SetValue(ZoomProperty, value); }
         }
 
@@ -348,7 +239,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </value>
         public PanningOptions Pan
         {
-            get { return (PanningOptions) GetValue(PanProperty); }
+            get { return (PanningOptions)GetValue(PanProperty); }
             set { SetValue(PanProperty, value); }
         }
 
@@ -364,7 +255,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public LegendLocation LegendLocation
         {
-            get { return (LegendLocation) GetValue(LegendLocationProperty); }
+            get { return (LegendLocation)GetValue(LegendLocationProperty); }
             set { SetValue(LegendLocationProperty, value); }
         }
 
@@ -396,7 +287,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public TimeSpan AnimationsSpeed
         {
-            get { return (TimeSpan) GetValue(AnimationsSpeedProperty); }
+            get { return (TimeSpan)GetValue(AnimationsSpeedProperty); }
             set { SetValue(AnimationsSpeedProperty, value); }
         }
 
@@ -412,7 +303,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public bool DisableAnimations
         {
-            get { return (bool) GetValue(DisableAnimationsProperty); }
+            get { return (bool)GetValue(DisableAnimationsProperty); }
             set { SetValue(DisableAnimationsProperty, value); }
         }
 
@@ -427,7 +318,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public UserControl DataTooltip
         {
-            get { return (UserControl) GetValue(DataTooltipProperty); }
+            get { return (UserControl)GetValue(DataTooltipProperty); }
             set { SetValue(DataTooltipProperty, value); }
         }
 
@@ -442,7 +333,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public bool Hoverable
         {
-            get { return (bool) GetValue(HoverableProperty); }
+            get { return (bool)GetValue(HoverableProperty); }
             set { SetValue(HoverableProperty, value); }
         }
 
@@ -458,7 +349,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public ScrollMode ScrollMode
         {
-            get { return (ScrollMode) GetValue(ScrollModeProperty); }
+            get { return (ScrollMode)GetValue(ScrollModeProperty); }
             set { SetValue(ScrollModeProperty, value); }
         }
 
@@ -474,7 +365,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public double ScrollHorizontalFrom
         {
-            get { return (double) GetValue(ScrollHorizontalFromProperty); }
+            get { return (double)GetValue(ScrollHorizontalFromProperty); }
             set { SetValue(ScrollHorizontalFromProperty, value); }
         }
 
@@ -490,7 +381,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public double ScrollHorizontalTo
         {
-            get { return (double) GetValue(ScrollHorizontalToProperty); }
+            get { return (double)GetValue(ScrollHorizontalToProperty); }
             set { SetValue(ScrollHorizontalToProperty, value); }
         }
 
@@ -505,7 +396,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public double ScrollVerticalFrom
         {
-            get { return (double) GetValue(ScrollVerticalFromProperty); }
+            get { return (double)GetValue(ScrollVerticalFromProperty); }
             set { SetValue(ScrollVerticalFromProperty, value); }
         }
 
@@ -520,7 +411,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public double ScrollVerticalTo
         {
-            get { return (double) GetValue(ScrollVerticalToProperty); }
+            get { return (double)GetValue(ScrollVerticalToProperty); }
             set { SetValue(ScrollVerticalToProperty, value); }
         }
 
@@ -536,7 +427,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public Brush ScrollBarFill
         {
-            get { return (Brush) GetValue(ScrollBarFillProperty); }
+            get { return (Brush)GetValue(ScrollBarFillProperty); }
             set { SetValue(ScrollBarFillProperty, value); }
         }
 
@@ -551,7 +442,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public double ZoomingSpeed
         {
-            get { return (double) GetValue(ZoomingSpeedProperty); }
+            get { return (double)GetValue(ZoomingSpeedProperty); }
             set { SetValue(ZoomingSpeedProperty, value); }
         }
 
@@ -567,34 +458,94 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public UpdaterState UpdaterState
         {
-            get { return (UpdaterState) GetValue(UpdaterStateProperty); }
+            get { return (UpdaterState)GetValue(UpdaterStateProperty); }
             set { SetValue(UpdaterStateProperty, value); }
+        }
+
+        /// <summary>
+        /// The data click command property
+        /// </summary>
+        public static readonly DependencyProperty DataClickCommandProperty = DependencyProperty.Register(
+            "DataClickCommand", typeof(ICommand), typeof(Chart), new PropertyMetadata(default(ICommand)));
+
+        /// <summary>
+        /// Gets or sets the data click command.
+        /// </summary>
+        /// <value>
+        /// The data click command.
+        /// </value>
+        public ICommand DataClickCommand
+        {
+            get { return (ICommand)GetValue(DataClickCommandProperty); }
+            set { SetValue(DataClickCommandProperty, value); }
+        }
+
+        /// <summary>
+        /// The data hover command property
+        /// </summary>
+        public static readonly DependencyProperty DataHoverCommandProperty = DependencyProperty.Register(
+            "DataHoverCommand", typeof(ICommand), typeof(Chart), new PropertyMetadata(default(ICommand)));
+
+        /// <summary>
+        /// Gets or sets the data hover command.
+        /// </summary>
+        /// <value>
+        /// The data hover command.
+        /// </value>
+        public ICommand DataHoverCommand
+        {
+            get { return (ICommand)GetValue(DataHoverCommandProperty); }
+            set { SetValue(DataHoverCommandProperty, value); }
+        }
+
+        /// <summary>
+        /// The updater tick command property
+        /// </summary>
+        public static readonly DependencyProperty UpdaterTickCommandProperty = DependencyProperty.Register(
+            "UpdaterTickCommand", typeof(ICommand), typeof(Chart), new PropertyMetadata(default(ICommand)));
+
+        /// <summary>
+        /// Gets or sets the updater tick command.
+        /// </summary>
+        /// <value>
+        /// The updater tick command.
+        /// </value>
+        public ICommand UpdaterTickCommand
+        {
+            get { return (ICommand)GetValue(UpdaterTickCommandProperty); }
+            set { SetValue(UpdaterTickCommandProperty, value); }
         }
 
         #endregion
 
-        #region Public Methods
+        #region Private and internal methods
 
-        /// <summary>
-        /// Gets the default color of the next.
-        /// </summary>
-        /// <returns></returns>
-        public Color GetNextDefaultColor()
+        private static void OnSeriesChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            if (Series.CurrentSeriesIndex == int.MaxValue) Series.CurrentSeriesIndex = 0;
-            var i = Series.CurrentSeriesIndex;
-            Series.CurrentSeriesIndex++;
+            var chart = (Chart) o;
 
-            if (SeriesColors != null)
+            if (chart.Series != null)
             {
-                var rsc = RandomizeStartingColor
-                    ? Randomizer.Next(0, SeriesColors.Count)
-                    : 0;
-                return SeriesColors[(i + rsc) % SeriesColors.Count];
+                chart.Series.Chart = chart.Core;
+                foreach (var series in chart.Series) series.Core.Chart = chart.Core;
             }
 
-            var r = RandomizeStartingColor ? Randomizer.Next(0, Colors.Count) : 0;
-            return Colors[(i + r) % Colors.Count];
+            if (chart.LastKnownSeriesCollection != chart.Series && chart.LastKnownSeriesCollection != null)
+            {
+                foreach (var series in chart.LastKnownSeriesCollection)
+                {
+                    series.Erase(true);
+                }
+            }
+
+            CallChartUpdater()(o, e);
+            chart.LastKnownSeriesCollection = chart.Series;
+        }
+
+        internal void ChartUpdated()
+        {
+            if (UpdaterTick != null) UpdaterTick.Invoke(this);
+            if (UpdaterTickCommand != null && UpdaterTickCommand.CanExecute(this)) UpdaterTickCommand.Execute(this);
         }
 
         #endregion
@@ -677,7 +628,7 @@ namespace LiveCharts.Wpf.Charts.Base
                         "The current tooltip is not valid, ensure it implements IChartsTooltip");
 
                 if (lcTooltip.SelectionMode == null)
-                    lcTooltip.SelectionMode = senderPoint.SeriesView.Model.PreferredSelectionMode;
+                    lcTooltip.SelectionMode = senderPoint.SeriesView.Core.PreferredSelectionMode;
 
                 var coreModel = ChartFunctions.GetTooltipData(senderPoint, Core, lcTooltip.SelectionMode.Value);
 
@@ -920,7 +871,7 @@ namespace LiveCharts.Wpf.Charts.Base
 
         internal void PrepareScrolBar()
         {
-            if (!IsControlLoaded) return;
+            if (!IsLoaded) return;
 
             if (ScrollMode == ScrollMode.None)
             {
@@ -1193,21 +1144,6 @@ namespace LiveCharts.Wpf.Charts.Base
             }
         }
 
-        /// <summary>
-        /// The DataClick event is fired when a user click any data point
-        /// </summary>
-        public event DataClickHandler DataClick;
-
-        /// <summary>
-        /// The DataHover event is fired when a user hovers over any data point
-        /// </summary>
-        public event DataHoverHandler DataHover;
-
-        /// <summary>
-        /// This event is fired every time the chart updates.
-        /// </summary>
-        public event UpdaterTickHandler UpdaterTick;
-
         SeriesCollection IChartView.Series { get { return Series; } }
 
         IEnumerable<ISeriesView> IChartView.ActualSeries
@@ -1221,6 +1157,12 @@ namespace LiveCharts.Wpf.Charts.Base
                     .Where(x => x.IsSeriesVisible);
             }
         }
+
+        IList IChartView.Colors { get { return Colors; } }
+
+        IList IChartView.SeriesColors { get { return SeriesColors; } }
+
+        bool IChartView.RandomizeStartingColor { get { return RandomizeStartingColor; } }
 
         TimeSpan IChartView.TooltipTimeout { get { return TooltipTimeout; } }
 
@@ -1263,12 +1205,27 @@ namespace LiveCharts.Wpf.Charts.Base
             get { return DataHover != null; }
         }
 
-        public bool IsControlLoaded { get; private set; }
+        bool IChartView.IsLoaded { get { return IsLoaded; } }
 
         bool IChartView.IsInDesignMode
         {
             get { return DesignerProperties.GetIsInDesignMode(this); }
         }
+
+        /// <summary>
+        /// The DataClick event is fired when a user click any data point
+        /// </summary>
+        public event DataClickHandler DataClick;
+
+        /// <summary>
+        /// The DataHover event is fired when a user hovers over any data point
+        /// </summary>
+        public event DataHoverHandler DataHover;
+
+        /// <summary>
+        /// This event is fired every time the chart updates.
+        /// </summary>
+        public event UpdaterTickHandler UpdaterTick;
 
         void IChartView.AddToView(object element)
         {

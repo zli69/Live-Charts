@@ -46,7 +46,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public CandleSeries()
         {
-            Model = new CandleAlgorithm(this);
+            Core = new CandleAlgorithm(this);
             InitializeDefuaults();
         }
 
@@ -56,7 +56,7 @@ namespace LiveCharts.Wpf
         /// <param name="configuration"></param>
         public CandleSeries(object configuration)
         {
-            Model = new CandleAlgorithm(this);
+            Core = new CandleAlgorithm(this);
             Configuration = configuration;
             InitializeDefuaults();
         }
@@ -159,19 +159,19 @@ namespace LiveCharts.Wpf
                     OpenToCloseRectangle = new Rectangle()
                 };
 
-                Model.Chart.View.AddToDrawMargin(pbv.HighToLowLine);
-                Model.Chart.View.AddToDrawMargin(pbv.OpenToCloseRectangle);
+                Core.Chart.View.AddToDrawMargin(pbv.HighToLowLine);
+                Core.Chart.View.AddToDrawMargin(pbv.OpenToCloseRectangle);
             }
             else
             {
                 pbv.IsNew = false;
-                point.SeriesView.Model.Chart.View
+                point.SeriesView.Core.Chart.View
                     .EnsureElementBelongsToCurrentDrawMargin(pbv.HighToLowLine);
-                point.SeriesView.Model.Chart.View
+                point.SeriesView.Core.Chart.View
                     .EnsureElementBelongsToCurrentDrawMargin(pbv.OpenToCloseRectangle);
-                point.SeriesView.Model.Chart.View
+                point.SeriesView.Core.Chart.View
                     .EnsureElementBelongsToCurrentDrawMargin(pbv.HoverShape);
-                point.SeriesView.Model.Chart.View
+                point.SeriesView.Core.Chart.View
                     .EnsureElementBelongsToCurrentDrawMargin(pbv.DataLabel);
             }
 
@@ -189,7 +189,7 @@ namespace LiveCharts.Wpf
             pbv.OpenToCloseRectangle.Visibility = Visibility;
             Panel.SetZIndex(pbv.HighToLowLine, i);
 
-            if (Model.Chart.RequiresHoverShape && pbv.HoverShape == null)
+            if (Core.Chart.RequiresHoverShape && pbv.HoverShape == null)
             {
                 pbv.HoverShape = new Rectangle
                 {
@@ -199,10 +199,10 @@ namespace LiveCharts.Wpf
 
                 Panel.SetZIndex(pbv.HoverShape, int.MaxValue);
 
-                var wpfChart = (Chart)Model.Chart.View;
+                var wpfChart = (Chart)Core.Chart.View;
                 wpfChart.AttachHoverableEventTo(pbv.HoverShape);
 
-                Model.Chart.View.AddToDrawMargin(pbv.HoverShape);
+                Core.Chart.View.AddToDrawMargin(pbv.HoverShape);
             }
 
             if (pbv.HoverShape != null) pbv.HoverShape.Visibility = Visibility;
@@ -218,7 +218,7 @@ namespace LiveCharts.Wpf
 
             if (!DataLabels && pbv.DataLabel != null)
             {
-                Model.Chart.View.RemoveFromDrawMargin(pbv.DataLabel);
+                Core.Chart.View.RemoveFromDrawMargin(pbv.DataLabel);
                 pbv.DataLabel = null;
             }
 

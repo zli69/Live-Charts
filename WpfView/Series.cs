@@ -86,7 +86,7 @@ namespace LiveCharts.Wpf
         /// <summary>
         /// THe Model is set by every series type, it is the motor of the series, it is the communication with the core of the library
         /// </summary>
-        public SeriesAlgorithm Model { get; set; }
+        public SeriesAlgorithm Core { get; set; }
         /// <summary>
         /// Gets the Actual values in the series, active or visible series only
         /// </summary>
@@ -419,7 +419,7 @@ namespace LiveCharts.Wpf
                     new Binding {Path = new PropertyPath(VisibilityProperty), Source = this});
                 Panel.SetZIndex(control, int.MaxValue - 1);
 
-                Model.Chart.View.AddToDrawMargin(control);
+                Core.Chart.View.AddToDrawMargin(control);
             }
             else
             {
@@ -468,9 +468,9 @@ namespace LiveCharts.Wpf
             Values.GetPoints(this).ForEach(p =>
             {
                 if (p.View != null)
-                    p.View.RemoveFromView(Model.Chart);
+                    p.View.RemoveFromView(Core.Chart);
             });
-            if (removeFromView) Model.Chart.View.RemoveFromView(this);
+            if (removeFromView) Core.Chart.View.RemoveFromView(this);
         }
 
         /// <summary>
@@ -486,11 +486,9 @@ namespace LiveCharts.Wpf
         /// </summary>
         public virtual void InitializeColors()
         {
-            var wpfChart = (Chart) Model.Chart.View;
-
             if (Stroke != null && Fill != null) return;
 
-            var nextColor = wpfChart.GetNextDefaultColor();
+            var nextColor = (Color) Core.Chart.GetNextDefaultColor();
 
             if (Stroke == null)
             {
@@ -544,7 +542,7 @@ namespace LiveCharts.Wpf
             if (series.Values != series.LastKnownValues && series.LastKnownValues != null)
             {
                 series.LastKnownValues.GetPoints(series).ForEach(
-                    x => { if (x.View != null) x.View.RemoveFromView(series.Model.Chart); });
+                    x => { if (x.View != null) x.View.RemoveFromView(series.Core.Chart); });
             }
 
             CallChartUpdater()(dependencyObject, dependencyPropertyChangedEventArgs);
@@ -563,9 +561,9 @@ namespace LiveCharts.Wpf
                 var wpfSeries = o as Series;
 
                 if (wpfSeries == null) return;
-                if (wpfSeries.Model == null) return;
+                if (wpfSeries.Core == null) return;
 
-                if (wpfSeries.Model.Chart != null) wpfSeries.Model.Chart.Updater.QueueUpdate(animate);
+                if (wpfSeries.Core.Chart != null) wpfSeries.Core.Chart.Updater.QueueUpdate(animate);
             };
         }
         
@@ -576,8 +574,8 @@ namespace LiveCharts.Wpf
             if (series.Visibility == Visibility.Collapsed || series.Visibility == Visibility.Hidden)
                 series.Erase(false);
 
-            if (series.Model == null) return;
-            series.Model.Chart.Updater.QueueUpdate();
+            if (series.Core == null) return;
+            series.Core.Chart.Updater.QueueUpdate();
         }
 
         private static IChartValues GetValuesForDesigner()

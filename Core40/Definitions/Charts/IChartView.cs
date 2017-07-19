@@ -26,6 +26,7 @@ using LiveCharts.Charts;
 using LiveCharts.Definitions.Series;
 using LiveCharts.Dtos;
 using LiveCharts.Events;
+using System.Collections;
 
 namespace LiveCharts.Definitions.Charts
 {
@@ -77,14 +78,6 @@ namespace LiveCharts.Definitions.Charts
         /// </value>
         double DrawMarginLeft { get; set; }
         /// <summary>
-        /// Occurs when [data click].
-        /// </summary>
-        event DataClickHandler DataClick;
-        /// <summary>
-        /// Occurs when [data hover]
-        /// </summary>
-        event DataHoverHandler DataHover;
-        /// <summary>
         /// Gets or sets the series.
         /// </summary>
         /// <value>
@@ -99,6 +92,27 @@ namespace LiveCharts.Definitions.Charts
         /// </value>
         IEnumerable<ISeriesView> ActualSeries { get; }
         /// <summary>
+        /// Gets the colors.
+        /// </summary>
+        /// <value>
+        /// The colors.
+        /// </value>
+        IList Colors { get; }
+        /// <summary>
+        /// Gets the series colors.
+        /// </summary>
+        /// <value>
+        /// The series colors.
+        /// </value>
+        IList SeriesColors { get; }
+        /// <summary>
+        /// Gets a value indicating whether [randomize starting color].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [randomize starting color]; otherwise, <c>false</c>.
+        /// </value>
+        bool RandomizeStartingColor { get; }
+            /// <summary>
         /// Gets or sets the tooltip timeout.
         /// </summary>
         /// <value>
@@ -202,7 +216,7 @@ namespace LiveCharts.Definitions.Charts
         /// <value>
         /// <c>true</c> if this instance is control loaded; otherwise, <c>false</c>.
         /// </value>
-        bool IsControlLoaded { get; }
+        bool IsLoaded { get; }
         /// <summary>
         /// Gets a value indicating whether this instance is in design mode.
         /// </summary>
@@ -210,6 +224,14 @@ namespace LiveCharts.Definitions.Charts
         /// <c>true</c> if this instance is in design mode; otherwise, <c>false</c>.
         /// </value>
         bool IsInDesignMode { get; }
+        /// <summary>
+        /// Occurs when [data click].
+        /// </summary>
+        event DataClickHandler DataClick;
+        /// <summary>
+        /// Occurs when [data hover]
+        /// </summary>
+        event DataHoverHandler DataHover;
         /// <summary>
         /// Adds to view.
         /// </summary>

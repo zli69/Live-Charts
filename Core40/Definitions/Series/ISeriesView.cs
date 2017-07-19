@@ -36,7 +36,7 @@ namespace LiveCharts.Definitions.Series
         /// <value>
         /// The model.
         /// </value>
-        SeriesAlgorithm Model { get; set; }
+        SeriesAlgorithm Core { get; set; }
         /// <summary>
         /// Gets or sets the values.
         /// </summary>

@@ -76,8 +76,8 @@ namespace LiveCharts
             {
                 foreach (var view in newItems)
                 {
-                    view.Model.SeriesCollection = this;
-                    view.Model.Chart = Chart;
+                    view.Core.SeriesCollection = this;
+                    view.Core.Chart = Chart;
                 }
             }
 
