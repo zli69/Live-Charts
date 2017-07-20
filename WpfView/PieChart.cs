@@ -99,12 +99,12 @@ namespace LiveCharts.Wpf
 
             DataTooltip.UpdateLayout();
 
-            var y = VisualDrawMargin.ActualHeight*.5 +
-                    (sliceMidAngle > 90 && sliceMidAngle < 270 ? -1 : 0)*DataTooltip.ActualHeight -
-                    Math.Cos(alphaRad)*15;
-            var x = VisualDrawMargin.ActualWidth*.5 +
-                    (sliceMidAngle > 0 && sliceMidAngle < 180 ? -1 : 0)*DataTooltip.ActualWidth +
-                    Math.Sin(alphaRad)*15;
+            var y = ((IChartView) this).DrawMarginHeight * .5 +
+                    (sliceMidAngle > 90 && sliceMidAngle < 270 ? -1 : 0) * DataTooltip.ActualHeight -
+                    Math.Cos(alphaRad) * 15;
+            var x = ((IChartView) this).DrawMarginWidth * .5 +
+                    (sliceMidAngle > 0 && sliceMidAngle < 180 ? -1 : 0) * DataTooltip.ActualWidth +
+                    Math.Sin(alphaRad) * 15;
 
             return new Point(x, y);
         }

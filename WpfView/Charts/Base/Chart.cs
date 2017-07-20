@@ -53,19 +53,9 @@ namespace LiveCharts.Wpf.Charts.Base
     {
         #region Fields
 
-        /// <summary>
-        /// The visual canvas
-        /// </summary>
-        protected Canvas VisualCanvas;
-        /// <summary>
-        /// The visual draw margin
-        /// </summary>
-        protected Canvas VisualDrawMargin;
-        /// <summary>
-        /// The tooltip container
-        /// </summary>
-        protected Popup TooltipContainer;
-
+        private readonly Canvas _visualCanvas;
+        private readonly Canvas _visualDrawMargin;
+        private Popup _tooltipContainer;
         private readonly ChartCore _chartCoreModel;
         private readonly DispatcherTimer _tooltipTimeoutTimer;
 
@@ -101,11 +91,10 @@ namespace LiveCharts.Wpf.Charts.Base
                 _chartCoreModel = new PieChartCore(this, updater);
             }
             
-
-            VisualCanvas = new Canvas();
-            Content = VisualCanvas;
-            VisualDrawMargin = new Canvas();
-            VisualCanvas.Children.Add(VisualDrawMargin);
+            _visualCanvas = new Canvas();
+            Content = _visualCanvas;
+            _visualDrawMargin = new Canvas();
+            _visualCanvas.Children.Add(_visualDrawMargin);
 
             _tooltipTimeoutTimer = new DispatcherTimer();
             SetCurrentValue(MinHeightProperty, 50d);
@@ -144,11 +133,11 @@ namespace LiveCharts.Wpf.Charts.Base
             MouseWheel += MouseWheelOnRoll;
             _tooltipTimeoutTimer.Tick += TooltipTimeoutTimerOnTick;
 
-            VisualDrawMargin.Background = Brushes.Transparent;
-            VisualDrawMargin.MouseDown += OnDraggingStart;
-            VisualDrawMargin.MouseUp += OnDraggingEnd;
-            VisualDrawMargin.MouseMove += DragSection;
-            VisualDrawMargin.MouseMove += PanOnMouseMove;
+            _visualDrawMargin.Background = Brushes.Transparent;
+            _visualDrawMargin.MouseDown += OnDraggingStart;
+            _visualDrawMargin.MouseUp += OnDraggingEnd;
+            _visualDrawMargin.MouseMove += DragSection;
+            _visualDrawMargin.MouseMove += PanOnMouseMove;
             MouseUp += DisableSectionDragMouseUp;
 
             Unloaded += (sender, args) =>
@@ -606,9 +595,9 @@ namespace LiveCharts.Wpf.Charts.Base
                 if (DataTooltip.Parent == null)
                 {
                     Panel.SetZIndex(DataTooltip, int.MaxValue);
-                    TooltipContainer = new Popup {AllowsTransparency = true, Placement = PlacementMode.RelativePoint};
-                    ((IChartView) this).AddToView(TooltipContainer);
-                    TooltipContainer.Child = DataTooltip;
+                    _tooltipContainer = new Popup {AllowsTransparency = true, Placement = PlacementMode.RelativePoint};
+                    ((IChartView) this).AddToView(_tooltipContainer);
+                    _tooltipContainer.Child = DataTooltip;
                     Canvas.SetTop(DataTooltip, 0d);
                     Canvas.SetLeft(DataTooltip, 0d);
                 }
@@ -650,22 +639,22 @@ namespace LiveCharts.Wpf.Charts.Base
                         .ToList()
                 };
 
-                TooltipContainer.IsOpen = true;
+                _tooltipContainer.IsOpen = true;
                 DataTooltip.UpdateLayout();
 
                 var location = GetTooltipPosition(senderPoint);
-                location = new Point(Canvas.GetLeft(VisualDrawMargin) + location.X, Canvas.GetTop(VisualDrawMargin) + location.Y);
+                location = new Point(Canvas.GetLeft(_visualDrawMargin) + location.X, Canvas.GetTop(_visualDrawMargin) + location.Y);
 
                 if (DisableAnimations)
                 {
-                    TooltipContainer.VerticalOffset = location.Y;
-                    TooltipContainer.HorizontalOffset = location.X;
+                    _tooltipContainer.VerticalOffset = location.Y;
+                    _tooltipContainer.HorizontalOffset = location.X;
                 }
                 else
                 {
-                    TooltipContainer.BeginAnimation(Popup.VerticalOffsetProperty,
+                    _tooltipContainer.BeginAnimation(Popup.VerticalOffsetProperty,
                         new DoubleAnimation(location.Y, TimeSpan.FromMilliseconds(200)));
-                    TooltipContainer.BeginAnimation(Popup.HorizontalOffsetProperty,
+                    _tooltipContainer.BeginAnimation(Popup.HorizontalOffsetProperty,
                         new DoubleAnimation(location.X, TimeSpan.FromMilliseconds(200)));
                 }
             }
@@ -696,8 +685,8 @@ namespace LiveCharts.Wpf.Charts.Base
         private void TooltipTimeoutTimerOnTick(object sender, EventArgs eventArgs)
         {
             _tooltipTimeoutTimer.Stop();
-            if (TooltipContainer == null) return;
-            TooltipContainer.IsOpen = false;
+            if (_tooltipContainer == null) return;
+            _tooltipContainer.IsOpen = false;
         }
 
         private static void TooltipTimeoutCallback(DependencyObject dependencyObject,
@@ -720,8 +709,8 @@ namespace LiveCharts.Wpf.Charts.Base
             var xt = senderPoint.ChartLocation.X;
             var yt = senderPoint.ChartLocation.Y;
 
-            xt = xt > VisualDrawMargin.Width / 2 ? xt - DataTooltip.ActualWidth - 5 : xt + 5;
-            yt = yt > VisualDrawMargin.Height / 2 ? yt - DataTooltip.ActualHeight - 5 : yt + 5;
+            xt = xt > _visualDrawMargin.Width / 2 ? xt - DataTooltip.ActualWidth - 5 : xt + 5;
+            yt = yt > _visualDrawMargin.Height / 2 ? yt - DataTooltip.ActualHeight - 5 : yt + 5;
 
             return new Point(xt, yt);
         }
@@ -1076,9 +1065,9 @@ namespace LiveCharts.Wpf.Charts.Base
         private void SetClip()
         {
             if (this is IPieChart) return;
-            VisualDrawMargin.Clip = new RectangleGeometry
+            _visualDrawMargin.Clip = new RectangleGeometry
             {
-                Rect = new Rect(0, 0, VisualDrawMargin.Width, VisualDrawMargin.Height)
+                Rect = new Rect(0, 0, _visualDrawMargin.Width, _visualDrawMargin.Height)
             };
         }
 
@@ -1104,32 +1093,32 @@ namespace LiveCharts.Wpf.Charts.Base
 
         double IChartView.DrawMarginTop
         {
-            get { return Canvas.GetTop(VisualDrawMargin); }
-            set { Canvas.SetTop(VisualDrawMargin, value); }
+            get { return Canvas.GetTop(_visualDrawMargin); }
+            set { Canvas.SetTop(_visualDrawMargin, value); }
         }
 
         double IChartView.DrawMarginLeft
         {
-            get { return Canvas.GetLeft(VisualDrawMargin); }
-            set { Canvas.SetLeft(VisualDrawMargin, value); }
+            get { return Canvas.GetLeft(_visualDrawMargin); }
+            set { Canvas.SetLeft(_visualDrawMargin, value); }
         }
 
         double IChartView.DrawMarginWidth
         {
-            get { return VisualDrawMargin.Width; }
+            get { return _visualDrawMargin.Width; }
             set
             {
-                VisualDrawMargin.Width = value;
+                _visualDrawMargin.Width = value;
                 SetClip();
             }
         }
 
         double IChartView.DrawMarginHeight
         {
-            get { return VisualDrawMargin.Height; }
+            get { return _visualDrawMargin.Height; }
             set
             {
-                VisualDrawMargin.Height = value;
+                _visualDrawMargin.Height = value;
                 SetClip();
             }
         }
@@ -1221,28 +1210,28 @@ namespace LiveCharts.Wpf.Charts.Base
         {
             var wpfElement = (FrameworkElement) element;
             if (wpfElement == null) return;
-            VisualCanvas.Children.Add(wpfElement);
+            _visualCanvas.Children.Add(wpfElement);
         }
 
         void IChartView.AddToDrawMargin(object element)
         {
             var wpfElement = (FrameworkElement) element;
             if (wpfElement == null) return;
-            VisualDrawMargin.Children.Add(wpfElement);
+            _visualDrawMargin.Children.Add(wpfElement);
         }
 
         void IChartView.RemoveFromView(object element)
         {
             var wpfElement = (FrameworkElement) element;
             if (wpfElement == null) return;
-            VisualCanvas.Children.Remove(wpfElement);
+            _visualCanvas.Children.Remove(wpfElement);
         }
 
         void IChartView.RemoveFromDrawMargin(object element)
         {
             var wpfElement = (FrameworkElement) element;
             if (wpfElement == null) return;
-            VisualDrawMargin.Children.Remove(wpfElement);
+            _visualDrawMargin.Children.Remove(wpfElement);
         }
 
         void IChartView.EnsureElementBelongsToCurrentView(object element)
@@ -1273,9 +1262,9 @@ namespace LiveCharts.Wpf.Charts.Base
 
         void IChartView.HideTooltip()
         {
-            if (TooltipContainer == null) return;
+            if (_tooltipContainer == null) return;
 
-            TooltipContainer.IsOpen = false;
+            _tooltipContainer.IsOpen = false;
         }
 
         void IChartView.ShowLegend(CorePoint at)
@@ -1307,7 +1296,7 @@ namespace LiveCharts.Wpf.Charts.Base
                 return new CoreSize();
 
             if (ChartLegend.Parent == null)
-                VisualCanvas.Children.Add(ChartLegend);
+                _visualCanvas.Children.Add(ChartLegend);
 
             var l = new List<SeriesViewModel>();
 
