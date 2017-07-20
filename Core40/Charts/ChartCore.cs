@@ -658,7 +658,7 @@ namespace LiveCharts.Charts
             if (Updater == null) return;
 
             Updater.SetFrequency(freq);
-            Updater.EnqueueUpdate(true, true);
+            Updater.EnqueueUpdate(true);
         }
 
         #endregion

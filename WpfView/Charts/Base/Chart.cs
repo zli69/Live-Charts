@@ -51,10 +51,25 @@ namespace LiveCharts.Wpf.Charts.Base
     /// </summary>
     public abstract class Chart : UserControl, IChartView
     {
+        #region Fields
+
         /// <summary>
-        /// Chart core model, the model calculates the chart.
+        /// The visual canvas
         /// </summary>
-        protected ChartCore ChartCoreModel;
+        protected Canvas VisualCanvas;
+        /// <summary>
+        /// The visual draw margin
+        /// </summary>
+        protected Canvas VisualDrawMargin;
+        /// <summary>
+        /// The tooltip container
+        /// </summary>
+        protected Popup TooltipContainer;
+
+        private readonly ChartCore _chartCoreModel;
+        private readonly DispatcherTimer _tooltipTimeoutTimer;
+
+        #endregion
 
         #region Constructors
 
@@ -63,14 +78,36 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         protected Chart()
         {
+            // Initialize core according to type
+            var freq = DisableAnimations ? TimeSpan.FromMilliseconds(10) : AnimationsSpeed;
+            var updater = new Components.ChartUpdater(freq);
+            updater.Tick += () =>
+            {
+                if (UpdaterTick != null)
+                {
+                    UpdaterTick.Invoke(this);
+                }
+                if (UpdaterTickCommand != null && UpdaterTickCommand.CanExecute(this))
+                {
+                    UpdaterTickCommand.Execute(this);
+                }
+            };
+            if (this is ICartesianChart)
+            {
+                _chartCoreModel = new CartesianChartCore(this, updater);
+            }
+            else if (this is IPieChart)
+            {
+                _chartCoreModel = new PieChartCore(this, updater);
+            }
+            
+
             VisualCanvas = new Canvas();
             Content = VisualCanvas;
             VisualDrawMargin = new Canvas();
             VisualCanvas.Children.Add(VisualDrawMargin);
 
-            IsTabStop = false;
-
-            TooltipTimeoutTimer = new DispatcherTimer();
+            _tooltipTimeoutTimer = new DispatcherTimer();
             SetCurrentValue(MinHeightProperty, 50d);
             SetCurrentValue(MinWidthProperty, 80d);
             SetCurrentValue(AnimationsSpeedProperty, TimeSpan.FromMilliseconds(300));
@@ -105,7 +142,7 @@ namespace LiveCharts.Wpf.Charts.Base
                 Core.Updater.EnqueueUpdate();
             };
             MouseWheel += MouseWheelOnRoll;
-            TooltipTimeoutTimer.Tick += TooltipTimeoutTimerOnTick;
+            _tooltipTimeoutTimer.Tick += TooltipTimeoutTimerOnTick;
 
             VisualDrawMargin.Background = Brushes.Transparent;
             VisualDrawMargin.MouseDown += OnDraggingStart;
@@ -120,14 +157,9 @@ namespace LiveCharts.Wpf.Charts.Base
             };
         }
 
-        #endregion
+        #endregion     
 
-        /// <summary>
-        /// Gets or sets the chart current canvas
-        /// </summary>
-        protected Canvas VisualCanvas { get; set; }
-        internal Canvas VisualDrawMargin { get; set; }
-        internal Popup TooltipContainer { get; set; }
+        #region Properties
 
         /// <summary>
         /// Gets or sets whether charts must randomize the starting default series color.
@@ -138,8 +170,6 @@ namespace LiveCharts.Wpf.Charts.Base
         /// Gets or sets the application level default series color list
         /// </summary>
         public static List<Color> Colors { get; set; }
-
-        #region Properties
 
         /// <summary>
         /// The series colors property
@@ -511,12 +541,6 @@ namespace LiveCharts.Wpf.Charts.Base
             set { SetValue(UpdaterTickCommandProperty, value); }
         }
 
-        #endregion
-
-        #region Tooltip and legend
-
-        internal DispatcherTimer TooltipTimeoutTimer { get; set; }
-
         /// <summary>
         /// The tooltip timeout property
         /// </summary>
@@ -529,18 +553,13 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public TimeSpan TooltipTimeout
         {
-            get { return (TimeSpan) GetValue(TooltipTimeoutProperty); }
+            get { return (TimeSpan)GetValue(TooltipTimeoutProperty); }
             set { SetValue(TooltipTimeoutProperty, value); }
         }
 
-        /// <summary>
-        /// Called when [updater tick].
-        /// </summary>
-        protected void OnUpdaterTick()
-        {
-            if (UpdaterTick != null) UpdaterTick.Invoke(this);
-            if (UpdaterTickCommand != null && UpdaterTickCommand.CanExecute(this)) UpdaterTickCommand.Execute(this);
-        }
+        #endregion
+
+        #region Tooltip and legend
 
         internal void AttachHoverableEventTo(FrameworkElement element)
         {
@@ -572,7 +591,7 @@ namespace LiveCharts.Wpf.Charts.Base
 
         private void DataMouseEnter(object sender, EventArgs e)
         {
-            TooltipTimeoutTimer.Stop();
+            _tooltipTimeoutTimer.Stop();
 
             var source = ((IChartView)this).ActualSeries.SelectMany(x => x.ActualValues.GetPoints(x)).ToList();
             var senderPoint = source.FirstOrDefault(x => x.View != null &&
@@ -662,8 +681,8 @@ namespace LiveCharts.Wpf.Charts.Base
 
         private void DataMouseLeave(object sender, EventArgs e)
         {
-            TooltipTimeoutTimer.Stop();
-            TooltipTimeoutTimer.Start();
+            _tooltipTimeoutTimer.Stop();
+            _tooltipTimeoutTimer.Start();
 
             var source = ((IChartView)this).ActualSeries.SelectMany(x => x.ActualValues.GetPoints(x));
             var senderPoint = source.FirstOrDefault(x => x.View != null &&
@@ -676,7 +695,7 @@ namespace LiveCharts.Wpf.Charts.Base
 
         private void TooltipTimeoutTimerOnTick(object sender, EventArgs eventArgs)
         {
-            TooltipTimeoutTimer.Stop();
+            _tooltipTimeoutTimer.Stop();
             if (TooltipContainer == null) return;
             TooltipContainer.IsOpen = false;
         }
@@ -688,7 +707,7 @@ namespace LiveCharts.Wpf.Charts.Base
 
             if (chart == null) return;
 
-            chart.TooltipTimeoutTimer.Interval = chart.TooltipTimeout;
+            chart._tooltipTimeoutTimer.Interval = chart.TooltipTimeout;
         }
 
         /// <summary>
@@ -985,8 +1004,8 @@ namespace LiveCharts.Wpf.Charts.Base
         }
 
         #endregion
-
-        #region Property changed call backs
+        
+        #region Callbacks
 
         /// <summary>
         /// Enqueues the update in the chart Updater
@@ -1037,6 +1056,23 @@ namespace LiveCharts.Wpf.Charts.Base
 
         #endregion
 
+        #region Public Methods
+
+        /// <summary>
+        /// Forces the chart to update
+        /// </summary>
+        /// <param name="restartView">Indicates whether the update should restart the view, animations will run again if true.</param>
+        /// <param name="force">Force the updater to run when called, without waiting for the next updater step.</param>
+        public void Update(bool restartView = false, bool force = false)
+        {
+            if (Core != null)
+            {
+                Core.Updater.EnqueueUpdate(restartView, force);
+            }
+        }
+
+        #endregion
+
         private void SetClip()
         {
             if (this is IPieChart) return;
@@ -1046,15 +1082,7 @@ namespace LiveCharts.Wpf.Charts.Base
             };
         }
 
-        /// <summary>
-        /// Forces the chart to update
-        /// </summary>
-        /// <param name="restartView">Indicates whether the update should restart the view, animations will run again if true.</param>
-        /// <param name="force">Force the updater to run when called, without waiting for the next updater step.</param>
-        public void Update(bool restartView = false, bool force = false)
-        {
-            if (Core != null) Core.Updater.EnqueueUpdate(restartView, force);
-        }
+        
 
         #region IChartView implementation
 
@@ -1066,7 +1094,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </value>
         public ChartCore Core
         {
-            get { return ChartCoreModel; }
+            get { return _chartCoreModel; }
         }
 
         CoreSize IChartView.ControlSize
