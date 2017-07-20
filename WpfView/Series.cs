@@ -563,7 +563,7 @@ namespace LiveCharts.Wpf
                 if (wpfSeries == null) return;
                 if (wpfSeries.Core == null) return;
 
-                if (wpfSeries.Core.Chart != null) wpfSeries.Core.Chart.Updater.QueueUpdate(animate);
+                if (wpfSeries.Core.Chart != null) wpfSeries.Core.Chart.Updater.EnqueueUpdate(animate);
             };
         }
         
@@ -575,7 +575,7 @@ namespace LiveCharts.Wpf
                 series.Erase(false);
 
             if (series.Core == null) return;
-            series.Core.Chart.Updater.QueueUpdate();
+            series.Core.Chart.Updater.EnqueueUpdate();
         }
 
         private static IChartValues GetValuesForDesigner()

@@ -330,12 +330,12 @@ namespace LiveCharts
 
         private void ObservableOnPointChanged()
         {
-            Trackers.Keys.ForEach(x => x.Core.Chart.Updater.QueueUpdate());
+            Trackers.Keys.ForEach(x => x.Core.Chart.Updater.EnqueueUpdate());
         }
 
         private void NotifyOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
-            Trackers.Keys.ForEach(x => x.Core.Chart.Updater.QueueUpdate());
+            Trackers.Keys.ForEach(x => x.Core.Chart.Updater.EnqueueUpdate());
         }
 
         private IEnumerable<ChartPoint> GetGarbagePoints(ISeriesView view)
@@ -367,7 +367,7 @@ namespace LiveCharts
         private void OnChanged(IEnumerable<T> oldItems, IEnumerable<T> newItems)
         {
             if (Trackers.Keys.All(x => x != null && x.Core.Chart != null))
-                Trackers.Keys.ForEach(x => x.Core.Chart.Updater.QueueUpdate());
+                Trackers.Keys.ForEach(x => x.Core.Chart.Updater.EnqueueUpdate());
         }
 
         #endregion

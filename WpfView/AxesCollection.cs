@@ -21,48 +21,11 @@
 //SOFTWARE.
 
 using System.Collections.Generic;
+using LiveCharts.Definitions.Charts;
 using LiveCharts.Helpers;
 using LiveCharts.Wpf.Charts.Base;
 
-namespace LiveCharts.Wpf
+namespace LiveCharts
 {
-    /// <summary>
-    /// Stores a collection of axis.
-    /// </summary>
-    public class AxesCollection : NoisyCollection<Axis>
-    {
-        /// <summary>
-        /// Initializes a new instance of AxisCollection class
-        /// </summary>
-        public AxesCollection()
-        {
-            NoisyCollectionChanged += OnNoisyCollectionChanged;
-        }
-
-        /// <summary>
-        /// Gets the chart that owns the series.
-        /// </summary>
-        /// <value>
-        /// The chart.
-        /// </value>
-        public Chart Chart { get; internal set; }
-
-        private void OnNoisyCollectionChanged(IEnumerable<Axis> oldItems, IEnumerable<Axis> newItems)
-        {
-            if(Chart != null && Chart.Core != null)
-                Chart.Core.Updater.QueueUpdate();
-
-            if (oldItems == null) return;
-
-            foreach (var oldAxis in oldItems)
-            {
-                oldAxis.Clean();
-                if (oldAxis.Model == null) continue;
-                var chart = oldAxis.Model.Chart.View;
-                if (chart == null) continue;
-                chart.RemoveFromView(oldAxis);
-                chart.RemoveFromView(oldAxis.Separator);
-            }
-        }
-    }
+    
 }

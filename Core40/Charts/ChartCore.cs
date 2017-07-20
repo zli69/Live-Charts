@@ -34,6 +34,14 @@ namespace LiveCharts.Charts
     /// </summary>
     public abstract class ChartCore
     {
+        #region Fields 
+
+        private AxesCollection _previousXAxis;
+        private AxesCollection _previousYAxis;
+        private SeriesCollection _previousSeriesCollection;
+
+        #endregion
+
         #region Constructors
 
         /// <summary>
@@ -585,6 +593,72 @@ namespace LiveCharts.Charts
 
             var r = View.RandomizeStartingColor ? Randomizer.Next(0, View.Colors.Count) : 0;
             return View.Colors[(i + r) % View.Colors.Count];
+        }
+
+        /// <summary>
+        /// Notifies the series collection changed.
+        /// </summary>
+        public void NotifySeriesCollectionChanged()
+        {
+            if (View.Series != null)
+            {
+                View.Series.Chart = this;
+                foreach (var series in View.Series)
+                {
+                    series.Core.Chart = View.Core;
+                }
+            }
+
+            if (_previousSeriesCollection != null)
+            {
+                foreach (var series in _previousSeriesCollection)
+                {
+                    series.Erase(true);
+                }
+            }
+
+            Updater.EnqueueUpdate();
+            _previousSeriesCollection = View.Series;
+        }
+
+        /// <summary>
+        /// Notifies the axis instance changed.
+        /// </summary>
+        public void NotifyAxisInstanceChanged(AxisOrientation orientation)
+        {
+            var ax = orientation == AxisOrientation.X ? _previousXAxis : _previousYAxis;
+
+            if (ax != null)
+            {
+                foreach (var axis in ax)
+                {
+                    axis.Clean();
+                }
+            }
+
+            if (orientation == AxisOrientation.X)
+            {
+                _previousXAxis = View.AxisX;
+            }
+            else
+            {
+                _previousYAxis = View.AxisY;
+            }
+
+            Updater.EnqueueUpdate();
+        }
+
+        /// <summary>
+        /// Notifies the updater frequency changed.
+        /// </summary>
+        public void NotifyUpdaterFrequencyChanged()
+        {
+            var freq = View.DisableAnimations ? TimeSpan.FromMilliseconds(10) : View.AnimationsSpeed;
+
+            if (Updater == null) return;
+
+            Updater.SetFrequency(freq);
+            Updater.EnqueueUpdate(true, true);
         }
 
         #endregion

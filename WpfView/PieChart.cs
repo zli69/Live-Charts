@@ -50,7 +50,7 @@ namespace LiveCharts.Wpf
         /// The inner radius property
         /// </summary>
         public static readonly DependencyProperty InnerRadiusProperty = DependencyProperty.Register(
-            "InnerRadius", typeof (double), typeof (PieChart), new PropertyMetadata(0d, CallChartUpdater()));
+            "InnerRadius", typeof (double), typeof (PieChart), new PropertyMetadata(0d, EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets the pie inner radius, increasing this property will result in a doughnut chart.
         /// </summary>
@@ -64,7 +64,7 @@ namespace LiveCharts.Wpf
         /// The starting rotation angle property
         /// </summary>
         public static readonly DependencyProperty StartingRotationAngleProperty = DependencyProperty.Register(
-            "StartingRotationAngle", typeof (double), typeof (PieChart), new PropertyMetadata(45d, CallChartUpdater()));
+            "StartingRotationAngle", typeof (double), typeof (PieChart), new PropertyMetadata(45d, EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets the starting rotation angle in degrees.
         /// </summary>

@@ -89,7 +89,7 @@ namespace LiveCharts
                 }
             }
            
-            if (Chart != null) Chart.Updater.QueueUpdate();
+            if (Chart != null) Chart.Updater.EnqueueUpdate();
         }
 
         private void OnCollectionReset()

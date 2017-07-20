@@ -52,7 +52,7 @@ namespace LiveCharts
         /// <param name="restartView">if set to <c>true</c> [restart view].</param>
         /// <param name="updateNow">if set to <c>true</c> [update now].</param>
         /// <exception cref="System.NotImplementedException"></exception>
-        public virtual void QueueUpdate(bool restartView = false, bool updateNow = false)   
+        public virtual void EnqueueUpdate(bool restartView = false, bool updateNow = false)   
         {
             throw new NotImplementedException();
         }

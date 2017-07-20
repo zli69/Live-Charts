@@ -42,6 +42,7 @@ namespace LiveCharts.Wpf
             var freq = DisableAnimations ? TimeSpan.FromMilliseconds(10) : AnimationsSpeed;
             var updater = new Components.ChartUpdater(freq);
             ChartCoreModel = new CartesianChartCore(this, updater);
+            updater.Tick += OnUpdaterTick;
 
             SetCurrentValue(SeriesProperty,
                 DesignerProperties.GetIsInDesignMode(this)

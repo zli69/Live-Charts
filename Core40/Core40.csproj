@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AxesCollection.cs" />
     <Compile Include="AxisCore.cs" />
     <Compile Include="AxisOrientation.cs" />
     <Compile Include="AxisPosition.cs" />

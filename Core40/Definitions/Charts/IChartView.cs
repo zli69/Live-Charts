@@ -174,14 +174,14 @@ namespace LiveCharts.Definitions.Charts
         /// <value>
         /// The axis x.
         /// </value>
-        IList<IAxisView> AxisX { get; }
+        AxesCollection AxisX { get; }
         /// <summary>
         /// Gets or sets the axis y.
         /// </summary>
         /// <value>
         /// The axis y.
         /// </value>
-        IList<IAxisView> AxisY { get; }
+        AxesCollection AxisY { get; }
         /// <summary>
         /// Gets a value indicating whether this instance has tooltip.
         /// </summary>

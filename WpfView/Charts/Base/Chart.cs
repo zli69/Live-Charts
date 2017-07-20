@@ -97,12 +97,12 @@ namespace LiveCharts.Wpf.Charts.Base
             SizeChanged += (sender, args) =>
             {
                 SetClip();
-                Core.Updater.QueueUpdate();
+                Core.Updater.EnqueueUpdate();
             };
             IsVisibleChanged += (sender, args) =>
             {
                 PrepareScrolBar();
-                Core.Updater.QueueUpdate();
+                Core.Updater.EnqueueUpdate();
             };
             MouseWheel += MouseWheelOnRoll;
             TooltipTimeoutTimer.Tick += TooltipTimeoutTimerOnTick;
@@ -122,17 +122,10 @@ namespace LiveCharts.Wpf.Charts.Base
 
         #endregion
 
-        #region Properties
-
-        private AxesCollection PreviousXAxis { get; set; }
-        private AxesCollection PreviousYAxis { get; set; }
-        private SeriesCollection LastKnownSeriesCollection { get; set; }
-
         /// <summary>
         /// Gets or sets the chart current canvas
         /// </summary>
         protected Canvas VisualCanvas { get; set; }
-
         internal Canvas VisualDrawMargin { get; set; }
         internal Popup TooltipContainer { get; set; }
 
@@ -145,6 +138,8 @@ namespace LiveCharts.Wpf.Charts.Base
         /// Gets or sets the application level default series color list
         /// </summary>
         public static List<Color> Colors { get; set; }
+
+        #region Properties
 
         /// <summary>
         /// The series colors property
@@ -166,7 +161,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public static readonly DependencyProperty AxisYProperty = DependencyProperty.Register(
             "AxisY", typeof(AxesCollection), typeof(Chart),
-            new PropertyMetadata(null, AxisInstancechanged(AxisOrientation.Y)));
+            new PropertyMetadata(null, OnAxisInstanceChanged(AxisOrientation.Y)));
 
         /// <summary>
         /// Gets or sets vertical axis
@@ -182,7 +177,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public static readonly DependencyProperty AxisXProperty = DependencyProperty.Register(
             "AxisX", typeof(AxesCollection), typeof(Chart),
-            new PropertyMetadata(null, AxisInstancechanged(AxisOrientation.X)));
+            new PropertyMetadata(null, OnAxisInstanceChanged(AxisOrientation.X)));
 
         /// <summary>
         /// Gets or sets horizontal axis
@@ -198,7 +193,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public static readonly DependencyProperty ChartLegendProperty = DependencyProperty.Register(
             "ChartLegend", typeof(UserControl), typeof(Chart),
-            new PropertyMetadata(null, CallChartUpdater()));
+            new PropertyMetadata(null, EnqueueUpdateCallback));
 
         /// <summary>
         /// Gets or sets the control to use as chart legend for this chart.
@@ -248,7 +243,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public static readonly DependencyProperty LegendLocationProperty = DependencyProperty.Register(
             "LegendLocation", typeof(LegendLocation), typeof(Chart),
-            new PropertyMetadata(LegendLocation.None, CallChartUpdater()));
+            new PropertyMetadata(LegendLocation.None, EnqueueUpdateCallback));
 
         /// <summary>
         /// Gets or sets where legend is located
@@ -280,7 +275,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public static readonly DependencyProperty AnimationsSpeedProperty = DependencyProperty.Register(
             "AnimationsSpeed", typeof(TimeSpan), typeof(Chart),
-            new PropertyMetadata(default(TimeSpan), UpdateChartFrequency));
+            new PropertyMetadata(default(TimeSpan), UpdateChartFrequencyCallback));
 
         /// <summary>
         /// Gets or sets the default animation speed for this chart, you can override this speed for each element (series and axes)
@@ -296,7 +291,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public static readonly DependencyProperty DisableAnimationsProperty = DependencyProperty.Register(
             "DisableAnimations", typeof(bool), typeof(Chart),
-            new PropertyMetadata(default(bool), UpdateChartFrequency));
+            new PropertyMetadata(default(bool), UpdateChartFrequencyCallback));
 
         /// <summary>
         /// Gets or sets if the chart is animated or not.
@@ -451,7 +446,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         public static readonly DependencyProperty UpdaterStateProperty = DependencyProperty.Register(
             "UpdaterState", typeof(UpdaterState), typeof(Chart),
-            new PropertyMetadata(default(UpdaterState), CallChartUpdater()));
+            new PropertyMetadata(default(UpdaterState), EnqueueUpdateCallback));
 
         /// <summary>
         /// Gets or sets chart's updater state
@@ -518,38 +513,6 @@ namespace LiveCharts.Wpf.Charts.Base
 
         #endregion
 
-        #region Private and internal methods
-
-        private static void OnSeriesChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-        {
-            var chart = (Chart) o;
-
-            if (chart.Series != null)
-            {
-                chart.Series.Chart = chart.Core;
-                foreach (var series in chart.Series) series.Core.Chart = chart.Core;
-            }
-
-            if (chart.LastKnownSeriesCollection != chart.Series && chart.LastKnownSeriesCollection != null)
-            {
-                foreach (var series in chart.LastKnownSeriesCollection)
-                {
-                    series.Erase(true);
-                }
-            }
-
-            CallChartUpdater()(o, e);
-            chart.LastKnownSeriesCollection = chart.Series;
-        }
-
-        internal void ChartUpdated()
-        {
-            if (UpdaterTick != null) UpdaterTick.Invoke(this);
-            if (UpdaterTickCommand != null && UpdaterTickCommand.CanExecute(this)) UpdaterTickCommand.Execute(this);
-        }
-
-        #endregion
-
         #region Tooltip and legend
 
         internal DispatcherTimer TooltipTimeoutTimer { get; set; }
@@ -568,6 +531,15 @@ namespace LiveCharts.Wpf.Charts.Base
         {
             get { return (TimeSpan) GetValue(TooltipTimeoutProperty); }
             set { SetValue(TooltipTimeoutProperty, value); }
+        }
+
+        /// <summary>
+        /// Called when [updater tick].
+        /// </summary>
+        protected void OnUpdaterTick()
+        {
+            if (UpdaterTick != null) UpdaterTick.Invoke(this);
+            if (UpdaterTickCommand != null && UpdaterTickCommand.CanExecute(this)) UpdaterTickCommand.Execute(this);
         }
 
         internal void AttachHoverableEventTo(FrameworkElement element)
@@ -1017,59 +989,49 @@ namespace LiveCharts.Wpf.Charts.Base
         #region Property changed call backs
 
         /// <summary>
-        /// Calls the chart updater
+        /// Enqueues the update in the chart Updater
         /// </summary>
-        /// <param name="animate">if true, the series view will be removed and added again, this restarts animations also.</param>
-        /// <param name="updateNow">forces the updater to run as this function is called.</param>
         /// <returns></returns>
-        protected static PropertyChangedCallback CallChartUpdater(bool animate = false, bool updateNow = false)
+        protected static void EnqueueUpdateCallback(
+            DependencyObject dependencyObject, 
+            DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
         {
-            return (o, args) =>
-            {
-                var wpfChart = o as Chart;
-                if (wpfChart == null) return;
-                if (wpfChart.Core != null) wpfChart.Core.Updater.QueueUpdate(animate, updateNow);
-            };
+            var wpfChart = dependencyObject as Chart;
+            if (wpfChart == null) return;
+            if (wpfChart.Core != null) wpfChart.Core.Updater.EnqueueUpdate();
+
         }
 
-        private static void UpdateChartFrequency(DependencyObject o, DependencyPropertyChangedEventArgs e)
+        private static void OnSeriesChanged(DependencyObject dependencyObject,
+            DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
         {
-            var wpfChart = (Chart) o;
+            var chart = (Chart)dependencyObject;
 
-            var freq = wpfChart.DisableAnimations ? TimeSpan.FromMilliseconds(10) : wpfChart.AnimationsSpeed;
-
-            if (wpfChart.Core == null || wpfChart.Core.Updater == null) return;
-
-            wpfChart.Core.Updater.SetFrequency(freq);
-
-            CallChartUpdater(true)(o, e);
+            chart.Core.NotifySeriesCollectionChanged();
         }
 
-        private static PropertyChangedCallback AxisInstancechanged(AxisOrientation orientation)
+        private static void UpdateChartFrequencyCallback(
+            DependencyObject dependencyObject, 
+            DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
         {
-            return (o, a) =>
+            var chart = (Chart) dependencyObject;
+
+            if (chart.Core != null)
             {
-                var chart = (Chart) o;
+                chart.Core.NotifyUpdaterFrequencyChanged();
+            }
+        }
 
-                var ax = orientation == AxisOrientation.X ? chart.PreviousXAxis : chart.PreviousYAxis;
+        private static PropertyChangedCallback OnAxisInstanceChanged(AxisOrientation orientation)
+        {
+            return (dependencyObject, dependencyPropertyChangedEventArgs) =>
+            {
+                var chart = (Chart) dependencyObject;
 
-                if (ax != null)
+                if (chart.Core != null)
                 {
-                    foreach (var axis in ax)
-                    {
-                        axis.Clean();
-                    }
+                    chart.Core.NotifyAxisInstanceChanged(orientation);
                 }
-
-                if (orientation == AxisOrientation.X)
-                {
-                    chart.PreviousXAxis = chart.AxisX;
-                }
-                else
-                {
-                    chart.PreviousYAxis = chart.AxisY;
-                }
-                CallChartUpdater()(o, a);
             };
         }
 
@@ -1091,7 +1053,7 @@ namespace LiveCharts.Wpf.Charts.Base
         /// <param name="force">Force the updater to run when called, without waiting for the next updater step.</param>
         public void Update(bool restartView = false, bool force = false)
         {
-            if (Core != null) Core.Updater.QueueUpdate(restartView, force);
+            if (Core != null) Core.Updater.EnqueueUpdate(restartView, force);
         }
 
         #region IChartView implementation
@@ -1180,14 +1142,14 @@ namespace LiveCharts.Wpf.Charts.Base
 
         UpdaterState IChartView.UpdaterState { get { return UpdaterState; } }
 
-        IList<IAxisView> IChartView.AxisX
+        AxesCollection IChartView.AxisX
         {
-            get { return AxisX.Cast<IAxisView>().ToArray(); }
+            get { return AxisX; }
         }
 
-        IList<IAxisView> IChartView.AxisY
+        AxesCollection IChartView.AxisY
         {
-            get { return AxisY.Cast<IAxisView>().ToArray(); }
+            get { return AxisY; }
         }
 
         bool IChartView.HasTooltip
@@ -1274,8 +1236,8 @@ namespace LiveCharts.Wpf.Charts.Base
 
         void IChartView.SetParentsTree()
         {
-            AxisX.Chart = this;
-            AxisY.Chart = this;
+            AxisX.Chart = Core;
+            AxisY.Chart = Core;
 
             foreach (var ax in AxisX) ax.Model.Chart = Core;
             foreach (var ay in AxisY) ay.Model.Chart = Core;

@@ -43,6 +43,10 @@ namespace LiveCharts.Wpf.Components
             Freq = frequency;
         }
 
+        /// <summary>
+        /// Occurs when the updater ticks.
+        /// </summary>
+        public event Action Tick;
         private DispatcherTimer Timer { get; set; }
         private bool RequiresRestart { get; set; }
         private TimeSpan Freq { get; set; }
@@ -52,7 +56,7 @@ namespace LiveCharts.Wpf.Components
         /// </summary>
         /// <param name="restartView">if set to <c>true</c> [restart view].</param>
         /// <param name="updateNow">if set to <c>true</c> [update now].</param>
-        public override void QueueUpdate(bool restartView = false, bool updateNow = false)
+        public override void EnqueueUpdate(bool restartView = false, bool updateNow = false)
         {
             if (Timer == null)
             {
@@ -112,7 +116,7 @@ namespace LiveCharts.Wpf.Components
 
             RequiresRestart = false;
 
-            wpfChart.ChartUpdated();
+            if (Tick != null) Tick.Invoke();
             wpfChart.PrepareScrolBar();
         }
     }
