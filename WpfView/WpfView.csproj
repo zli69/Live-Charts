@@ -93,7 +93,6 @@
     <Compile Include="Points\CandlePointView.cs" />
     <Compile Include="Points\StepLinePointView.cs" />
     <Compile Include="SectionsCollection.cs" />
-    <Compile Include="AxesCollection.cs" />
     <Compile Include="Axis.cs" />
     <Compile Include="AxisSection.cs" />
     <Compile Include="Gauge.cs" />
