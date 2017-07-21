@@ -264,10 +264,7 @@ namespace LiveCharts.Wpf
                 };
 
                 Panel.SetZIndex(pbv.HoverShape, int.MaxValue);
-
-                var wpfChart = (Chart)Core.Chart.View;
-                wpfChart.AttachHoverableEventTo(pbv.HoverShape);
-
+                Core.Chart.View.EnableHoveringFor(pbv.HoverShape);
                 Core.Chart.View.AddToDrawMargin(pbv.HoverShape);
             }
 

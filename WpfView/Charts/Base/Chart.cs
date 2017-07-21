@@ -68,7 +68,6 @@ namespace LiveCharts.Wpf.Charts.Base
         /// </summary>
         protected Chart()
         {
-            // Initialize core according to type
             var freq = DisableAnimations ? TimeSpan.FromMilliseconds(10) : AnimationsSpeed;
             var updater = new Components.ChartUpdater(freq);
             updater.Tick += () =>
@@ -82,6 +81,7 @@ namespace LiveCharts.Wpf.Charts.Base
                     UpdaterTickCommand.Execute(this);
                 }
             };
+
             if (this is ICartesianChart)
             {
                 _chartCoreModel = new CartesianChartCore(this, updater);
@@ -89,6 +89,10 @@ namespace LiveCharts.Wpf.Charts.Base
             else if (this is IPieChart)
             {
                 _chartCoreModel = new PieChartCore(this, updater);
+            }
+            else
+            {
+                throw new NotImplementedException();
             }
             
             _visualCanvas = new Canvas();
@@ -549,18 +553,7 @@ namespace LiveCharts.Wpf.Charts.Base
         #endregion
 
         #region Tooltip and legend
-
-        internal void AttachHoverableEventTo(FrameworkElement element)
-        {
-            element.MouseDown -= DataMouseDown;
-            element.MouseEnter -= DataMouseEnter;
-            element.MouseLeave -= DataMouseLeave;
-
-            element.MouseDown += DataMouseDown;
-            element.MouseEnter += DataMouseEnter;
-            element.MouseLeave += DataMouseLeave;
-        }
-
+        
         private void DataMouseDown(object sender, MouseEventArgs e)
         {
             var result = ((IChartView) this).ActualSeries.SelectMany(x => x.ActualValues.GetPoints(x))
@@ -569,14 +562,11 @@ namespace LiveCharts.Wpf.Charts.Base
                     var pointView = x.View as PointView;
                     return pointView != null && Equals(pointView.HoverShape, sender);
                 });
-            OnDataClick(sender, result);
+
+            if (DataClick != null) DataClick.Invoke(sender, result);
+            if (DataClickCommand != null && DataClickCommand.CanExecute(result)) DataClickCommand.Execute(result);
         }
 
-        internal void OnDataClick(object sender, ChartPoint point)
-        {
-            if (DataClick != null) DataClick.Invoke(sender, point);
-            if (DataClickCommand != null && DataClickCommand.CanExecute(point)) DataClickCommand.Execute(point);
-        }
 
         private void DataMouseEnter(object sender, EventArgs e)
         {
@@ -1249,6 +1239,19 @@ namespace LiveCharts.Wpf.Charts.Base
             var p = (Canvas) wpfElement.Parent;
             if (p != null) p.Children.Remove(wpfElement);
             ((IChartView) this).AddToDrawMargin(wpfElement);
+        }
+
+        void IChartView.EnableHoveringFor(object target)
+        {
+            var frameworkElement = (FrameworkElement) target;
+
+            frameworkElement.MouseDown -= DataMouseDown;
+            frameworkElement.MouseEnter -= DataMouseEnter;
+            frameworkElement.MouseLeave -= DataMouseLeave;
+
+            frameworkElement.MouseDown += DataMouseDown;
+            frameworkElement.MouseEnter += DataMouseEnter;
+            frameworkElement.MouseLeave += DataMouseLeave;
         }
 
         void IChartView.SetParentsTree()

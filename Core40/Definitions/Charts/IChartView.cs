@@ -263,6 +263,11 @@ namespace LiveCharts.Definitions.Charts
         /// <param name="element">The element.</param>
         void EnsureElementBelongsToCurrentDrawMargin(object element);
         /// <summary>
+        /// Enables the hovering for.
+        /// </summary>
+        /// <param name="target">The target.</param>
+        void EnableHoveringFor(object target);
+        /// <summary>
         /// Sets the parents.
         /// </summary>
         void SetParentsTree();
