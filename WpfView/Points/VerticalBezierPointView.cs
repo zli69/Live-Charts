@@ -35,8 +35,8 @@ namespace LiveCharts.Wpf.Points
         {
             var previosPbv = previousDrawn == null ? null : (VerticalBezierPointView) previousDrawn.View;
 
-            Container.Segments.Remove(Segment);
-            Container.Segments.Insert(index, Segment);
+            ShadowContainer.Segments.Remove(Segment);
+            ShadowContainer.Segments.Insert(index, Segment);
 
             ValidArea = new CoreRectangle(current.ChartLocation.X - 7.5, current.ChartLocation.Y - 7.5, 15, 15);
 

@@ -21,18 +21,21 @@
 //SOFTWARE.
 
 using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace LiveCharts.Wpf
 {
-    internal class LineSegmentSplitter
+    internal class LineSeriesPathHelper
     {
-        public LineSegmentSplitter()
+        public LineSeriesPathHelper()
         {
-            Bottom = new LineSegment { IsStroked = false };
-            Left = new LineSegment { IsStroked = false };
-            Right = new LineSegment { IsStroked = false };
+            Bottom = new LineSegment ();
+            Left = new LineSegment ();
+            Right = new LineSegment ();
         }
 
+        public PathFigure LineFigure { get; set; }
+        public PathFigure ShadowFigure { get; set; }
         public LineSegment Bottom { get; private set; }
         public LineSegment Left { get; private set; }
         public LineSegment Right { get; private set; }

@@ -22,7 +22,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -33,7 +32,6 @@ using LiveCharts.Definitions.Series;
 using LiveCharts.Dtos;
 using LiveCharts.Helpers;
 using LiveCharts.SeriesAlgorithms;
-using LiveCharts.Wpf.Charts.Base;
 using LiveCharts.Wpf.Components;
 using LiveCharts.Wpf.Points;
 
@@ -68,12 +66,7 @@ namespace LiveCharts.Wpf
         #endregion
 
         #region Private Properties
-        /// <summary>
-        /// Gets or sets the figure.
-        /// </summary>
-        /// <value>
-        /// The figure.
-        /// </value>
+
         protected PathFigure Figure { get; set; }
         internal Path Path { get; set; }
         /// <summary>
@@ -83,7 +76,7 @@ namespace LiveCharts.Wpf
         /// <c>true</c> if this instance is path initialized; otherwise, <c>false</c>.
         /// </value>
         protected bool IsPathInitialized { get; set; }
-        internal List<LineSegmentSplitter> Splitters { get; set; }
+        internal List<LineSeriesPathHelper> Splitters { get; set; }
         /// <summary>
         /// Gets or sets the active splitters.
         /// </summary>
@@ -105,6 +98,7 @@ namespace LiveCharts.Wpf
         ///   <c>true</c> if this instance is new; otherwise, <c>false</c>.
         /// </value>
         protected bool IsNew { get; set; }
+
         #endregion
 
         #region Properties
@@ -185,40 +179,6 @@ namespace LiveCharts.Wpf
                 Splitters.ForEach(s => s.SplitterCollectorIndex = 0);
                 SplittersCollector = 0;
             }
-
-            SplittersCollector++;
-
-            if (IsPathInitialized)
-            {
-                Core.Chart.View.EnsureElementBelongsToCurrentDrawMargin(Path);
-                Path.Stroke = Stroke;
-                Path.StrokeThickness = StrokeThickness;
-                Path.Fill = Fill;
-                Path.Visibility = Visibility;
-                Path.StrokeDashArray = StrokeDashArray;
-                Panel.SetZIndex(Path, Panel.GetZIndex(this));
-                return;
-            }
-
-            IsPathInitialized = true;
-
-            Path = new Path
-            {
-                Stroke = Stroke,
-                StrokeThickness = StrokeThickness,
-                Fill = Fill,
-                Visibility = Visibility,
-                StrokeDashArray = StrokeDashArray
-            };
-
-            Panel.SetZIndex(Path, Panel.GetZIndex(this));
-      
-            var geometry = new PathGeometry();
-            Figure = new PathFigure();
-            geometry.Figures.Add(Figure);
-            Path.Data = geometry;
-            
-            Core.Chart.View.EnsureElementBelongsToCurrentDrawMargin(Path);
         }
 
         /// <summary>
@@ -238,7 +198,8 @@ namespace LiveCharts.Wpf
                 pbv = new HorizontalBezierPointView
                 {
                     Segment = new BezierSegment(),
-                    Container = Figure,
+                    ShadowContainer = Splitters[ActiveSplitters].ShadowFigure,
+                    LineContainer = Splitters[ActiveSplitters].LineFigure,
                     IsNew = true
                 };
             }
@@ -324,14 +285,14 @@ namespace LiveCharts.Wpf
         {
             base.OnSeriesUpdatedFinish();
 
-            foreach (var inactive in Splitters
-                .Where(s => s.SplitterCollectorIndex < SplittersCollector).ToList())
-            {
-                Figure.Segments.Remove(inactive.Left);
-                Figure.Segments.Remove(inactive.Bottom);
-                Figure.Segments.Remove(inactive.Right);
-                Splitters.Remove(inactive);
-            }
+            //foreach (var inactive in Splitters
+            //    .Where(s => s.SplitterCollectorIndex < SplittersCollector).ToList())
+            //{
+            //    ((PathGeometry)Path.Data).Figures[0].Segments.Remove(inactive.Left);
+            //    ((PathGeometry)Path.Data).Figures[0].Segments.Remove(inactive.Bottom);
+            //    ((PathGeometry)Path.Data).Figures[0].Segments.Remove(inactive.Right);
+            //    Splitters.Remove(inactive);
+            //}
         }
 
         /// <summary>
@@ -345,7 +306,6 @@ namespace LiveCharts.Wpf
                 if (p.View != null)
                     p.View.RemoveFromView(Core.Chart);
             });
-            if (Path != null) Path.Visibility = Visibility.Hidden;
             if (removeFromView)
             {
                 Core.Chart.View.RemoveFromDrawMargin(Path);
@@ -355,7 +315,8 @@ namespace LiveCharts.Wpf
 
         #endregion
 
-        #region Public Methods         
+        #region Public Methods
+
         /// <summary>
         /// Gets the point diameter.
         /// </summary>
@@ -373,12 +334,57 @@ namespace LiveCharts.Wpf
         public virtual void StartSegment(int atIndex, CorePoint location)
         {
             if (Splitters.Count <= ActiveSplitters)
-                Splitters.Add(new LineSegmentSplitter {IsNew = true});
+            {
+                var shadow = new Path
+                {
+                    Fill = Fill,
+                    Visibility = Visibility,
+                    StrokeDashArray = StrokeDashArray,
+                    Data = new PathGeometry
+                    {
+                        Figures = new PathFigureCollection
+                        {
+                            new PathFigure()
+                        }
+                    }
+                };
+
+                Panel.SetZIndex(shadow, Panel.GetZIndex(this));
+                Panel.SetZIndex(shadow, Panel.GetZIndex(this));
+                Core.Chart.View.EnsureElementBelongsToCurrentDrawMargin(shadow);
+
+                var line = new Path
+                {
+                    Visibility = Visibility,
+                    StrokeDashArray = StrokeDashArray,
+                    StrokeThickness = StrokeThickness,
+                    Stroke = Stroke,
+                    Data = new PathGeometry
+                    {
+                        Figures = new PathFigureCollection
+                        {
+                            new PathFigure()
+                        }
+                    }
+                };
+
+                Panel.SetZIndex(line, Panel.GetZIndex(this));
+                Panel.SetZIndex(line, Panel.GetZIndex(this));
+                Core.Chart.View.EnsureElementBelongsToCurrentDrawMargin(line);
+
+                Splitters.Add(new LineSeriesPathHelper
+                {
+                    IsNew = true,
+                    ShadowFigure = ((PathGeometry) shadow.Data).Figures[0],
+                    LineFigure = ((PathGeometry)line.Data).Figures[0]
+                });
+
+                SplittersCollector++;
+            }
 
             var splitter = Splitters[ActiveSplitters];
             splitter.SplitterCollectorIndex = SplittersCollector;
 
-            ActiveSplitters++;
             var animSpeed = Core.Chart.View.AnimationsSpeed;
             var noAnim = Core.Chart.View.DisableAnimations;
 
@@ -386,44 +392,22 @@ namespace LiveCharts.Wpf
                 ? Core.Chart.View.AxisY[ScalesYAt].Model.FirstSeparator
                 : AreaLimit, AxisOrientation.Y, Core.Chart, ScalesYAt);
 
-            if (Values != null && atIndex == 0)
-            {
-                if (Core.Chart.View.DisableAnimations || IsNew)
-                    Figure.StartPoint = new Point(location.X, areaLimit);
-                else
-                    Figure.BeginAnimation(PathFigure.StartPointProperty,
-                        new PointAnimation(new Point(location.X, areaLimit), animSpeed));
+            Splitters[ActiveSplitters].LineFigure.BeginAnimation(PathFigure.StartPointProperty,
+                new PointAnimation(new Point(location.X, location.Y), animSpeed));
 
-                IsNew = false;
+            if (Core.Chart.View.DisableAnimations || IsNew)
+            {
+                Splitters[ActiveSplitters].ShadowFigure.StartPoint = new Point(location.X, areaLimit);
+            }
+            else
+            {
+                Splitters[ActiveSplitters].ShadowFigure.BeginAnimation(PathFigure.StartPointProperty,
+                    new PointAnimation(new Point(location.X, areaLimit), animSpeed));
             }
 
-            if (atIndex != 0)
-            {
-                Figure.Segments.Remove(splitter.Bottom);
+            atIndex = 0; //ToDo: Verify it!
 
-                if (splitter.IsNew)
-                {
-                    splitter.Bottom.Point = new Point(location.X, Core.Chart.View.DrawMarginHeight);
-                    splitter.Left.Point = new Point(location.X, Core.Chart.View.DrawMarginHeight);
-                }
-
-                if (noAnim)
-                    splitter.Bottom.Point = new Point(location.X, areaLimit);
-                else
-                    splitter.Bottom.BeginAnimation(LineSegment.PointProperty,
-                        new PointAnimation(new Point(location.X, areaLimit), animSpeed));
-                Figure.Segments.Insert(atIndex, splitter.Bottom);
-
-                Figure.Segments.Remove(splitter.Left);
-                if (noAnim)
-                    splitter.Left.Point = location.AsPoint();
-                else
-                    splitter.Left.BeginAnimation(LineSegment.PointProperty,
-                        new PointAnimation(location.AsPoint(), animSpeed));
-                Figure.Segments.Insert(atIndex + 1, splitter.Left);
-
-                return;
-            }
+            Splitters[ActiveSplitters].ShadowFigure.Segments.Remove(splitter.Bottom);
 
             if (splitter.IsNew)
             {
@@ -431,13 +415,21 @@ namespace LiveCharts.Wpf
                 splitter.Left.Point = new Point(location.X, Core.Chart.View.DrawMarginHeight);
             }
 
-            Figure.Segments.Remove(splitter.Left);
-            if (Core.Chart.View.DisableAnimations)
+            if (noAnim)
+                splitter.Bottom.Point = new Point(location.X, areaLimit);
+            else
+                splitter.Bottom.BeginAnimation(LineSegment.PointProperty,
+                    new PointAnimation(new Point(location.X, areaLimit), animSpeed));
+            Splitters[ActiveSplitters].ShadowFigure.Segments.Insert(atIndex, splitter.Bottom);
+
+            Splitters[ActiveSplitters].ShadowFigure.Segments.Remove(splitter.Left);
+            if (noAnim)
                 splitter.Left.Point = location.AsPoint();
             else
                 splitter.Left.BeginAnimation(LineSegment.PointProperty,
                     new PointAnimation(location.AsPoint(), animSpeed));
-            Figure.Segments.Insert(atIndex, splitter.Left);
+            Splitters[ActiveSplitters].ShadowFigure.Segments.Insert(atIndex + 1, splitter.Left);
+
         }
 
         /// <summary>
@@ -447,7 +439,7 @@ namespace LiveCharts.Wpf
         /// <param name="location">The location.</param>
         public virtual void EndSegment(int atIndex, CorePoint location)
         {
-            var splitter = Splitters[ActiveSplitters-1];
+             var splitter = Splitters[ActiveSplitters];
 
             var animSpeed = Core.Chart.View.AnimationsSpeed;
             var noAnim = Core.Chart.View.DisableAnimations;
@@ -466,15 +458,16 @@ namespace LiveCharts.Wpf
                 splitter.Right.Point = new Point(location.X, Core.Chart.View.DrawMarginHeight);
             }
 
-            Figure.Segments.Remove(splitter.Right);
+            Splitters[ActiveSplitters].ShadowFigure.Segments.Remove(splitter.Right);
             if (noAnim)
                 splitter.Right.Point = new Point(location.X, areaLimit);
             else
                 splitter.Right.BeginAnimation(LineSegment.PointProperty,
                     new PointAnimation(new Point(location.X, areaLimit), animSpeed));
-            Figure.Segments.Insert(atIndex, splitter.Right);
+            Splitters[ActiveSplitters].ShadowFigure.Segments.Insert(atIndex, splitter.Right);
 
             splitter.IsNew = false;
+            ActiveSplitters++;
         }
         #endregion
 
@@ -482,6 +475,12 @@ namespace LiveCharts.Wpf
 
         private void InitializeDefuaults()
         {
+            Path = new Path();
+
+            //var geometry = new PathGeometry();
+            //geometry.Figures.Add(new PathFigure());
+            //Path.Data = geometry;
+
             SetCurrentValue(LineSmoothnessProperty, .7d);
             SetCurrentValue(PointGeometrySizeProperty, 8d);
             SetCurrentValue(PointForegroundProperty, Brushes.White);
@@ -491,7 +490,7 @@ namespace LiveCharts.Wpf
             SetCurrentValue(LabelPointProperty, defaultLabel);
 
             DefaultFillOpacity = 0.15;
-            Splitters = new List<LineSegmentSplitter>();
+            Splitters = new List<LineSeriesPathHelper>();
 
             IsNew = true;
         }

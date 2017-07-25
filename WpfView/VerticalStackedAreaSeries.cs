@@ -165,7 +165,7 @@ namespace LiveCharts.Wpf
             SetCurrentValue(LabelPointProperty, defaultLabel);
 
             DefaultFillOpacity = 1;
-            Splitters = new List<LineSegmentSplitter>();
+            Splitters = new List<LineSeriesPathHelper>();
         }
 
         #endregion

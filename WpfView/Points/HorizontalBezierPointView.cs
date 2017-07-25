@@ -35,7 +35,8 @@ namespace LiveCharts.Wpf.Points
     {
         public BezierSegment Segment { get; set; }
         public Path Shape { get; set; }
-        public PathFigure Container { get; set; }
+        public PathFigure ShadowContainer { get; set; }
+        public PathFigure LineContainer { get; set; }
         public BezierData Data { get; set; }
 
         public override void DrawOrMove(ChartPoint previousDrawn, ChartPoint current, int index, ChartCore chart)
@@ -46,8 +47,10 @@ namespace LiveCharts.Wpf.Points
 
             var y = chart.View.DrawMarginTop + chart.View.DrawMarginHeight;
 
-            Container.Segments.Remove(Segment);
-            Container.Segments.Insert(index, Segment);
+            ShadowContainer.Segments.Remove(Segment);
+            ShadowContainer.Segments.Insert(index, Segment);
+            LineContainer.Segments.Remove(Segment);
+            LineContainer.Segments.Add(Segment);
 
             ValidArea = new CoreRectangle(current.ChartLocation.X - 7.5, current.ChartLocation.Y - 7.5, 15, 15);
 
@@ -199,7 +202,7 @@ namespace LiveCharts.Wpf.Points
             chart.View.RemoveFromDrawMargin(HoverShape);
             chart.View.RemoveFromDrawMargin(Shape);
             chart.View.RemoveFromDrawMargin(DataLabel);
-            Container.Segments.Remove(Segment);
+            ShadowContainer.Segments.Remove(Segment);
         }
 
         protected double CorrectXLabel(double desiredPosition, ChartCore chart)

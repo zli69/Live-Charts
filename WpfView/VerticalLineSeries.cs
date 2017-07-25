@@ -130,7 +130,7 @@ namespace LiveCharts.Wpf
                 pbv = new VerticalBezierPointView
                 {
                     Segment = new BezierSegment(),
-                    Container = Figure,
+                    ShadowContainer = Figure,
                     IsNew = true
                 };
             }
@@ -220,7 +220,7 @@ namespace LiveCharts.Wpf
         public override void StartSegment(int atIndex, CorePoint location)
         {
             if (Splitters.Count <= ActiveSplitters)
-                Splitters.Add(new LineSegmentSplitter { IsNew = true });
+                Splitters.Add(new LineSeriesPathHelper { IsNew = true });
 
             var splitter = Splitters[ActiveSplitters];
             splitter.SplitterCollectorIndex = SplittersCollector;
@@ -339,7 +339,7 @@ namespace LiveCharts.Wpf
             SetCurrentValue(LabelPointProperty, defaultLabel);
 
             DefaultFillOpacity = 0.15;
-            Splitters = new List<LineSegmentSplitter>();
+            Splitters = new List<LineSeriesPathHelper>();
         }
 
         #endregion

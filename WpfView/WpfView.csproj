@@ -148,7 +148,7 @@
     </Compile>
     <Compile Include="Separator.cs" />
     <Compile Include="Series.cs" />
-    <Compile Include="LineSegmentSplitter.cs" />
+    <Compile Include="LineSeriesPathHelper.cs" />
     <Compile Include="VisualElement.cs" />
     <Compile Include="GeoMap.cs" />
     <Compile Include="WindowAxis.cs" />

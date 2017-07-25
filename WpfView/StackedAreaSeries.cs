@@ -168,7 +168,7 @@ namespace LiveCharts.Wpf
             Func<ChartPoint, string> defaultLabel = x => Core.CurrentYAxis.GetFormatter()(x.Y);
             SetCurrentValue(LabelPointProperty, defaultLabel);
 
-            Splitters = new List<LineSegmentSplitter>();
+            Splitters = new List<LineSeriesPathHelper>();
         }
 
         #endregion

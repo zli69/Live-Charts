@@ -107,7 +107,7 @@ namespace LiveCharts.SeriesAlgorithms
                     if (!isOpen)
                     {
                         lineView.StartSegment(segmentPosition, p1);
-                        segmentPosition += segmentPosition == 0 ? 1 : 2;
+                        segmentPosition = 2;
                     }
 
                     var chartPoint = segment[index];
