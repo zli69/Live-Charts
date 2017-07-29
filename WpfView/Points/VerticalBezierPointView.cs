@@ -62,25 +62,25 @@ namespace LiveCharts.Wpf.Points
                 }
                 else
                 {
-                    if (current.SeriesView.IsFirstDraw)
-                    {
-                        Segment.Point1 = new Point(0, Data.Point1.Y);
-                        Segment.Point2 = new Point(0, Data.Point2.Y);
-                        Segment.Point3 = new Point(0, Data.Point3.Y);
+                    //if (current.SeriesView.IsFirstDraw)
+                    //{
+                    //    Segment.Point1 = new Point(0, Data.Point1.Y);
+                    //    Segment.Point2 = new Point(0, Data.Point2.Y);
+                    //    Segment.Point3 = new Point(0, Data.Point3.Y);
 
-                        if (Shape != null)
-                        {
-                            Canvas.SetTop(Shape, current.ChartLocation.Y - Shape.Height * .5);
-                            Canvas.SetLeft(Shape, 0);
-                        }
-                        if (DataLabel != null)
-                        {
-                            Canvas.SetTop(DataLabel, current.ChartLocation.Y - DataLabel.ActualHeight * .5);
-                            Canvas.SetLeft(DataLabel, 0);
-                        }
-                    }
-                    else
-                    {
+                    //    if (Shape != null)
+                    //    {
+                    //        Canvas.SetTop(Shape, current.ChartLocation.Y - Shape.Height * .5);
+                    //        Canvas.SetLeft(Shape, 0);
+                    //    }
+                    //    if (DataLabel != null)
+                    //    {
+                    //        Canvas.SetTop(DataLabel, current.ChartLocation.Y - DataLabel.ActualHeight * .5);
+                    //        Canvas.SetLeft(DataLabel, 0);
+                    //    }
+                    //}
+                    //else
+                    //{
                         var startPoint = ((LineSeries) current.SeriesView).Splitters[0].Left.Point;
                         Segment.Point1 = startPoint;
                         Segment.Point2 = startPoint;
@@ -96,7 +96,7 @@ namespace LiveCharts.Wpf.Points
                             Canvas.SetTop(DataLabel, startPoint.Y - DataLabel.ActualHeight * .5);
                             Canvas.SetLeft(DataLabel, startPoint.X);
                         }
-                    }
+                    //}
                 }
             }
             else if (DataLabel != null && double.IsNaN(Canvas.GetLeft(DataLabel)))

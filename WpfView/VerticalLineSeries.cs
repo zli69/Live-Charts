@@ -30,7 +30,6 @@ using System.Windows.Shapes;
 using LiveCharts.Definitions.Points;
 using LiveCharts.Dtos;
 using LiveCharts.SeriesAlgorithms;
-using LiveCharts.Wpf.Charts.Base;
 using LiveCharts.Wpf.Points;
 
 namespace LiveCharts.Wpf
@@ -46,7 +45,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public VerticalLineSeries()
         {
-            Core = new VerticalLineAlgorithm(this);
+            Core = new VerticalLineCore(this);
             InitializeDefuaults();
         }
 
@@ -55,7 +54,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public VerticalLineSeries(object configuration)
         {
-            Core = new VerticalLineAlgorithm(this);
+            Core = new VerticalLineCore(this);
             Configuration = configuration;
             InitializeDefuaults();
         }
@@ -67,7 +66,7 @@ namespace LiveCharts.Wpf
         /// <summary>
         /// This method runs when the update starts
         /// </summary>
-        public override void OnSeriesUpdateStart()
+        protected override void OnSeriesUpdateStart()
         {
             ActiveSplitters = 0;
 
@@ -119,7 +118,7 @@ namespace LiveCharts.Wpf
         /// <param name="point"></param>
         /// <param name="label"></param>
         /// <returns></returns>
-        public override IChartPointView GetPointView(ChartPoint point, string label)
+        protected override IChartPointView GetPointView(ChartPoint point, string label)
         {
             var mhr = PointGeometrySize < 10 ? 10 : PointGeometrySize;
 
@@ -220,7 +219,7 @@ namespace LiveCharts.Wpf
         public override void StartSegment(int atIndex, CorePoint location)
         {
             if (Splitters.Count <= ActiveSplitters)
-                Splitters.Add(new LineSeriesPathHelper { IsNew = true });
+                Splitters.Add(new LineSeriesPathHelper(location,  0) { IsNew = true });
 
             var splitter = Splitters[ActiveSplitters];
             splitter.SplitterCollectorIndex = SplittersCollector;

@@ -43,7 +43,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public PieSeries()
         {
-            Core = new PieAlgorithm(this);
+            Core = new PieCore(this);
             InitializeDefuaults();
         }
 
@@ -53,7 +53,7 @@ namespace LiveCharts.Wpf
         /// <param name="configuration"></param>
         public PieSeries(object configuration)
         {
-            Core = new PieAlgorithm(this);
+            Core = new PieCore(this);
             Configuration = configuration;
             InitializeDefuaults();
         }
@@ -70,7 +70,7 @@ namespace LiveCharts.Wpf
         /// The push out property
         /// </summary>
         public static readonly DependencyProperty PushOutProperty = DependencyProperty.Register(
-            "PushOut", typeof (double), typeof (PieSeries), new PropertyMetadata(default(double), CallChartUpdater()));
+            "PushOut", typeof (double), typeof (PieSeries), new PropertyMetadata(default(double), EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets the slice push out, this property highlights the slice
         /// </summary>
@@ -85,7 +85,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public static readonly DependencyProperty LabelPositionProperty = DependencyProperty.Register(
             "LabelPosition", typeof(PieLabelPosition), typeof(PieSeries), 
-            new PropertyMetadata(PieLabelPosition.InsideSlice, CallChartUpdater()));
+            new PropertyMetadata(PieLabelPosition.InsideSlice, EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets the label position.
         /// </summary>
@@ -108,7 +108,7 @@ namespace LiveCharts.Wpf
         /// <param name="point"></param>
         /// <param name="label"></param>
         /// <returns></returns>
-        public override IChartPointView GetPointView(ChartPoint point, string label)
+        protected override IChartPointView GetPointView(ChartPoint point, string label)
         {
             var pbv = (PiePointView) point.View;
 

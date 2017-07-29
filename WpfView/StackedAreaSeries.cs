@@ -45,7 +45,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public StackedAreaSeries()
         {
-            Core = new StackedAreaAlgorithm(this);
+            Core = new StackedAreaCore(this);
             InitializeDefuaults();
         }
 
@@ -54,7 +54,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public StackedAreaSeries(object configuration)
         {
-            Core = new StackedAreaAlgorithm(this);
+            Core = new StackedAreaCore(this);
             Configuration = configuration;
             InitializeDefuaults();
         }
@@ -71,7 +71,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public static readonly DependencyProperty StackModeProperty = DependencyProperty.Register(
             "StackMode", typeof(StackMode), typeof(StackedAreaSeries),
-            new PropertyMetadata(default(StackMode), CallChartUpdater()));
+            new PropertyMetadata(default(StackMode), EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets the series stacked mode, values or percentage
         /// </summary>
@@ -87,7 +87,7 @@ namespace LiveCharts.Wpf
         /// <summary>
         /// This method runs when the update starts
         /// </summary>
-        public override void OnSeriesUpdateStart()
+        protected override void OnSeriesUpdateStart()
         {
             ActiveSplitters = 0;
 
@@ -140,7 +140,7 @@ namespace LiveCharts.Wpf
             Path.Data = geometry;
             Core.Chart.View.AddToDrawMargin(Path);
 
-            var x = ChartFunctions.ToDrawMargin(ActualValues.GetTracker(this).XLimit.Min, AxisOrientation.X, Core.Chart, ScalesXAt);
+            var x = ChartFunctions.ToDrawMargin(((ISeriesView) this).ActualValues.GetTracker(this).XLimit.Min, AxisOrientation.X, Core.Chart, ScalesXAt);
             Figure.StartPoint = new Point(x, Core.Chart.View.DrawMarginHeight);
 
             var i = Core.Chart.View.Series.IndexOf(this);

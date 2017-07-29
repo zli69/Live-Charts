@@ -813,7 +813,7 @@ namespace LiveCharts.Charts
                     ? series[0].Values.GetTracker(series[0]).XLimit
                     : series[0].Values.GetTracker(series[0]).YLimit;
                 var view = series[0] as IAreaPoint;
-                firstR = view != null ? view.GetPointDiameter() : 0;
+                firstR = view != null ? view.PointDiameter : 0;
             }
             
             //                     [ max, min, pointRadius ]
@@ -825,7 +825,7 @@ namespace LiveCharts.Charts
                 var tracker = seriesView.Values.GetTracker(seriesView);
                 var limit = orientation == AxisOrientation.X ? tracker.XLimit : tracker.YLimit;
                 var view = seriesView as IAreaPoint;
-                var radius = view != null ? view.GetPointDiameter() : 0;
+                var radius = view != null ? view.PointDiameter : 0;
 
                 if (limit.Max > boundries[0]) boundries[0] = limit.Max;
                 if (limit.Min < boundries[1]) boundries[1] = limit.Min;

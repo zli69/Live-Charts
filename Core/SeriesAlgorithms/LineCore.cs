@@ -33,15 +33,15 @@ namespace LiveCharts.SeriesAlgorithms
     /// <summary>
     /// 
     /// </summary>
-    /// <seealso cref="LiveCharts.SeriesAlgorithm" />
+    /// <seealso cref="SeriesAlgorithm" />
     /// <seealso cref="LiveCharts.Definitions.Series.ICartesianSeries" />
-    public class LineAlgorithm : SeriesAlgorithm, ICartesianSeries
+    public class LineCore : SeriesAlgorithm, ICartesianSeries
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LineAlgorithm"/> class.
+        /// Initializes a new instance of the <see cref="LineCore"/> class.
         /// </summary>
         /// <param name="view">The view.</param>
-        public LineAlgorithm(ISeriesView view) : base(view)
+        public LineCore(ISeriesView view) : base(view)
         {
             SeriesOrientation = SeriesOrientation.Horizontal;
             PreferredSelectionMode = TooltipSelectionMode.SharedXValues;

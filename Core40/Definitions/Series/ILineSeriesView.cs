@@ -20,6 +20,7 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+using System;
 using LiveCharts.Dtos;
 
 namespace LiveCharts.Definitions.Series
@@ -36,20 +37,31 @@ namespace LiveCharts.Definitions.Series
         /// <value>
         /// The line smoothness.
         /// </value>
-        double LineSmoothness { get; set; }
+        double LineSmoothness { get; }
+
         /// <summary>
         /// Gets or sets the area limit.
         /// </summary>
         /// <value>
         /// The area limit.
         /// </value>
-        double AreaLimit { get; set; }
+        double AreaLimit { get; }
+
         /// <summary>
         /// Starts the segment.
         /// </summary>
-        /// <param name="atIndex">At index.</param>
         /// <param name="location">The location.</param>
-        void StartSegment(int atIndex, CorePoint location);
+        /// <param name="areaLimit">The animations speed.</param>
+        void StartSegment(CorePoint location, double areaLimit);
+
+        /// <summary>
+        /// Starts the animated segment.
+        /// </summary>
+        /// <param name="location">The location.</param>
+        /// <param name="areaLimit">The area limit.</param>
+        /// <param name="animationsSpeed">The animations speed.</param>
+        void StartAnimatedSegment(CorePoint location, double areaLimit, TimeSpan animationsSpeed);
+
         /// <summary>
         /// Ends the segment.
         /// </summary>

@@ -28,7 +28,6 @@ using System.Windows.Shapes;
 using LiveCharts.Definitions.Points;
 using LiveCharts.Definitions.Series;
 using LiveCharts.SeriesAlgorithms;
-using LiveCharts.Wpf.Charts.Base;
 using LiveCharts.Wpf.Components;
 using LiveCharts.Wpf.Points;
 
@@ -40,12 +39,13 @@ namespace LiveCharts.Wpf
     public class StepLineSeries : Series, IFondeable, IAreaPoint
     {
         #region Constructors
+
         /// <summary>
         /// Initializes a new instance of BubbleSeries class
         /// </summary>
         public StepLineSeries()
         {
-            Core = new StepLineAlgorithm(this);
+            Core = new StepLineCore(this);
             InitializeDefuaults();
         }
 
@@ -55,14 +55,10 @@ namespace LiveCharts.Wpf
         /// <param name="configuration"></param>
         public StepLineSeries(object configuration)
         {
-            Core = new ScatterAlgorithm(this);
+            Core = new StepLineCore(this);
             Configuration = configuration;
             InitializeDefuaults();
         }
-
-        #endregion
-
-        #region Private Properties
 
         #endregion
 
@@ -73,7 +69,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public static readonly DependencyProperty PointGeometrySizeProperty = DependencyProperty.Register(
            "PointGeometrySize", typeof(double), typeof(StepLineSeries),
-           new PropertyMetadata(default(double), CallChartUpdater()));
+           new PropertyMetadata(default(double), EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets the point geometry size, increasing this property will make the series points bigger
         /// </summary>
@@ -120,7 +116,7 @@ namespace LiveCharts.Wpf
         /// The inverted mode property
         /// </summary>
         public static readonly DependencyProperty InvertedModeProperty = DependencyProperty.Register(
-            "InvertedMode", typeof(bool), typeof(StepLineSeries), new PropertyMetadata(default(bool), CallChartUpdater()));
+            "InvertedMode", typeof(bool), typeof(StepLineSeries), new PropertyMetadata(default(bool), EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets a value indicating whether the series should be drawn using the inverted mode.
         /// </summary>
@@ -143,7 +139,7 @@ namespace LiveCharts.Wpf
         /// <param name="point"></param>
         /// <param name="label"></param>
         /// <returns></returns>
-        public override IChartPointView GetPointView(ChartPoint point, string label)
+        protected override IChartPointView GetPointView(ChartPoint point, string label)
         {
             var pbv = (StepLinePointView) point.View;
 
@@ -252,7 +248,7 @@ namespace LiveCharts.Wpf
         /// <summary>
         /// Initializes the series colors if they are not set
         /// </summary>
-        public override void InitializeColors()
+        protected override void InitializeColors()
         {
             if (Stroke != null && AlternativeStroke != null) return;
 
@@ -266,16 +262,7 @@ namespace LiveCharts.Wpf
 
         #endregion
 
-        #region Public methods
-        /// <summary>
-        /// Gets the point diameter.
-        /// </summary>
-        /// <returns></returns>
-        public double GetPointDiameter()
-        {
-            return PointGeometrySize/2;
-        }
-        #endregion
+        double IAreaPoint.PointDiameter { get { return PointGeometrySize / 2; } }
 
         #region Private Methods
 

@@ -30,15 +30,15 @@ namespace LiveCharts.SeriesAlgorithms
     /// <summary>
     /// 
     /// </summary>
-    /// <seealso cref="LiveCharts.SeriesAlgorithm" />
+    /// <seealso cref="SeriesAlgorithm" />
     /// <seealso cref="LiveCharts.Definitions.Series.ICartesianSeries" />
-    public class StepLineAlgorithm : SeriesAlgorithm, ICartesianSeries
+    public class StepLineCore : SeriesAlgorithm, ICartesianSeries
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="StepLineAlgorithm"/> class.
+        /// Initializes a new instance of the <see cref="StepLineCore"/> class.
         /// </summary>
         /// <param name="view">The view.</param>
-        public StepLineAlgorithm(ISeriesView view) : base(view)
+        public StepLineCore(ISeriesView view) : base(view)
         {
             SeriesOrientation = SeriesOrientation.Horizontal;
             PreferredSelectionMode = TooltipSelectionMode.SharedXValues;

@@ -33,15 +33,15 @@ namespace LiveCharts.SeriesAlgorithms
     /// <summary>
     /// 
     /// </summary>
-    /// <seealso cref="LiveCharts.SeriesAlgorithm" />
+    /// <seealso cref="SeriesCore" />
     /// <seealso cref="LiveCharts.Definitions.Series.ICartesianSeries" />
-    public class HeatAlgorithm : SeriesAlgorithm, ICartesianSeries
+    public class HeatCore : SeriesCore, ICartesianSeries
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="HeatAlgorithm"/> class.
+        /// Initializes a new instance of the <see cref="LiveCharts.SeriesAlgorithms.HeatCore"/> class.
         /// </summary>
         /// <param name="view">The view.</param>
-        public HeatAlgorithm(ISeriesView view) : base(view)
+        public HeatCore(ISeriesView view) : base(view)
         {
             PreferredSelectionMode = TooltipSelectionMode.OnlySender;
         }

@@ -205,7 +205,7 @@ namespace LiveCharts.Charts
                     ? new CoreLimit(series[0].GetMinX(ax), series[0].GetMaxX(ax))
                     : new CoreLimit(series[0].GetMinY(ax), series[0].GetMaxY(ax));
                 var view = series[0].View as IAreaPoint;
-                firstR = view != null ? view.GetPointDiameter() : 0;
+                firstR = view != null ? view.PointDiameter : 0;
             }
 
             //                     [ max, min, pointRadius ]
@@ -218,7 +218,7 @@ namespace LiveCharts.Charts
                     ? new CoreLimit(cartesianSeries.GetMinX(ax), cartesianSeries.GetMaxX(ax))
                     : new CoreLimit(cartesianSeries.GetMinY(ax), cartesianSeries.GetMaxY(ax));
                 var view = cartesianSeries.View as IAreaPoint;
-                var radius = view != null ? view.GetPointDiameter() : 0;
+                var radius = view != null ? view.PointDiameter : 0;
 
                 if (limit.Max > boundries[0]) boundries[0] = limit.Max;
                 if (limit.Min < boundries[1]) boundries[1] = limit.Min;

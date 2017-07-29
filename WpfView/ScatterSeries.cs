@@ -44,7 +44,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public ScatterSeries()
         {
-            Core = new ScatterAlgorithm(this);
+            Core = new ScatterCore(this);
             InitializeDefuaults();
         }
 
@@ -54,7 +54,7 @@ namespace LiveCharts.Wpf
         /// <param name="configuration"></param>
         public ScatterSeries(object configuration)
         {
-            Core = new ScatterAlgorithm(this);
+            Core = new ScatterCore(this);
             Configuration = configuration;
             InitializeDefuaults();
         }
@@ -72,7 +72,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public static readonly DependencyProperty MaxPointShapeDiameterProperty = DependencyProperty.Register(
             "MaxPointShapeDiameter", typeof (double), typeof (ScatterSeries), 
-            new PropertyMetadata(default(double), CallChartUpdater()));
+            new PropertyMetadata(default(double), EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets the max shape diameter, the points using the max weight in the series will have this radius.
         /// </summary>
@@ -87,7 +87,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public static readonly DependencyProperty MinPointShapeDiameterProperty = DependencyProperty.Register(
             "MinPointShapeDiameter", typeof (double), typeof (ScatterSeries), 
-            new PropertyMetadata(default(double), CallChartUpdater()));
+            new PropertyMetadata(default(double), EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets the min shape diameter, the points using the min weight in the series will have this radius.
         /// </summary>
@@ -99,16 +99,7 @@ namespace LiveCharts.Wpf
 
         #endregion
 
-        #region Public Methods
-        /// <summary>
-        /// Gets the point diameter.
-        /// </summary>
-        /// <returns></returns>
-        public double GetPointDiameter()
-        {
-            return MaxPointShapeDiameter/2;
-        }
-        #endregion
+        double IAreaPoint.PointDiameter { get{ return MaxPointShapeDiameter / 2; } }
 
         #region Overridden Methods
 
@@ -118,7 +109,7 @@ namespace LiveCharts.Wpf
         /// <param name="point"></param>
         /// <param name="label"></param>
         /// <returns></returns>
-        public override IChartPointView GetPointView(ChartPoint point, string label)
+        protected override IChartPointView GetPointView(ChartPoint point, string label)
         {
             var pbv = (ScatterPointView) point.View;
 

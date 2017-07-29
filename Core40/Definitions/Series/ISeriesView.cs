@@ -36,7 +36,8 @@ namespace LiveCharts.Definitions.Series
         /// <value>
         /// The model.
         /// </value>
-        SeriesAlgorithm Core { get; set; }
+        SeriesCore Core { get; }
+
         /// <summary>
         /// Gets or sets the values.
         /// </summary>
@@ -44,6 +45,7 @@ namespace LiveCharts.Definitions.Series
         /// The values.
         /// </value>
         IChartValues Values { get; set; }
+
         /// <summary>
         /// Gets a value indicating whether [data labels].
         /// </summary>
@@ -51,27 +53,31 @@ namespace LiveCharts.Definitions.Series
         ///   <c>true</c> if [data labels]; otherwise, <c>false</c>.
         /// </value>
         bool DataLabels { get; }
+
         /// <summary>
         /// Gets or sets the scales x at.
         /// </summary>
         /// <value>
         /// The scales x at.
         /// </value>
-        int ScalesXAt { get; set; }
+        int ScalesXAt { get; }
+
         /// <summary>
         /// Gets or sets the scales y at.
         /// </summary>
         /// <value>
         /// The scales y at.
         /// </value>
-        int ScalesYAt { get; set; }
+        int ScalesYAt { get; }
+
         /// <summary>
         /// Gets or sets the configuration.
         /// </summary>
         /// <value>
         /// The configuration.
         /// </value>
-        object Configuration { get; set; }
+        object Configuration { get; }
+
         /// <summary>
         /// Gets a value indicating whether this instance is series visible.
         /// </summary>
@@ -79,13 +85,15 @@ namespace LiveCharts.Definitions.Series
         /// <c>true</c> if this instance is series visible; otherwise, <c>false</c>.
         /// </value>
         bool IsSeriesVisible { get; }
+
         /// <summary>
         /// Gets or sets the label point.
         /// </summary>
         /// <value>
         /// The label point.
         /// </value>
-        Func<ChartPoint, string> LabelPoint { get; set; }
+        Func<ChartPoint, string> LabelPoint { get; }
+
         /// <summary>
         /// Gets the actual values.
         /// </summary>
@@ -93,6 +101,7 @@ namespace LiveCharts.Definitions.Series
         /// The actual values.
         /// </value>
         IChartValues ActualValues { get; }
+
         /// <summary>
         /// Gets the title.
         /// </summary>
@@ -100,13 +109,6 @@ namespace LiveCharts.Definitions.Series
         /// The title.
         /// </value>
         string Title { get; }
-        /// <summary>
-        /// Gets a value indicating whether this instance is first draw.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if this instance is first draw; otherwise, <c>false</c>.
-        /// </value>
-        bool IsFirstDraw { get; }
 
         /// <summary>
         /// Gets the point view.
@@ -115,31 +117,38 @@ namespace LiveCharts.Definitions.Series
         /// <param name="label">The label.</param>
         /// <returns></returns>
         IChartPointView GetPointView(ChartPoint point, string label);
+
         /// <summary>
         /// Called when [series update start].
         /// </summary>
         void OnSeriesUpdateStart();
+
+        /// <summary>
+        /// Called when [series updated finish].
+        /// </summary>
+        void OnSeriesUpdatedFinish();
+
         /// <summary>
         /// Erases the specified remove from view.
         /// </summary>
         /// <param name="removeFromView">if set to <c>true</c> [remove from view].</param>
         void Erase(bool removeFromView);
-        /// <summary>
-        /// Called when [series updated finish].
-        /// </summary>
-        void OnSeriesUpdatedFinish();
+        
         /// <summary>
         /// Initializes the colors.
         /// </summary>
         void InitializeColors();
+
         /// <summary>
         /// Draws the specialized elements.
         /// </summary>
         void DrawSpecializedElements();
+
         /// <summary>
         /// Places the specialized elements.
         /// </summary>
         void PlaceSpecializedElements();
+
         /// <summary>
         /// Gets the label point formatter.
         /// </summary>

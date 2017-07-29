@@ -21,7 +21,6 @@
 //SOFTWARE.
 
 using System;
-using System.Linq;
 using LiveCharts.Defaults;
 using LiveCharts.Definitions.Points;
 using LiveCharts.Definitions.Series;
@@ -32,18 +31,20 @@ namespace LiveCharts.SeriesAlgorithms
     /// <summary>
     /// 
     /// </summary>
-    /// <seealso cref="LiveCharts.SeriesAlgorithm" />
+    /// <seealso cref="SeriesCore" />
     /// <seealso cref="LiveCharts.Definitions.Series.ICartesianSeries" />
-    public class RowAlgorithm : SeriesAlgorithm, ICartesianSeries
+    public class StackedRowCore : SeriesCore, ICartesianSeries
     {
+        private readonly IStackModelableSeriesView _stackModelable;
         /// <summary>
-        /// Initializes a new instance of the <see cref="RowAlgorithm"/> class.
+        /// Initializes a new instance of the <see cref="LiveCharts.SeriesAlgorithms.StackedRowCore"/> class.
         /// </summary>
         /// <param name="view">The view.</param>
-        public RowAlgorithm(ISeriesView view) : base(view)
+        public StackedRowCore(ISeriesView view) : base(view)
         {
             SeriesOrientation = SeriesOrientation.Vertical;
-            PreferredSelectionMode = TooltipSelectionMode.SharedYInSeries;
+            _stackModelable = (IStackModelableSeriesView) view;
+            PreferredSelectionMode = TooltipSelectionMode.SharedYValues;
         }
 
         /// <summary>
@@ -51,63 +52,59 @@ namespace LiveCharts.SeriesAlgorithms
         /// </summary>
         public override void Update()
         {
-            var castedSeries = (IRowSeriesView) View;
+            var castedSeries = (IStackedRowSeriesView) View;
 
             var padding = castedSeries.RowPadding;
-            
-            var totalSpace = ChartFunctions.GetUnitWidth(AxisOrientation.Y, Chart, View.ScalesYAt) - padding;
-            var typeSeries = Chart.View.ActualSeries.OfType<IRowSeriesView>().ToList();
 
-            var singleRowHeight = totalSpace/typeSeries.Count;
+            var totalSpace = ChartFunctions.GetUnitWidth(AxisOrientation.Y, Chart, View.ScalesYAt) - padding;
+            var singleColHeigth = totalSpace;
 
             double exceed = 0;
 
-            var seriesPosition = typeSeries.IndexOf((IRowSeriesView) View);
-
-            if (singleRowHeight > castedSeries.MaxRowHeigth)
+            if (singleColHeigth > castedSeries.MaxRowHeight)
             {
-                exceed = (singleRowHeight - castedSeries.MaxRowHeigth)*typeSeries.Count/2;
-                singleRowHeight = castedSeries.MaxRowHeigth;
+                exceed = (singleColHeigth - castedSeries.MaxRowHeight)/2;
+                singleColHeigth = castedSeries.MaxRowHeight;
             }
 
-            var relativeTop = padding + exceed + singleRowHeight * (seriesPosition);
+            var relativeTop = padding + exceed;
 
-            var startAt = CurrentXAxis.FirstSeparator >= 0 && CurrentXAxis.LastSeparator > 0   //both positive
-                ? CurrentXAxis.FirstSeparator                                                  //then use Min
-                : (CurrentXAxis.FirstSeparator < 0 && CurrentXAxis.LastSeparator <= 0          //both negative
-                    ? CurrentXAxis.LastSeparator                                               //then use Max
-                    : 0);                                                                      //if mixed then use 0
+            var startAt = CurrentXAxis.FirstSeparator >= 0 && CurrentXAxis.LastSeparator > 0
+                ? CurrentXAxis.FirstSeparator
+                : (CurrentXAxis.FirstSeparator < 0 && CurrentXAxis.LastSeparator <= 0
+                    ? CurrentXAxis.LastSeparator
+                    : 0);
 
             var zero = ChartFunctions.ToDrawMargin(startAt, AxisOrientation.X, Chart, View.ScalesXAt);
 
-            var correction = ChartFunctions.GetUnitWidth(AxisOrientation.Y, Chart, View.ScalesYAt);
-
             foreach (var chartPoint in View.ActualValues.GetPoints(View))
             {
-                var reference =
-                    ChartFunctions.ToDrawMargin(chartPoint, View.ScalesXAt, View.ScalesYAt, Chart);
+                var y = ChartFunctions.ToDrawMargin(chartPoint.Y, AxisOrientation.Y, Chart, View.ScalesYAt) - ChartFunctions.GetUnitWidth(AxisOrientation.Y, Chart, View.ScalesYAt);
+                var from = _stackModelable.StackMode == StackMode.Values
+                    ? ChartFunctions.ToDrawMargin(chartPoint.From, AxisOrientation.X, Chart, View.ScalesXAt)
+                    : ChartFunctions.ToDrawMargin(chartPoint.From/chartPoint.Sum, AxisOrientation.X, Chart, View.ScalesXAt);
+                var to = _stackModelable.StackMode == StackMode.Values
+                    ? ChartFunctions.ToDrawMargin(chartPoint.To, AxisOrientation.X, Chart, View.ScalesXAt)
+                    : ChartFunctions.ToDrawMargin(chartPoint.To/chartPoint.Sum, AxisOrientation.X, Chart, View.ScalesXAt);
 
                 chartPoint.View = View.GetPointView(chartPoint,
-                    View.DataLabels ? View.GetLabelPointFormatter()(chartPoint) : null);
+                    View.DataLabels
+                        ? (chartPoint.Participation > 0.05
+                            ? View.GetLabelPointFormatter()(chartPoint)
+                            : string.Empty)
+                        : null);
 
                 chartPoint.SeriesView = View;
 
                 var rectangleView = (IRectanglePointView) chartPoint.View;
 
-                var w = Math.Abs(reference.X - zero);
-                var l = reference.X < zero
-                    ? reference.X
-                    : zero;
+                var w = Math.Abs(to - zero) - Math.Abs(from - zero);
+                var l = to < zero
+                    ? to
+                    : from;
 
-            
-                if (chartPoint.EvaluatesGantt)
-                {
-                    l = ChartFunctions.ToDrawMargin(chartPoint.XStart, AxisOrientation.X, Chart, View.ScalesXAt);
-                    if (!(reference.X < zero && l < zero)) w -= l;
-                }
-
-                rectangleView.Data.Height = singleRowHeight - padding;
-                rectangleView.Data.Top = reference.Y + relativeTop - correction;
+                rectangleView.Data.Height = singleColHeigth - padding;
+                rectangleView.Data.Top = y + relativeTop;
 
                 rectangleView.Data.Left = l;
                 rectangleView.Data.Width = w;
@@ -123,18 +120,12 @@ namespace LiveCharts.SeriesAlgorithms
 
         double ICartesianSeries.GetMinX(AxisCore axis)
         {
-            var f = AxisLimits.SeparatorMin(axis);
-            return CurrentXAxis.BotLimit >= 0 && CurrentXAxis.TopLimit > 0
-                ? (f >= 0 ? f : 0)
-                : f;
+            return double.MaxValue;
         }
 
         double ICartesianSeries.GetMaxX(AxisCore axis)
         {
-            var f = AxisLimits.SeparatorMaxRounded(axis);
-            return CurrentXAxis.BotLimit < 0 && CurrentXAxis.TopLimit <= 0
-                ? (f >= 0 ? f : 0)
-                : f;
+            return double.MinValue;
         }
 
         double ICartesianSeries.GetMinY(AxisCore axis)

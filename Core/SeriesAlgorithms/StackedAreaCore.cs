@@ -33,17 +33,17 @@ namespace LiveCharts.SeriesAlgorithms
     /// <summary>
     /// 
     /// </summary>
-    /// <seealso cref="LiveCharts.SeriesAlgorithm" />
+    /// <seealso cref="SeriesAlgorithm" />
     /// <seealso cref="LiveCharts.Definitions.Series.ICartesianSeries" />
-    public class StackedAreaAlgorithm : SeriesAlgorithm, ICartesianSeries
+    public class StackedAreaCore : SeriesAlgorithm, ICartesianSeries
     {
         private readonly IStackModelableSeriesView _stackModelable;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StackedAreaAlgorithm"/> class.
+        /// Initializes a new instance of the <see cref="StackedAreaCore"/> class.
         /// </summary>
         /// <param name="view">The view.</param>
-        public StackedAreaAlgorithm(ISeriesView view) : base(view)
+        public StackedAreaCore(ISeriesView view) : base(view)
         {
             SeriesOrientation = SeriesOrientation.Horizontal;
             _stackModelable = (IStackModelableSeriesView)view;

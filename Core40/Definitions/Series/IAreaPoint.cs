@@ -31,6 +31,6 @@ namespace LiveCharts.Definitions.Series
         /// Gets the point diameter.
         /// </summary>
         /// <returns></returns>
-        double GetPointDiameter();
+        double PointDiameter { get; }
     }
 }

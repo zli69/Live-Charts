@@ -45,7 +45,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public ColumnSeries()
         {
-            Core = new ColumnAlgorithm(this);
+            Core = new ColumnCore(this);
             InitializeDefuaults();
         }
 
@@ -54,7 +54,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public ColumnSeries(object configuration)
         {
-            Core = new ColumnAlgorithm(this);
+            Core = new ColumnCore(this);
             Configuration = configuration;
             InitializeDefuaults();
         }
@@ -100,7 +100,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public static readonly DependencyProperty LabelsPositionProperty = DependencyProperty.Register(
             "LabelsPosition", typeof (BarLabelPosition), typeof (ColumnSeries), 
-            new PropertyMetadata(default(BarLabelPosition), CallChartUpdater()));
+            new PropertyMetadata(default(BarLabelPosition), EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets where the label is placed
         /// </summary>
@@ -134,7 +134,7 @@ namespace LiveCharts.Wpf
         /// <param name="point"></param>
         /// <param name="label"></param>
         /// <returns></returns>
-        public override IChartPointView GetPointView(ChartPoint point, string label)
+        protected override IChartPointView GetPointView(ChartPoint point, string label)
         {
             var pbv = (ColumnPointView) point.View;
 

@@ -20,45 +20,46 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+using LiveCharts.Defaults;
 using LiveCharts.Definitions.Series;
-using LiveCharts.Dtos;
 
 namespace LiveCharts.SeriesAlgorithms
 {
     /// <summary>
     /// 
     /// </summary>
-    /// <seealso cref="LiveCharts.SeriesAlgorithms.StackedAreaAlgorithm" />
-    public class VerticalStackedAreaAlgorithm : StackedAreaAlgorithm
+    /// <seealso cref="LiveCharts.SeriesAlgorithms.LineCore" />
+    /// <seealso cref="LiveCharts.Definitions.Series.ICartesianSeries" />
+    public class VerticalLineCore : LineCore, ICartesianSeries
     {
-        private readonly IStackModelableSeriesView _stackModelable;
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="VerticalStackedAreaAlgorithm"/> class.
+        /// Initializes a new instance of the <see cref="LiveCharts.SeriesAlgorithms.VerticalLineCore"/> class.
         /// </summary>
         /// <param name="view">The view.</param>
-        public VerticalStackedAreaAlgorithm(ISeriesView view) : base(view)
+        public VerticalLineCore(ISeriesView view) : base(view)
         {
             SeriesOrientation = SeriesOrientation.Vertical;
-            _stackModelable = (IStackModelableSeriesView) view;
             PreferredSelectionMode = TooltipSelectionMode.SharedYValues;
         }
 
-        /// <summary>
-        /// Gets the stacked point.
-        /// </summary>
-        /// <param name="chartPoint">The chart point.</param>
-        /// <returns></returns>
-        protected override CorePoint GetStackedPoint(ChartPoint chartPoint)
+        double ICartesianSeries.GetMinX(AxisCore axis)
         {
-            if (_stackModelable.StackMode == StackMode.Values)
-                return new CorePoint(
-                    ChartFunctions.ToDrawMargin(chartPoint.To, AxisOrientation.X, Chart, View.ScalesXAt),
-                    ChartFunctions.ToDrawMargin(chartPoint.Y, AxisOrientation.Y, Chart, View.ScalesYAt));
+            return AxisLimits.SeparatorMin(axis);
+        }
 
-            return new CorePoint(
-                ChartFunctions.ToDrawMargin(chartPoint.StackedParticipation, AxisOrientation.X, Chart, View.ScalesXAt),
-                ChartFunctions.ToDrawMargin(chartPoint.Y, AxisOrientation.Y, Chart, View.ScalesYAt));
+        double ICartesianSeries.GetMaxX(AxisCore axis)
+        {
+            return AxisLimits.SeparatorMaxRounded(axis);
+        }
+
+        double ICartesianSeries.GetMinY(AxisCore axis)
+        {
+            return AxisLimits.StretchMin(axis);
+        }
+
+        double ICartesianSeries.GetMaxY(AxisCore axis)
+        {
+            return AxisLimits.StretchMax(axis);
         }
     }
 }

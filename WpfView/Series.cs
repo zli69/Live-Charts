@@ -27,11 +27,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
-using LiveCharts.Defaults;
 using LiveCharts.Definitions.Points;
 using LiveCharts.Definitions.Series;
 using LiveCharts.Helpers;
-using LiveCharts.Wpf.Charts.Base;
 using LiveCharts.Wpf.Components;
 using LiveCharts.Wpf.Converters;
 
@@ -42,16 +40,21 @@ namespace LiveCharts.Wpf
     /// </summary>
     public abstract class Series : FrameworkElement, ISeriesView
     {
+        #region Fields
+
+        private static int _seriesNameCounter = 1;
+
+        #endregion
+
         #region Constructors
+
         /// <summary>
         /// Initializes a new Instance of Series
         /// </summary>
         protected Series()
         {
             DefaultFillOpacity = 0.35;
-            SetCurrentValue(TitleProperty, "Series");
             IsVisibleChanged += OnIsVisibleChanged;
-            IsFirstDraw = true;
         }
 
         /// <summary>
@@ -60,61 +63,40 @@ namespace LiveCharts.Wpf
         /// <param name="configuration"></param>
         protected Series(object configuration)
         {
+            DefaultFillOpacity = 0.35;
             Configuration = configuration;
-            SetValue(TitleProperty, "Series");
             IsVisibleChanged += OnIsVisibleChanged;
-            IsFirstDraw = true;
         }
 
         static Series()
         {
             VisibilityProperty.OverrideMetadata(typeof(Series), new PropertyMetadata(Visibility.Visible, OnIsVisibleChanged));
         }
+
+        #endregion
+
+        #region Protected Properties
+
+        /// <summary>
+        /// The default fill opacity
+        /// </summary>
+        protected double DefaultFillOpacity { get; set; }
+
+        /// <summary>
+        /// The core
+        /// </summary>
+        protected SeriesCore Core { get; set; }
+
         #endregion
 
         #region Properties
-
-        private IChartValues LastKnownValues { get; set; }
-        internal double DefaultFillOpacity { get; set; }
-        /// <summary>
-        /// Gets a value indicating whether this instance is first draw.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if this instance is first draw; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsFirstDraw { get; internal set; }
-        /// <summary>
-        /// THe Model is set by every series type, it is the motor of the series, it is the communication with the core of the library
-        /// </summary>
-        public SeriesAlgorithm Core { get; set; }
-        /// <summary>
-        /// Gets the Actual values in the series, active or visible series only
-        /// </summary>
-        public IChartValues ActualValues
-        {
-            get
-            {
-                if (DesignerProperties.GetIsInDesignMode(this) && (Values == null || Values.Count == 0))
-                    SetValue(ValuesProperty, GetValuesForDesigner());
-
-                return Values ?? new ChartValues<double>();
-            }
-        }
-
-        /// <summary>
-        /// Gets whether the series is visible
-        /// </summary>
-        public bool IsSeriesVisible
-        {
-            get { return Visibility == Visibility.Visible; }
-        }
-
+        
         /// <summary>
         /// Gets the current chart points in the series
         /// </summary>
         public IEnumerable<ChartPoint> ChartPoints
         {
-            get { return ActualValues.GetPoints(this); }
+            get { return ((ISeriesView) this).ActualValues.GetPoints(this); }
         }
 
         /// <summary>
@@ -139,7 +121,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public static readonly DependencyProperty TitleProperty = DependencyProperty.Register(
             "Title", typeof (string), typeof (Series),
-            new PropertyMetadata(default(string), CallChartUpdater()));
+            new PropertyMetadata("Series " + _seriesNameCounter++, EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets series title
         /// </summary>
@@ -154,7 +136,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public static readonly DependencyProperty StrokeProperty = DependencyProperty.Register(
             "Stroke", typeof (Brush), typeof (Series), 
-            new PropertyMetadata(default(Brush), CallChartUpdater()));
+            new PropertyMetadata(default(Brush), EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets series stroke, if this property is null then a SolidColorBrush will be assigned according to series position in collection and Chart.Colors property
         /// </summary>
@@ -169,7 +151,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public static readonly DependencyProperty StrokeThicknessProperty = DependencyProperty.Register(
             "StrokeThickness", typeof (double), typeof (Series), 
-            new PropertyMetadata(default(double), CallChartUpdater()));
+            new PropertyMetadata(default(double), EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets the series stroke thickness.
         /// </summary>
@@ -184,7 +166,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public static readonly DependencyProperty FillProperty = DependencyProperty.Register(
             "Fill", typeof (Brush), typeof (Series), 
-            new PropertyMetadata(default(Brush), CallChartUpdater()));
+            new PropertyMetadata(default(Brush), EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets series fill color, if this property is null then a SolidColorBrush will be assigned according to series position in collection and Chart.Colors property, also Fill property has a default opacity according to chart type.
         /// </summary>
@@ -199,7 +181,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public static readonly DependencyProperty DataLabelsProperty = DependencyProperty.Register(
             "DataLabels", typeof (bool), typeof (Series), 
-            new PropertyMetadata(default(bool), CallChartUpdater()));
+            new PropertyMetadata(default(bool), EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets if series should include a label over each data point.
         /// </summary>
@@ -214,7 +196,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public static readonly DependencyProperty DataLabelsTemplateProperty = DependencyProperty.Register(
             "DataLabelsTemplate", typeof(DataTemplate), typeof(Series),
-            new PropertyMetadata(DefaultXamlReader.DataLabelTemplate(), CallChartUpdater()));
+            new PropertyMetadata(DefaultXamlReader.DataLabelTemplate(), EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets the labels template.
         /// </summary>
@@ -247,7 +229,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public static readonly DependencyProperty FontSizeProperty = DependencyProperty.Register(
             "FontSize", typeof (double),
-            typeof (Series), new PropertyMetadata(10d, CallChartUpdater()));
+            typeof (Series), new PropertyMetadata(10d, EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets labels font size
         /// </summary>
@@ -262,7 +244,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public static readonly DependencyProperty FontWeightProperty = DependencyProperty.Register(
             "FontWeight", typeof (FontWeight), typeof (Series),
-            new PropertyMetadata(FontWeights.Bold, CallChartUpdater()));
+            new PropertyMetadata(FontWeights.Bold, EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets labels font weight
         /// </summary>
@@ -277,7 +259,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public static readonly DependencyProperty FontStyleProperty = DependencyProperty.Register(
             "FontStyle", typeof (FontStyle),
-            typeof (Series), new PropertyMetadata(FontStyles.Normal, CallChartUpdater()));
+            typeof (Series), new PropertyMetadata(FontStyles.Normal, EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets labels font style
         /// </summary>
@@ -292,7 +274,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public static readonly DependencyProperty FontStretchProperty = DependencyProperty.Register(
             "FontStretch", typeof (FontStretch),
-            typeof (Series), new PropertyMetadata(FontStretches.Normal, CallChartUpdater()));
+            typeof (Series), new PropertyMetadata(FontStretches.Normal, EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets labels font stretch
         /// </summary>
@@ -337,7 +319,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public static readonly DependencyProperty PointGeometryProperty =
             DependencyProperty.Register("PointGeometry", typeof (Geometry), typeof (Series),
-                new PropertyMetadata(DefaultGeometries.Circle, CallChartUpdater()));
+                new PropertyMetadata(DefaultGeometries.Circle, EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets the point geometry, this shape will be drawn in the Tooltip, Legend, and if line series in every point also.
         /// </summary>
@@ -351,7 +333,7 @@ namespace LiveCharts.Wpf
         /// The scales x at property
         /// </summary>
         public static readonly DependencyProperty ScalesXAtProperty = DependencyProperty.Register(
-            "ScalesXAt", typeof (int), typeof (Series), new PropertyMetadata(default(int), CallChartUpdater()));
+            "ScalesXAt", typeof (int), typeof (Series), new PropertyMetadata(default(int), EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets the axis where series is scaled at, the axis must exist in the collection
         /// </summary>
@@ -365,7 +347,7 @@ namespace LiveCharts.Wpf
         /// The scales y at property
         /// </summary>
         public static readonly DependencyProperty ScalesYAtProperty = DependencyProperty.Register(
-            "ScalesYAt", typeof (int), typeof (Series), new PropertyMetadata(default(int), CallChartUpdater()));
+            "ScalesYAt", typeof (int), typeof (Series), new PropertyMetadata(default(int), EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets the axis where series is scaled at, the axis must exist in the collection
         /// </summary>
@@ -394,7 +376,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public static readonly DependencyProperty ConfigurationProperty = DependencyProperty.Register(
             "Configuration", typeof (object), typeof (Series), 
-            new PropertyMetadata(default(object), CallChartUpdater()));
+            new PropertyMetadata(default(object), EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets series mapper, if this property is set then the library will ignore the SeriesCollection mapper and global mappers.
         /// </summary>
@@ -406,7 +388,35 @@ namespace LiveCharts.Wpf
 
         #endregion
 
-        #region Internal Helpers
+        #region Callbacks and helpers
+
+        /// <summary>
+        /// Calls the chart updater.
+        /// </summary>
+        /// <returns></returns>
+        protected static void EnqueueUpdateCallback(DependencyObject dependencyObject,
+            DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        {
+            var wpfSeries = dependencyObject as Series;
+
+            if (wpfSeries == null) return;
+            if (wpfSeries.Core == null) return;
+
+            if (wpfSeries.Core.Chart != null) wpfSeries.Core.Chart.Updater.EnqueueUpdate();
+        }
+
+        private static void OnValuesInstanceChanged(DependencyObject dependencyObject,
+            DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        {
+            var series = (Series)dependencyObject;
+            series.Core.NotifyChartValuesInstanceChanged();
+        }
+
+        private static void OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            var series = (Series)sender;
+            series.Core.NotifySeriesVisibilityChanged();
+        }
 
         internal ContentControl UpdateLabelContent(DataLabelViewModel content, ContentControl currentControl)
         {
@@ -440,7 +450,7 @@ namespace LiveCharts.Wpf
 
         #endregion
 
-        #region Publics
+        #region Protected Methods
 
         /// <summary>
         /// Gets the view of a given point
@@ -448,7 +458,7 @@ namespace LiveCharts.Wpf
         /// <param name="point"></param>
         /// <param name="label"></param>
         /// <returns></returns>
-        public virtual IChartPointView GetPointView(ChartPoint point, string label)
+        protected virtual IChartPointView GetPointView(ChartPoint point, string label)
         {
             throw new NotImplementedException();
         }
@@ -456,14 +466,14 @@ namespace LiveCharts.Wpf
         /// <summary>
         /// This method runs when the update starts
         /// </summary>
-        public virtual void OnSeriesUpdateStart()
+        protected virtual void OnSeriesUpdateStart()
         {
         }
 
         /// <summary>
         /// Erases series
         /// </summary>
-        public virtual void Erase(bool removeFromView = true)
+        protected virtual void Erase(bool removeFromView = true)
         {
             Values.GetPoints(this).ForEach(p =>
             {
@@ -476,15 +486,14 @@ namespace LiveCharts.Wpf
         /// <summary>
         /// This method runs when the update finishes
         /// </summary>
-        public virtual void OnSeriesUpdatedFinish()
+        protected virtual void OnSeriesUpdatedFinish()
         {
-            IsFirstDraw = false;
         }
 
         /// <summary>
         /// Initializes the series colors if they are not set
         /// </summary>
-        public virtual void InitializeColors()
+        protected virtual void InitializeColors()
         {
             if (Stroke != null && Fill != null) return;
 
@@ -509,7 +518,7 @@ namespace LiveCharts.Wpf
         /// <summary>
         /// Defines special elements to draw according to the series type
         /// </summary>
-        public virtual void DrawSpecializedElements()
+        protected virtual void DrawSpecializedElements()
         {
 
         }
@@ -517,7 +526,7 @@ namespace LiveCharts.Wpf
         /// <summary>
         /// Places specializes items
         /// </summary>
-        public virtual void PlaceSpecializedElements()
+        protected virtual void PlaceSpecializedElements()
         {
 
         }
@@ -526,79 +535,86 @@ namespace LiveCharts.Wpf
         /// Gets the label point formatter.
         /// </summary>
         /// <returns></returns>
-        public Func<ChartPoint, string> GetLabelPointFormatter()
+        protected Func<ChartPoint, string> GetLabelPointFormatter()
         {
             if (DesignerProperties.GetIsInDesignMode(this))
                 return x => "Label";
 
             return LabelPoint;
         }
+
         #endregion
 
-        private static void OnValuesInstanceChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
-        {
-            var series = (Series) dependencyObject;
+        #region ISeriesView Implementation
 
-            if (series.Values != series.LastKnownValues && series.LastKnownValues != null)
+        SeriesCore ISeriesView.Core { get { return Core; } }
+
+        IChartValues ISeriesView.Values { get { return Values; } set { Values = value; } }
+
+        bool ISeriesView.DataLabels { get { return DataLabels; } }
+
+        int ISeriesView.ScalesXAt { get { return ScalesXAt; } }
+
+        int ISeriesView.ScalesYAt { get { return ScalesYAt; } }
+
+        object ISeriesView.Configuration { get { return Configuration; } }
+
+        bool ISeriesView.IsSeriesVisible { get { return Visibility == Visibility.Visible; } }
+
+        Func<ChartPoint, string> ISeriesView.LabelPoint { get { return LabelPoint; } }
+
+        IChartValues ISeriesView.ActualValues
+        {
+            get
             {
-                series.LastKnownValues.GetPoints(series).ForEach(
-                    x => { if (x.View != null) x.View.RemoveFromView(series.Core.Chart); });
+                if (DesignerProperties.GetIsInDesignMode(this) && (Values == null || Values.Count == 0))
+                    SetValue(ValuesProperty, Core.GetValuesForDesigner());
+
+                return Values ?? new ChartValues<double>();
             }
-
-            CallChartUpdater()(dependencyObject, dependencyPropertyChangedEventArgs);
-            series.LastKnownValues = series.Values;
         }
 
-        /// <summary>
-        /// Calls the chart updater.
-        /// </summary>
-        /// <param name="animate">if set to <c>true</c> [animate].</param>
-        /// <returns></returns>
-        protected static PropertyChangedCallback CallChartUpdater(bool animate = false)
+        string ISeriesView.Title { get { return Title; } }
+
+        IChartPointView ISeriesView.GetPointView(ChartPoint point, string label)
         {
-            return (o, args) =>
-            {
-                var wpfSeries = o as Series;
-
-                if (wpfSeries == null) return;
-                if (wpfSeries.Core == null) return;
-
-                if (wpfSeries.Core.Chart != null) wpfSeries.Core.Chart.Updater.EnqueueUpdate(animate);
-            };
+            return GetPointView(point, label);
         }
-        
-        private static void OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+
+        void ISeriesView.OnSeriesUpdateStart()
         {
-             var series = (Series) sender;
-
-            if (series.Visibility == Visibility.Collapsed || series.Visibility == Visibility.Hidden)
-                series.Erase(false);
-
-            if (series.Core == null) return;
-            series.Core.Chart.Updater.EnqueueUpdate();
+            OnSeriesUpdateStart();
         }
 
-        private static IChartValues GetValuesForDesigner()
+        void ISeriesView.Erase(bool removeFromView)
         {
-            var r = new Random();
-
-            var gvt = Type.GetType("LiveCharts.Geared.GearedValues`1, LiveCharts.Geared");
-            if (gvt != null) gvt = gvt.MakeGenericType(typeof(ObservableValue));
-
-            var obj = gvt != null
-                ? (IChartValues) Activator.CreateInstance(gvt)
-                : new ChartValues<ObservableValue>();
-
-            obj.Add(new ObservableValue(r.Next(0, 100)));
-            obj.Add(new ObservableValue(r.Next(0, 100)));
-            obj.Add(new ObservableValue(r.Next(0, 100)));
-            obj.Add(new ObservableValue(r.Next(0, 100)));
-            obj.Add(new ObservableValue(r.Next(0, 100)));
-
-            return obj;
+            Erase();
         }
 
-        #region Obsoletes
+        void ISeriesView.OnSeriesUpdatedFinish()
+        {
+            OnSeriesUpdatedFinish();
+        }
+
+        void ISeriesView.InitializeColors()
+        {
+            InitializeColors();
+        }
+
+        void ISeriesView.DrawSpecializedElements()
+        {
+            DrawSpecializedElements();
+        }
+
+        void ISeriesView.PlaceSpecializedElements()
+        {
+            PlaceSpecializedElements();
+        }
+
+        Func<ChartPoint, string> ISeriesView.GetLabelPointFormatter()
+        {
+            return GetLabelPointFormatter();
+        }
 
         #endregion
     }

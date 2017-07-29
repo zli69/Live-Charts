@@ -46,7 +46,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public StackedRowSeries()
         {
-            Core = new StackedRowAlgorithm(this);
+            Core = new StackedRowCore(this);
             InitializeDefuaults();
         }
 
@@ -55,7 +55,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public StackedRowSeries(object configuration)
         {
-            Core = new StackedRowAlgorithm(this);
+            Core = new StackedRowCore(this);
             Configuration = configuration;
             InitializeDefuaults();
         }
@@ -115,7 +115,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public static readonly DependencyProperty LabelsPositionProperty = DependencyProperty.Register(
             "LabelsPosition", typeof(BarLabelPosition), typeof(StackedRowSeries),
-            new PropertyMetadata(BarLabelPosition.Parallel, CallChartUpdater()));
+            new PropertyMetadata(BarLabelPosition.Parallel, EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets where the label is placed
         /// </summary>
@@ -134,7 +134,7 @@ namespace LiveCharts.Wpf
         /// <param name="point"></param>
         /// <param name="label"></param>
         /// <returns></returns>
-        public override IChartPointView GetPointView(ChartPoint point, string label)
+        protected override IChartPointView GetPointView(ChartPoint point, string label)
         {
             var pbv = (RowPointView) point.View;
 

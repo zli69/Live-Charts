@@ -43,7 +43,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public VerticalStackedAreaSeries()
         {
-            Core = new VerticalStackedAreaAlgorithm(this);
+            Core = new VerticalStackedAreaCore(this);
             InitializeDefuaults();
         }
 
@@ -52,7 +52,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public VerticalStackedAreaSeries(object configuration)
         {
-            Core = new VerticalStackedAreaAlgorithm(this);
+            Core = new VerticalStackedAreaCore(this);
             Configuration = configuration;
             InitializeDefuaults();
         }
@@ -81,7 +81,7 @@ namespace LiveCharts.Wpf
         /// <summary>
         /// This method runs when the update starts
         /// </summary>
-        public override void OnSeriesUpdateStart()
+        protected override void OnSeriesUpdateStart()
         {
             ActiveSplitters = 0;
 
@@ -136,7 +136,7 @@ namespace LiveCharts.Wpf
             Path.Data = geometry;
             Core.Chart.View.AddToDrawMargin(Path);
 
-            var y = ChartFunctions.ToDrawMargin(ActualValues.GetTracker(this).YLimit.Min, AxisOrientation.Y, Core.Chart, ScalesYAt);
+            var y = ChartFunctions.ToDrawMargin(((ISeriesView) this).ActualValues.GetTracker(this).YLimit.Min, AxisOrientation.Y, Core.Chart, ScalesYAt);
             Figure.StartPoint = new Point(0, y);
 
             var i = Core.Chart.View.Series.IndexOf(this);

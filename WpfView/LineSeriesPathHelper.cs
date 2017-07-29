@@ -20,18 +20,21 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using LiveCharts.Dtos;
 
 namespace LiveCharts.Wpf
 {
     internal class LineSeriesPathHelper
     {
-        public LineSeriesPathHelper()
+        public LineSeriesPathHelper(CorePoint location, double startsY)
         {
-            Bottom = new LineSegment ();
-            Left = new LineSegment ();
-            Right = new LineSegment ();
+            var p = new Point(location.X, startsY);
+            Bottom = new LineSegment {Point = p};
+            Left = new LineSegment {Point = p};
+            Right = new LineSegment {Point = p};
         }
 
         public PathFigure LineFigure { get; set; }

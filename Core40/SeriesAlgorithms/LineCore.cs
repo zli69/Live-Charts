@@ -33,15 +33,15 @@ namespace LiveCharts.SeriesAlgorithms
     /// <summary>
     /// 
     /// </summary>
-    /// <seealso cref="LiveCharts.SeriesAlgorithm" />
+    /// <seealso cref="SeriesCore" />
     /// <seealso cref="LiveCharts.Definitions.Series.ICartesianSeries" />
-    public class LineAlgorithm : SeriesAlgorithm, ICartesianSeries
+    public class LineCore : SeriesCore, ICartesianSeries
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LineAlgorithm"/> class.
+        /// Initializes a new instance of the <see cref="LiveCharts.SeriesAlgorithms.LineCore"/> class.
         /// </summary>
         /// <param name="view">The view.</param>
-        public LineAlgorithm(ISeriesView view) : base(view)
+        public LineCore(ISeriesView view) : base(view)
         {
             SeriesOrientation = SeriesOrientation.Horizontal;
             PreferredSelectionMode = TooltipSelectionMode.SharedXValues;
@@ -60,6 +60,10 @@ namespace LiveCharts.SeriesAlgorithms
 
             var smoothness = lineView.LineSmoothness;
             smoothness = smoothness > 1 ? 1 : (smoothness < 0 ? 0 : smoothness);
+
+            var areaLimit = ChartFunctions.ToDrawMargin(double.IsNaN(lineView.AreaLimit)
+                ? Chart.View.AxisY[View.ScalesYAt].Model.FirstSeparator
+                : lineView.AreaLimit, AxisOrientation.Y, Chart, View.ScalesYAt);
 
             foreach (var segment in points.SplitEachNaN())
             {
@@ -106,7 +110,8 @@ namespace LiveCharts.SeriesAlgorithms
                 {
                     if (!isOpen)
                     {
-                        lineView.StartSegment(segmentPosition, p1);
+                        if (Chart.View.DisableAnimations) lineView.StartSegment(p1, areaLimit);
+                        else lineView.StartAnimatedSegment(p1, areaLimit, Chart.View.AnimationsSpeed);
                         segmentPosition = 2;
                     }
 

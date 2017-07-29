@@ -30,17 +30,18 @@ namespace LiveCharts.SeriesAlgorithms
     /// <summary>
     /// 
     /// </summary>
-    /// <seealso cref="LiveCharts.SeriesAlgorithm" />
+    /// <seealso cref="SeriesCore" />
     /// <seealso cref="LiveCharts.Definitions.Series.ICartesianSeries" />
-    public class ScatterAlgorithm : SeriesAlgorithm, ICartesianSeries
+    public class CandleCore : SeriesCore, ICartesianSeries
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ScatterAlgorithm"/> class.
+        /// Initializes a new instance of the <see cref="LiveCharts.SeriesAlgorithms.CandleCore"/> class.
         /// </summary>
         /// <param name="view">The view.</param>
-        public ScatterAlgorithm(ISeriesView view) : base(view)
+        public CandleCore(ISeriesView view) : base(view)
         {
-            PreferredSelectionMode = TooltipSelectionMode.OnlySender;
+            SeriesOrientation = SeriesOrientation.Horizontal;
+            PreferredSelectionMode = TooltipSelectionMode.SharedXValues;
         }
 
         /// <summary>
@@ -48,42 +49,46 @@ namespace LiveCharts.SeriesAlgorithms
         /// </summary>
         public override void Update()
         {
-            var bubbleSeries = (IScatterSeriesView) View;
+            var castedSeries = (IFinancialSeriesView) View;
+            
+            const double padding = 1.2;
 
-            var p1 = new CorePoint();
-            var p2 = new CorePoint();
+            var totalSpace = ChartFunctions.GetUnitWidth(AxisOrientation.X, Chart, View.ScalesXAt) - padding;
 
-            p1.X = Chart.WLimit.Max;
-            p1.Y = bubbleSeries.MaxPointShapeDiameter;
+            double exceed = 0;
+            double candleWidth;
 
-            p2.X = Chart.WLimit.Min;
-            p2.Y = bubbleSeries.MinPointShapeDiameter;
-
-            var deltaX = p2.X - p1.X;
-            // ReSharper disable once CompareOfFloatsByEqualityOperator
-            var m = (p2.Y - p1.Y) / (deltaX == 0 ? double.MinValue : deltaX);
-
-            var uw = new CorePoint(
-                    CurrentXAxis.EvaluatesUnitWidth
-                        ? ChartFunctions.GetUnitWidth(AxisOrientation.X, Chart, View.ScalesXAt) / 2
-                        : 0,
-                    CurrentYAxis.EvaluatesUnitWidth
-                        ? ChartFunctions.GetUnitWidth(AxisOrientation.Y, Chart, View.ScalesYAt) / 2
-                        : 0);
+            if (totalSpace > castedSeries.MaxColumnWidth)
+            {
+                exceed = totalSpace - castedSeries.MaxColumnWidth;
+                candleWidth = castedSeries.MaxColumnWidth;
+            }
+            else
+            {
+                candleWidth = totalSpace;
+            }
 
             foreach (var chartPoint in View.ActualValues.GetPoints(View))
             {
-                chartPoint.ChartLocation = ChartFunctions.ToDrawMargin(
-                    chartPoint, View.ScalesXAt, View.ScalesYAt, Chart) + uw;
-
-                chartPoint.SeriesView = View;
+                var x = ChartFunctions.ToDrawMargin(chartPoint.X, AxisOrientation.X, Chart, View.ScalesXAt);
 
                 chartPoint.View = View.GetPointView(chartPoint,
                     View.DataLabels ? View.GetLabelPointFormatter()(chartPoint) : null);
 
-                var bubbleView = (IScatterPointView) chartPoint.View;
+                chartPoint.SeriesView = View;
 
-                bubbleView.Diameter = m*(chartPoint.Weight - p1.X) + p1.Y;
+                var candeView = (IOhlcPointView) chartPoint.View;
+
+                candeView.Open = ChartFunctions.ToDrawMargin(chartPoint.Open, AxisOrientation.Y, Chart, View.ScalesYAt);
+                candeView.Close = ChartFunctions.ToDrawMargin(chartPoint.Close, AxisOrientation.Y, Chart, View.ScalesYAt);
+                candeView.High = ChartFunctions.ToDrawMargin(chartPoint.High, AxisOrientation.Y, Chart, View.ScalesYAt);
+                candeView.Low = ChartFunctions.ToDrawMargin(chartPoint.Low, AxisOrientation.Y, Chart, View.ScalesYAt);
+
+                candeView.Width = candleWidth - padding > 0 ? candleWidth - padding : 0;
+                candeView.Left = x + exceed/2 + padding;
+                candeView.StartReference = (candeView.High + candeView.Low)/2;
+
+                chartPoint.ChartLocation = new CorePoint(x + exceed/2, (candeView.High + candeView.Low)/2);
 
                 chartPoint.View.DrawOrMove(null, chartPoint, 0, Chart);
             }
@@ -96,17 +101,17 @@ namespace LiveCharts.SeriesAlgorithms
 
         double ICartesianSeries.GetMaxX(AxisCore axis)
         {
-            return AxisLimits.StretchMax(axis);
+            return AxisLimits.UnitRight(axis);
         }
 
         double ICartesianSeries.GetMinY(AxisCore axis)
         {
-            return AxisLimits.StretchMin(axis);
+            return AxisLimits.SeparatorMin(axis);
         }
 
         double ICartesianSeries.GetMaxY(AxisCore axis)
         {
-            return AxisLimits.StretchMax(axis);
+            return AxisLimits.SeparatorMaxRounded(axis);
         }
     }
 }

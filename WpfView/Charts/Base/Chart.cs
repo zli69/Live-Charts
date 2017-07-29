@@ -1061,8 +1061,6 @@ namespace LiveCharts.Wpf.Charts.Base
             };
         }
 
-        
-
         #region IChartView implementation
 
         /// <summary>

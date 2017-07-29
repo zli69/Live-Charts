@@ -44,7 +44,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public OhlcSeries()
         {
-            Core = new OhlcAlgorithm(this);
+            Core = new OhlcCore(this);
             InitializeDefuaults();
         }
 
@@ -54,7 +54,7 @@ namespace LiveCharts.Wpf
         /// <param name="configuration"></param>
         public OhlcSeries(object configuration)
         {
-            Core = new OhlcAlgorithm(this);
+            Core = new OhlcCore(this);
             Configuration = configuration;
             InitializeDefuaults();
         }
@@ -116,7 +116,7 @@ namespace LiveCharts.Wpf
         /// <summary>
         /// This method runs when the update starts
         /// </summary>
-        public override void OnSeriesUpdateStart()
+        protected override void OnSeriesUpdateStart()
         {
             //do nothing on updateStart
         }
@@ -127,7 +127,7 @@ namespace LiveCharts.Wpf
         /// <param name="point">The point.</param>
         /// <param name="label">The label.</param>
         /// <returns></returns>
-        public override IChartPointView GetPointView(ChartPoint point, string label)
+        protected override IChartPointView GetPointView(ChartPoint point, string label)
         {
             var pbv = (OhlcPointView)point.View;
 

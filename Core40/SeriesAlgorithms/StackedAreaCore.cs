@@ -33,17 +33,17 @@ namespace LiveCharts.SeriesAlgorithms
     /// <summary>
     /// 
     /// </summary>
-    /// <seealso cref="LiveCharts.SeriesAlgorithm" />
+    /// <seealso cref="SeriesCore" />
     /// <seealso cref="LiveCharts.Definitions.Series.ICartesianSeries" />
-    public class StackedAreaAlgorithm : SeriesAlgorithm, ICartesianSeries
+    public class StackedAreaCore : SeriesCore, ICartesianSeries
     {
         private readonly IStackModelableSeriesView _stackModelable;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StackedAreaAlgorithm"/> class.
+        /// Initializes a new instance of the <see cref="LiveCharts.SeriesAlgorithms.StackedAreaCore"/> class.
         /// </summary>
         /// <param name="view">The view.</param>
-        public StackedAreaAlgorithm(ISeriesView view) : base(view)
+        public StackedAreaCore(ISeriesView view) : base(view)
         {
             SeriesOrientation = SeriesOrientation.Horizontal;
             _stackModelable = (IStackModelableSeriesView)view;
@@ -64,6 +64,10 @@ namespace LiveCharts.SeriesAlgorithms
 
             var smoothness = lineView.LineSmoothness;
             smoothness = smoothness > 1 ? 1 : (smoothness < 0 ? 0 : smoothness);
+
+            var areaLimit = ChartFunctions.ToDrawMargin(double.IsNaN(lineView.AreaLimit)
+                ? Chart.View.AxisY[View.ScalesYAt].Model.FirstSeparator
+                : lineView.AreaLimit, AxisOrientation.Y, Chart, View.ScalesYAt);
 
             foreach (var segment in points.SplitEachNaN())
             {
@@ -93,7 +97,7 @@ namespace LiveCharts.SeriesAlgorithms
                 p2 += uw;
                 p3 += uw;
 
-                lineView.StartSegment(segmentPosition, p1);
+                lineView.StartSegment(p1, areaLimit);
                 segmentPosition += segmentPosition == 0 ? 1 : 2;
 
                 ChartPoint previousDrawn = null;

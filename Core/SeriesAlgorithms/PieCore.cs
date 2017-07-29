@@ -30,15 +30,15 @@ namespace LiveCharts.SeriesAlgorithms
     /// <summary>
     /// 
     /// </summary>
-    /// <seealso cref="LiveCharts.SeriesAlgorithm" />
+    /// <seealso cref="SeriesAlgorithm" />
     /// <seealso cref="LiveCharts.Definitions.Series.IPieSeries" />
-    public class PieAlgorithm : SeriesAlgorithm, IPieSeries
+    public class PieCore : SeriesAlgorithm, IPieSeries
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PieAlgorithm"/> class.
+        /// Initializes a new instance of the <see cref="PieCore"/> class.
         /// </summary>
         /// <param name="view">The view.</param>
-        public PieAlgorithm(ISeriesView view) : base(view)
+        public PieCore(ISeriesView view) : base(view)
         {
             PreferredSelectionMode= TooltipSelectionMode.SharedXValues;
         }

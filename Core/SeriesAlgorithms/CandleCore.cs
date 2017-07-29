@@ -30,15 +30,15 @@ namespace LiveCharts.SeriesAlgorithms
     /// <summary>
     /// 
     /// </summary>
-    /// <seealso cref="LiveCharts.SeriesAlgorithm" />
+    /// <seealso cref="SeriesAlgorithm" />
     /// <seealso cref="LiveCharts.Definitions.Series.ICartesianSeries" />
-    public class OhlcAlgorithm : SeriesAlgorithm, ICartesianSeries
+    public class CandleCore : SeriesAlgorithm, ICartesianSeries
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="OhlcAlgorithm"/> class.
+        /// Initializes a new instance of the <see cref="CandleCore"/> class.
         /// </summary>
         /// <param name="view">The view.</param>
-        public OhlcAlgorithm(ISeriesView view) : base(view)
+        public CandleCore(ISeriesView view) : base(view)
         {
             SeriesOrientation = SeriesOrientation.Horizontal;
             PreferredSelectionMode = TooltipSelectionMode.SharedXValues;
@@ -56,7 +56,7 @@ namespace LiveCharts.SeriesAlgorithms
             var totalSpace = ChartFunctions.GetUnitWidth(AxisOrientation.X, Chart, View.ScalesXAt) - padding;
 
             double exceed = 0;
-            double candleWidth = 0;
+            double candleWidth;
 
             if (totalSpace > castedSeries.MaxColumnWidth)
             {
@@ -77,18 +77,18 @@ namespace LiveCharts.SeriesAlgorithms
 
                 chartPoint.SeriesView = View;
 
-                var ohclView = (IOhlcPointView) chartPoint.View;
+                var candeView = (IOhlcPointView) chartPoint.View;
 
-                ohclView.Open = ChartFunctions.ToDrawMargin(chartPoint.Open, AxisOrientation.Y, Chart, View.ScalesYAt);
-                ohclView.Close = ChartFunctions.ToDrawMargin(chartPoint.Close, AxisOrientation.Y, Chart, View.ScalesYAt);
-                ohclView.High = ChartFunctions.ToDrawMargin(chartPoint.High, AxisOrientation.Y, Chart, View.ScalesYAt);
-                ohclView.Low = ChartFunctions.ToDrawMargin(chartPoint.Low, AxisOrientation.Y, Chart, View.ScalesYAt);
+                candeView.Open = ChartFunctions.ToDrawMargin(chartPoint.Open, AxisOrientation.Y, Chart, View.ScalesYAt);
+                candeView.Close = ChartFunctions.ToDrawMargin(chartPoint.Close, AxisOrientation.Y, Chart, View.ScalesYAt);
+                candeView.High = ChartFunctions.ToDrawMargin(chartPoint.High, AxisOrientation.Y, Chart, View.ScalesYAt);
+                candeView.Low = ChartFunctions.ToDrawMargin(chartPoint.Low, AxisOrientation.Y, Chart, View.ScalesYAt);
 
-                ohclView.Width = candleWidth - padding > 0 ? candleWidth - padding : 0;
-                ohclView.Left = x + exceed/2 + padding;
-                ohclView.StartReference = (ohclView.High + ohclView.Low)/2;
+                candeView.Width = candleWidth - padding > 0 ? candleWidth - padding : 0;
+                candeView.Left = x + exceed/2 + padding;
+                candeView.StartReference = (candeView.High + candeView.Low)/2;
 
-                chartPoint.ChartLocation = new CorePoint(x + exceed/2, (ohclView.High + ohclView.Low)/2);
+                chartPoint.ChartLocation = new CorePoint(x + exceed/2, (candeView.High + candeView.Low)/2);
 
                 chartPoint.View.DrawOrMove(null, chartPoint, 0, Chart);
             }

@@ -31,7 +31,7 @@ namespace LiveCharts
     public abstract class SeriesAlgorithm
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SeriesAlgorithm"/> class.
+        /// Initializes a new instance of the <see cref="LiveCharts.SeriesCore"/> class.
         /// </summary>
         /// <param name="view">The view.</param>
         protected SeriesAlgorithm(ISeriesView view)

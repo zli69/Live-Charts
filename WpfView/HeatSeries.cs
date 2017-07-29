@@ -51,7 +51,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public HeatSeries()
         {
-            Core = new HeatAlgorithm(this);
+            Core = new HeatCore(this);
             InitializeDefuaults();
         }
 
@@ -61,7 +61,7 @@ namespace LiveCharts.Wpf
         /// <param name="configuration"></param>
         public HeatSeries(object configuration)
         {
-            Core = new HeatAlgorithm(this);
+            Core = new HeatCore(this);
             Configuration = configuration;
             InitializeDefuaults();
         }
@@ -80,7 +80,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public static readonly DependencyProperty DrawsHeatRangeProperty = DependencyProperty.Register(
             "DrawsHeatRange", typeof(bool), typeof(HeatSeries),
-            new PropertyMetadata(default(bool), CallChartUpdater()));
+            new PropertyMetadata(default(bool), EnqueueUpdateCallback));
         /// <summary>
         /// Gets or sets whether the series should draw the heat range control, it is the vertical frame to the right that displays the heat gradient.
         /// </summary>
@@ -129,7 +129,7 @@ namespace LiveCharts.Wpf
         /// <param name="point"></param>
         /// <param name="label"></param>
         /// <returns></returns>
-        public override IChartPointView GetPointView(ChartPoint point, string label)
+        protected override IChartPointView GetPointView(ChartPoint point, string label)
         {
             var pbv = (HeatPoint) point.View;
 
@@ -197,7 +197,7 @@ namespace LiveCharts.Wpf
         /// Erases series
         /// </summary>
         /// <param name="removeFromView"></param>
-        public override void Erase(bool removeFromView = true)
+        protected override void Erase(bool removeFromView = true)
         {
             Values.GetPoints(this).ForEach(p =>
             {
@@ -210,7 +210,7 @@ namespace LiveCharts.Wpf
         /// <summary>
         /// Defines special elements to draw according to the series type
         /// </summary>
-        public override void DrawSpecializedElements()
+        protected override void DrawSpecializedElements()
         {
             if (DrawsHeatRange)
             {
@@ -238,8 +238,8 @@ namespace LiveCharts.Wpf
                 {
                     Core.Chart.View.AddToView(ColorRangeControl);
                 }
-                var max = ColorRangeControl.SetMax(ActualValues.GetTracker(this).WLimit.Max.ToString(CultureInfo.InvariantCulture));
-                var min = ColorRangeControl.SetMin(ActualValues.GetTracker(this).WLimit.Min.ToString(CultureInfo.InvariantCulture));
+                var max = ColorRangeControl.SetMax(((ISeriesView) this).ActualValues.GetTracker(this).WLimit.Max.ToString(CultureInfo.InvariantCulture));
+                var min = ColorRangeControl.SetMin(((ISeriesView) this).ActualValues.GetTracker(this).WLimit.Min.ToString(CultureInfo.InvariantCulture));
 
                 var m = max > min ? max : min;
 
@@ -256,7 +256,7 @@ namespace LiveCharts.Wpf
         /// <summary>
         /// Places specializes items
         /// </summary>
-        public override void PlaceSpecializedElements()
+        protected override void PlaceSpecializedElements()
         {
             if (!DrawsHeatRange) return;
 
@@ -289,14 +289,11 @@ namespace LiveCharts.Wpf
         /// <summary>
         /// Initializes the series colors if they are not set
         /// </summary>
-        public override void InitializeColors()
+        protected override void InitializeColors()
         {
-            var nextColor = (Color) Core.Chart.GetNextDefaultColor();
+            base.InitializeColors();
 
-            if (Stroke == null)
-                SetValue(StrokeProperty, new SolidColorBrush(nextColor));
-            if (Fill == null)
-                SetValue(FillProperty, new SolidColorBrush(nextColor));
+            var nextColor = ((SolidColorBrush) Stroke).Color;
 
             var defaultColdColor = new Color
             {
@@ -308,19 +305,18 @@ namespace LiveCharts.Wpf
                 B = nextColor.B
             };
 
-            if (!GradientStopCollection.Any())
+            if (GradientStopCollection.Any()) return;
+
+            GradientStopCollection.Add(new GradientStop
             {
-                GradientStopCollection.Add(new GradientStop
-                {
-                    Color = defaultColdColor,
-                    Offset = 0
-                });
-                GradientStopCollection.Add(new GradientStop
-                {
-                    Color = nextColor,
-                    Offset = 1
-                });
-            }
+                Color = defaultColdColor,
+                Offset = 0
+            });
+            GradientStopCollection.Add(new GradientStop
+            {
+                Color = nextColor,
+                Offset = 1
+            });
         }
 
         #endregion

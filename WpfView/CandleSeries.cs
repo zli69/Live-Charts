@@ -46,7 +46,7 @@ namespace LiveCharts.Wpf
         /// </summary>
         public CandleSeries()
         {
-            Core = new CandleAlgorithm(this);
+            Core = new CandleCore(this);
             InitializeDefuaults();
         }
 
@@ -56,7 +56,7 @@ namespace LiveCharts.Wpf
         /// <param name="configuration"></param>
         public CandleSeries(object configuration)
         {
-            Core = new CandleAlgorithm(this);
+            Core = new CandleCore(this);
             Configuration = configuration;
             InitializeDefuaults();
         }
@@ -135,7 +135,7 @@ namespace LiveCharts.Wpf
         /// <summary>
         /// This method runs when the update starts
         /// </summary>
-        public override void OnSeriesUpdateStart()
+        protected override void OnSeriesUpdateStart()
         {
             //do nothing on updateStart
         }
@@ -146,7 +146,7 @@ namespace LiveCharts.Wpf
         /// <param name="point">The point.</param>
         /// <param name="label">The label.</param>
         /// <returns></returns>
-        public override IChartPointView GetPointView(ChartPoint point, string label)
+        protected override IChartPointView GetPointView(ChartPoint point, string label)
         {
             var pbv = (CandlePointView)point.View;
 
