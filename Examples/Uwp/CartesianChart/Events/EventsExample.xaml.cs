@@ -4,6 +4,7 @@ using Windows.UI.Xaml.Controls;
 using LiveCharts;
 using LiveCharts.Events;
 using LiveCharts.Uwp;
+//using LiveCharts.Uwp.Charts.Base;
 
 namespace UWP.CartesianChart.Events
 {

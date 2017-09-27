@@ -264,6 +264,8 @@ namespace LiveCharts.Uwp
             get { return (Brush) GetValue(DataLabelForegroundProperty); }
             set { SetValue(DataLabelForegroundProperty, value); }
         }
+
+        public double SectionOffset { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         #endregion
 
         /// <summary>

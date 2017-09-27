@@ -56,6 +56,24 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'arm|AnyCPU'">
     <OutputPath>bin\arm\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DelaySign>false</DelaySign>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>false</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -268,16 +286,16 @@
     <Compile Include="Cartesian\Zooming and Panning\ZomingAndPanningExample.Designer.cs">
       <DependentUpon>ZomingAndPanningExample.cs</DependentUpon>
     </Compile>
-    <Compile Include="Gauge\360\Gauge360Example.cs">
+    <Compile Include="Cartesian\Zooming and Panning\Gauge\360\Gauge360Example.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Gauge\360\Gauge360Example.Designer.cs">
+    <Compile Include="Cartesian\Zooming and Panning\Gauge\360\Gauge360Example.Designer.cs">
       <DependentUpon>Gauge360Example.cs</DependentUpon>
     </Compile>
-    <Compile Include="Gauge\AngularGauge\AngularGugeForm.cs">
+    <Compile Include="Cartesian\Zooming and Panning\Gauge\AngularGauge\AngularGugeForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Gauge\AngularGauge\AngularGugeForm.Designer.cs">
+    <Compile Include="Cartesian\Zooming and Panning\Gauge\AngularGauge\AngularGugeForm.Designer.cs">
       <DependentUpon>AngularGugeForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Main.cs">
@@ -414,10 +432,10 @@
     <EmbeddedResource Include="Cartesian\Zooming and Panning\ZomingAndPanningExample.resx">
       <DependentUpon>ZomingAndPanningExample.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gauge\360\Gauge360Example.resx">
+    <EmbeddedResource Include="Cartesian\Zooming and Panning\Gauge\360\Gauge360Example.resx">
       <DependentUpon>Gauge360Example.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gauge\AngularGauge\AngularGugeForm.resx">
+    <EmbeddedResource Include="Cartesian\Zooming and Panning\Gauge\AngularGauge\AngularGugeForm.resx">
       <DependentUpon>AngularGugeForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Main.resx">
@@ -448,6 +466,7 @@
     <Content Include="cities.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

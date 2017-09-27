@@ -40,6 +40,9 @@
   <PropertyGroup>
     <DelaySign>false</DelaySign>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="AxisCore.cs" />
     <Compile Include="AxisOrientation.cs" />
